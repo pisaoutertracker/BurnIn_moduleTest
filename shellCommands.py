@@ -62,18 +62,14 @@ def getDateTimeAndTestID():
 def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolder="logs"):
     if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
     date, testID = getDateTimeAndTestID()
-    if not useExistingModuleTest:
-        logFile = "%s/%s.log"%(logFolder,testID)
-    else:
-        logFile = "%s/%s.log"%(logFolder,useExistingModuleTest)
+    logFile = "%s/%s.log"%(logFolder,testID)
     if verbose>0: print(testID,logFile)
     if not useExistingModuleTest:
         output = runCommand("ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(xmlFile,testID,logFile)) #or --readlpGBTIDs ?
     else:
-        output = runCommand("cat logs/2023_11_08_14_36_06_465927.log | tee %s"%(logFile)) #or --readlpGBTIDs ?
-#    hwID = getID(output)
+        output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile)) #or --readlpGBTIDs ?
     if verbose>10: print(output)
-    return testID, date #, hwID
+    return testID, date
 
 
 ### This code allow you to test this code using "python3 shellCommands.py"
