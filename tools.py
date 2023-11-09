@@ -55,28 +55,28 @@ def getMean(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
 
 ### Make a map [D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s) containing the mean noise of each chip per each module
 
-def getNoise(rootFile, xmlConfig):
-    if verbose>0: print("Calling getNoise()", rootFile.GetName())
-    noises = {}
+def getNoisePerChip(rootFile, xmlConfig):
+    if verbose>0: print("Calling getNoisePerChip()", rootFile.GetName())
+    noisePerChip = {}
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
             for hybrid_id, hybrid in opticalGroup["hybrids"].items():
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, strip_id, "SSA")
-                    if histoName in noises: raise Exception("%s is already in noises (getNoise function): %s."%(histoName, noises.keys()))
-                    noises[histoName] = noise
+                    if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
+                    noisePerChip[histoName] = noise
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in hybrid["pixels"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, pixel_id, "MPA")
-                    if histoName in noises: raise Exception("%s is already in noises (getNoise function): %s."%(histoName, noises.keys()))
-                    noises[histoName] = noise
-    return noises
+                    if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
+                    noisePerChip[histoName] = noise
+    return noisePerChip
 
 ### Make an output result "pass" or "failed" depending on the noise of all the chips of a single module.
 ##TODO
-def getResult(noises):
-    for noise in noises.values():
+def getResultPerModule(noisePerChip):
+    for noise in noisePerChip.values():
         if noise>5 or noise<2:
             return "failed"
     return "pass"
@@ -86,7 +86,7 @@ def getResult(noises):
 def getROOTfile(testID):
     import ROOT, os
     matches = [folder for folder in os.listdir("Results") if testID in folder ]
-    if len(matches) != 1: raise Exception("%d matches of %s in Result folder. %s"%( len(matches), testID, str(matches)))
+    if len(matches) != 1: raise Exception("%d matches of %s in ./Results/ folder. %s"%( len(matches), testID, str(matches)))
     fName = "Results/%s/Hybrid.root"%matches[0]
     return ROOT.TFile.Open(fName)
 
@@ -99,11 +99,11 @@ if __name__ == '__main__':
     rootFile = getROOTfile(testID)
     from makeXml import readXmlConfig
     xmlConfig = readXmlConfig(xmlConfigFile)
-    noises = getNoise(rootFile , xmlConfig)
+    noisePerChip = getNoisePerChip(rootFile , xmlConfig)
     from pprint import pprint
-    print("\nnoises:")
-    pprint(noises)
-    result = getResult(noises)
+    print("\nnoisePerChip:")
+    pprint(noisePerChip)
+    result = getResultPerModule(noisePerChip)
     print("\nresult:")
     pprint(result)
     IDs = getIDsFromROOT(rootFile, xmlConfig)

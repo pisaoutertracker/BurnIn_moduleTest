@@ -25,7 +25,7 @@ useExistingModuleTest = "T2023_11_08_17_57_54_302065" ## read existing module te
 
 if __name__ == '__main__':
     from pprint import pprint
-    from tools import getROOTfile, getIDsFromROOT, getNoise, getResult
+    from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors
     from makeXml import makeXml, makeBoardMap, readXmlConfig
     from databaseTools import uploadTestToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleIdMapFromDB
@@ -44,12 +44,12 @@ if __name__ == '__main__':
     rootFile = getROOTfile(testID) if not useExistingModuleTest else getROOTfile(useExistingModuleTest) 
     
     ### Read noise "NoiseDistribution_Chip" for each chip
-    # noises is a map "D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)" --> noise
-    noises = getNoise(rootFile , xmlConfig)
-    if verbose>5: pprint(noises)
+    # noisePerChip is a map "D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)" --> noise
+    noisePerChip = getNoisePerChip(rootFile , xmlConfig)
+    if verbose>5: pprint(noisePerChip)
     
     ### Define an outcome result "pass" or "failed"
-    result = getResult(noises)
+    result = getResultPerModule(noisePerChip)
     
     ### get the lpGBT hardware ID for each module from the ROOT file (CHIPID registers, CHIPID0)
     # Note: each module is identified by (board_id, opticalGroup_id)
@@ -80,7 +80,7 @@ if __name__ == '__main__':
                 "testStatus": "completed",
                 "testResults": {
                     "result": result,
-                    "noises": noises,
+                    "noisePerChip": noisePerChip,
                     "boards": makeBoardMap(xmlConfig),
                     "temperatures": temps,
                     "xmlConfig": xmlConfig
