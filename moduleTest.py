@@ -23,6 +23,21 @@ runFpgaConfig = False
 #skipMongo = True
 useExistingModuleTest = "T2023_11_08_17_57_54_302065" ## read existing module test instead of launching a new test!
 
+### webdav keys
+hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
+webdav_url = "https://cernbox.cern.ch/remote.php/dav/public-files"
+from webdavclient import WebDAVWrapper
+import os
+hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("|")
+webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
+run = "RunXXX"
+dname = "/%s"%run
+webdav_wrapper.mkDir(dname)
+file = "ModuleTest_settings.xml"
+newFile = webdav_wrapper.write_file(file, "/%s/%s"%(run, file))
+print(dir, newFile)
+
+
 if __name__ == '__main__':
     from pprint import pprint
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultPerModule
@@ -49,7 +64,7 @@ if __name__ == '__main__':
     if verbose>5: pprint(noisePerChip)
     
     ### Define an outcome result "pass" or "failed"
-    result = getResultPerModule(noisePerChip)
+    result = getResultPerModule(noisePerChip, xmlConfig)
     
     ### get the lpGBT hardware ID for each module from the ROOT file (CHIPID registers, CHIPID0)
     # Note: each module is identified by (board_id, opticalGroup_id)
@@ -69,6 +84,10 @@ if __name__ == '__main__':
         ### Read sensors from FNAL box
         if not skipBurnIn: temps = burnIn_readSensors()
         
+        for file in [xmlConfigFile, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
+            newFile = webdav_wrapper.write_file(file, "/%s/%s"%(run, file))
+            print("Uploaded %s"%newFile)
+            
         ### Create test result and upload it to "test" DB
         # see https://github.com/pisaoutertracker/testmongo/blob/f7e032c3dafa7954f834810903ea8ac9dc5bdbd0/populate_db.py#L70C6-L70C8
         testResult = {
@@ -85,6 +104,7 @@ if __name__ == '__main__':
                     "temperatures": temps,
                     "xmlConfig": xmlConfig
                 },
+                "runFolder" : run
         #        ## Not manadatory
         }
 
@@ -126,4 +146,6 @@ if __name__ == '__main__':
                     pprint(getModuleFromDB(moduleID = moduleID))
             else:
                 raise Exception("Test %s (%s) is already included in %s (%s) test list %s."%(test["testID"], test["_id"], module["moduleID"], module["_id"], module["tests"]))
+
+
 
