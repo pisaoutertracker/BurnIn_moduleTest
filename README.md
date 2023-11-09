@@ -7,7 +7,7 @@ python3 moduleTest.py
 (Check configuration parameters).
 
 This script will:
-- make a XML file to be used in `ot_module_test` using the configuration in [PS_Module_settings.py];
+- make a XML file to be used in `ot_module_test` using the configuration in [PS_Module_settings.py](PS_Module_settings.py);
 - run `fpgaconfig`;
 - run `ot_module_test`;
 - read the output ROOT file to:
