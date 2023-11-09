@@ -75,7 +75,16 @@ def getNoisePerChip(rootFile, xmlConfig):
 
 ### Make an output result "pass" or "failed" depending on the noise of all the chips of a single module.
 ##TODO
-def getResultPerModule(noisePerChip):
+def getResultPerModule(noisePerChip, xmlConfig):
+    results = []
+    for board_id, board in xmlConfig["boards"].items():
+        for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
+            for hybrid_id, hybrid in opticalGroup["hybrids"].items():
+                for strip_id in hybrid["strips"]:
+                    pass
+                for pixel_id in hybrid["pixels"]:
+                    pass
+    
     for noise in noisePerChip.values():
         if noise>5 or noise<2:
             return "failed"
