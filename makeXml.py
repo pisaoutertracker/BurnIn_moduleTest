@@ -27,8 +27,9 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     Hybrid = OpticalGroup.find("Hybrid")
     SSA = Hybrid.find("SSA")
     MPA = Hybrid.find("MPA")
-    for el in [HwDescription, BeBoard, OpticalGroup, lpGBT, Hybrid, SSA, MPA]:
-        print(el.getchildren(),el.keys())
+    if verbose > 5:
+        for el in [HwDescription, BeBoard, OpticalGroup, lpGBT, Hybrid, SSA, MPA]:
+            print(el.getchildren(),el.keys())
     
     ## Clean template from the existing parameters
     Hybrid.remove(SSA)
@@ -61,10 +62,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
             for hybrid_id, hybrid in opticalGroup["hybrids"].items():
                 Hybrid = deepcopy(Hybrid_)
                 Hybrid.set("Id", str(hybrid_id))
-#                BeBoard.insert(2,copy(OpticalGroup))
                 SSAFiles_position = Hybrid.getchildren().index(Hybrid.find("SSA_Files"))
-#                print(hybrid["pixels"])
-#                print(hybrid["strips"])
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
                     SSA.set("Id", str(strip_id))
@@ -97,3 +95,11 @@ def makeBoardMap(xmlConfig):
     for board_id, board in xmlConfig["boards"].items():
          boardMap[board_id] = board["ip"]
     return boardMap
+
+if __name__ == '__main__':
+#    verbose = -1
+    xmlConfigFile = "PS_Module_settings.py"
+    xmlOutput="ModuleTest_settings.xml"
+    xmlTemplate="PS_Module_template.xml"
+    xmlConfig = readXmlConfig(xmlConfigFile)
+    makeXml(xmlOutput, xmlConfig, xmlTemplate)
