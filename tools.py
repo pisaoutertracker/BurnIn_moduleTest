@@ -19,7 +19,7 @@ def getID(output):
 # IDs is a map: IDs[(board_id, opticalGroup_id)] --> hardware ID
 
 def getIDsFromROOT(rootFile, xmlConfig):
-    global out
+    if verbose>1: print("Calling getIDsFromROOT()", rootFile)
     IDs = {}
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
@@ -61,10 +61,12 @@ def getNoise(rootFile, xmlConfig):
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
             for hybrid_id, hybrid in opticalGroup["hybrids"].items():
+                if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, strip_id, "SSA")
                     if histoName in noises: raise Exception("%s is already in noises (getNoise function): %s."%(histoName, noises.keys()))
                     noises[histoName] = noise
+                if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in hybrid["pixels"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, pixel_id, "MPA")
                     if histoName in noises: raise Exception("%s is already in noises (getNoise function): %s."%(histoName, noises.keys()))
@@ -87,3 +89,24 @@ def getROOTfile(testID):
     if len(matches) != 1: raise Exception("%d matches of %s in Result folder. %s"%( len(matches), testID, str(matches)))
     fName = "Results/%s/Hybrid.root"%matches[0]
     return ROOT.TFile.Open(fName)
+
+
+### This code allow you to test this code using "python3 tools.py"
+
+if __name__ == '__main__':
+    testID = "T2023_11_08_17_57_54_302065"
+    xmlConfigFile = "PS_Module_settings.py"
+    rootFile = getROOTfile(testID)
+    from makeXml import readXmlConfig
+    xmlConfig = readXmlConfig(xmlConfigFile)
+    noises = getNoise(rootFile , xmlConfig)
+    from pprint import pprint
+    print("\nnoises:")
+    pprint(noises)
+    result = getResult(noises)
+    print("\nresult:")
+    pprint(result)
+    IDs = getIDsFromROOT(rootFile, xmlConfig)
+    print("\nIDs:")
+    pprint(IDs)
+

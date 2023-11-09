@@ -74,3 +74,28 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
 #    hwID = getID(output)
     if verbose>10: print(output)
     return testID, date #, hwID
+
+
+### This code allow you to test this code using "python3 shellCommands.py"
+
+if __name__ == '__main__':
+#    verbose = -1
+    xmlFile = "ModuleTest_settings.xml"
+    firmware="ps_twomod_oct23.bin"
+    useExistingModuleTest=False
+    
+    temps = burnIn_readSensors()
+    print("\ntemps:")
+    print(temps)
+    
+    date, testID = getDateTimeAndTestID()
+    print("\ntestID-1:")
+    print(date, testID)
+    print()
+    
+#    fpgaconfig(xmlFile, firmware)
+    print()
+    testID, date = runModuleTest(xmlFile, useExistingModuleTest)
+    print("\ntestID-2:")
+    print(date, testID)
+

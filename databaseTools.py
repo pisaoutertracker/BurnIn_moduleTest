@@ -82,3 +82,27 @@ def makeModuleIdMapFromDB():
     hwToMongoID["-1"] = "-1"
     return hwToModuleID, hwToMongoID
 
+
+
+### This code allow you to test this code using "python3 databaseTools.py"
+if __name__ == '__main__':
+    moduleID = "M123"
+    testID = "T2023_11_08_17_57_54_302065"
+    hwToModuleID, hwToMongoID = makeModuleIdMapFromDB()
+
+    print("\nhwToModuleID:")
+    from pprint import pprint
+    pprint(hwToModuleID)
+    print()
+    print("\nhwToMongoID:")
+    from pprint import pprint
+    pprint(hwToMongoID)
+    print()
+    
+    module = getModuleFromDB(moduleID)
+    print("\n #####     Check Module %s on MongoDB    ##### \n"%moduleID)
+    pprint(module)
+    
+    test = getTestFromDB(testID)
+    print("\n #####     Check Test %s on MongoDB    ##### \n"%testID)
+    pprint(test)

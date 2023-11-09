@@ -96,10 +96,18 @@ def makeBoardMap(xmlConfig):
          boardMap[board_id] = board["ip"]
     return boardMap
 
+### This code allows you to make the XML file directly with "python3 makeXml.py"
+
 if __name__ == '__main__':
 #    verbose = -1
     xmlConfigFile = "PS_Module_settings.py"
     xmlOutput="ModuleTest_settings.xml"
     xmlTemplate="PS_Module_template.xml"
     xmlConfig = readXmlConfig(xmlConfigFile)
+    print("\nxmlConfig:")
+    from pprint import pprint
+    pprint(xmlConfig)
+    print()
     makeXml(xmlOutput, xmlConfig, xmlTemplate)
+    print("XML created in %s."%xmlOutput)
+
