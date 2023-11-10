@@ -31,7 +31,7 @@ def burnIn_valveOn():
 def burnIn_readSensors():
     if verbose>0: print("Calling burnIn_readSensors()")
     output = runCommand("/home/thermal/suvankar/power_supply//simbxcntrl read-sensors")
-    temps = output.stdout.decode().split("buffer: [")[1].split("]\n")[0]
+    temps = output.stdout.decode().split("buffer: [")[1].split("]")[0]
     temps = [float(temp) for temp in temps.split(",")]
     if verbose>1: print(output)
     return temps
@@ -46,6 +46,11 @@ def burnIn_setTemperature(temperature):
 def fpgaconfig(xmlFile, firmware):
     if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
     output = runCommand("fpgaconfig -c %s -i %s"%(xmlFile, firmware))
+    error = output.stderr.decode()
+    if error:
+        print()
+        print("|"+error+"|")
+        raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
     if verbose>1: print(output)
 
 ### Make testID from current date and time
@@ -69,6 +74,34 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
     else:
         output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile)) #or --readlpGBTIDs ?
     if verbose>10: print(output)
+    error = output.stderr.decode()
+    ## Remove known warning
+    error = error.replace("Warning in <EnableImplicitMT>: Cannot enable implicit multi-threading with 0 threads, please build ROOT with -Dimt=ON", "")
+    ## Raise an exception, with an explanation, if something went wrong
+    if "ControlHub returned error code 3" in error:
+        print()
+        print(error)
+        raise Exception("ControlHub returned error code 3. Please check that 1) your FC7 is on, 2) that you are using the correct port (eg. 50001). Command: %s"%output.args)
+    if "Host not found (authoritative)" in error:
+        print()
+        print(error)
+        raise Exception("Host not found. Please check that all hosts used (eg. fc7ot3) are defined in /etc/hosts. Command: %s"%output.args)
+    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
+        print()
+        print(error)
+        if "lpGBT TX Ready\x1b[1m\x1b[31m\t : FAILED" in output.stdout.decode():
+            print("ExceptionHandler Error: No object enabled in fDetectorContainer. Please check that you have installed the firmware (fpgaconfig). Command: %s"%output.args)
+            return "Run fpgaconfig"
+        else:
+            raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected. Command: %s"%output.args)
+#    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
+#        print()
+#        print(error)
+#        raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the 
+    if error:
+        print()
+        print("|"+error+"|")
+        raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
     return testID, date
 
 
