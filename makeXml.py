@@ -83,8 +83,8 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
 
 def readXmlConfig(xmlConfigFile):
     import importlib
-    PS_Module_settings = 'PS_Module_settings'
-    PS_Module_settings = importlib.import_module("PS_Module_settings")
+    PS_Module_settings = xmlConfigFile[:-3] ## drop .py from "PS_Module_settings.py"
+    PS_Module_settings = importlib.import_module(PS_Module_settings)
     xmlConfig = PS_Module_settings.config
     return xmlConfig
 
@@ -100,9 +100,10 @@ def makeBoardMap(xmlConfig):
 
 if __name__ == '__main__':
 #    verbose = -1
-    xmlConfigFile = "PS_Module_settings.py"
-    xmlOutput="ModuleTest_settings.xml"
+    xmlConfigFile = "PS_Module_settings_test.py"
+    xmlOutput="ModuleTest_settings_test.xml"
     xmlTemplate="PS_Module_template.xml"
+    print("\nReading %s"%xmlConfigFile)
     xmlConfig = readXmlConfig(xmlConfigFile)
     print("\nxmlConfig:")
     from pprint import pprint
