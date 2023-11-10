@@ -1,5 +1,5 @@
 ### Default values 
-verbose = 10
+verbose = 100
 xmlConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
@@ -21,7 +21,7 @@ lpGBTids = ['42949672', '42949673', '42949674', '0x00', '0x67']
 runFpgaConfig = False
 #skipBurnIn = True
 #skipMongo = True
-useExistingModuleTest = "T2023_11_08_17_57_54_302065" ## read existing module test instead of launching a new test!
+#useExistingModuleTest = "T2023_11_08_17_57_54_302065" ## read existing module test instead of launching a new test!
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
@@ -30,12 +30,12 @@ from webdavclient import WebDAVWrapper
 import os
 hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("|")
 webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
-run = "RunXXX"
-dname = "/%s"%run
-webdav_wrapper.mkDir(dname)
-file = "ModuleTest_settings.xml"
-newFile = webdav_wrapper.write_file(file, "/%s/%s"%(run, file))
-print(dir, newFile)
+#run = "RunXXX"
+#dname = "/%s"%run
+#webdav_wrapper.mkDir(dname)
+#file = "ModuleTest_settings.xml"
+#newFile = webdav_wrapper.write_file(file, "/%s/%s"%(run, file))
+#print(dir, newFile)
 
 
 if __name__ == '__main__':
@@ -53,7 +53,12 @@ if __name__ == '__main__':
     if runFpgaConfig: fpgaconfig(xmlFile, firmware)
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
-    testID, date = runModuleTest(xmlFile, useExistingModuleTest) # 
+    out = runModuleTest(xmlFile, useExistingModuleTest) # 
+    if out == "Run fpgaconfig":
+        print("\n\nWARNING: You forgot to run fpgaconfig. Lauching it not.\n")
+        fpgaconfig(xmlFile, firmware)
+        out = runModuleTest(xmlFile, useExistingModuleTest) # 
+    testID, date = out
     
     ### read the output file (if useExistingModuleTest is defined, read the that ROOT file)
     rootFile = getROOTfile(testID) if not useExistingModuleTest else getROOTfile(useExistingModuleTest) 
@@ -85,7 +90,7 @@ if __name__ == '__main__':
         if not skipBurnIn: temps = burnIn_readSensors()
         
         for file in [xmlConfigFile, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
-            newFile = webdav_wrapper.write_file(file, "/%s/%s"%(run, file))
+            newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
             print("Uploaded %s"%newFile)
             
         ### Create test result and upload it to "test" DB
@@ -104,7 +109,7 @@ if __name__ == '__main__':
                     "temperatures": temps,
                     "xmlConfig": xmlConfig
                 },
-                "runFolder" : run
+                "runFolder" : testID
         #        ## Not manadatory
         }
 
