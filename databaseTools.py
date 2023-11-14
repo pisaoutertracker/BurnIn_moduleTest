@@ -84,8 +84,8 @@ def makeModuleIdMapFromDB():
     api_url = "http://%s:%d/modules"%(ip, port)
     response = requests.get(api_url)
     modules = eval(response.content.decode().replace("null","[]"))
-    if len(modules)==0:
-        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
+#    if len(modules)==0:
+#        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
     hwToModuleID = {} ## hwId --> moduleId
     hwToMongoID = {} ## hwId --> mongoId
     for module in modules:
@@ -95,9 +95,14 @@ def makeModuleIdMapFromDB():
     
     ### hard-code some modules, waiting to have these numbers in the database
     for i, lpGBTid in enumerate(lpGBTids):
-        if not lpGBTid in hwToModuleID: hwToModuleID[lpGBTid] = modules[i]["moduleID"]
-        if not lpGBTid in hwToMongoID: hwToMongoID[lpGBTid] = modules[i]["_id"]
-    
+        try:
+            if not lpGBTid in hwToModuleID: hwToModuleID[lpGBTid] = modules[i]["moduleID"]
+            if not lpGBTid in hwToMongoID: hwToMongoID[lpGBTid] = modules[i]["_id"]
+        except:
+            print("WARNING: 'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
+            if not lpGBTid in hwToModuleID: hwToModuleID[lpGBTid] = str(i)
+            if not lpGBTid in hwToMongoID: hwToMongoID[lpGBTid] = str(i)
+        
     ### "-1", ie. missing modules, should go in "-1"
     hwToModuleID["-1"] = "-1"
     hwToMongoID["-1"] = "-1"
