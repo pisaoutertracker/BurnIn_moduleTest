@@ -45,6 +45,25 @@ def addTestToModuleDB(updatedTestList, moduleID):
     else:
         print("Failed to update the module. Status code:", response.status_code)
 
+
+new_test = {
+    "testID": "T001",
+    "modules_list": ["M1", "M2"],
+    "testType": "Type1",
+    "testDate": "2023-11-01",
+    "testStatus": "completed",
+    "testResults": {}
+}
+
+def addTestToModuleDBNew():
+    if verbose>0: print("Calling addTestToModuleDBNew()")
+    api_url = "http://%s:%d/addTest"%(ip, port)
+    response = requests.put(api_url, json=new_test)
+    if response.status_code == 201:
+        if verbose>1: print("Module added successfully")
+    else:
+        print("Failed to add the module. Status code:", response.status_code)
+
 ### read a module from DB, given the moduleID
 
 def getModuleFromDB(moduleID=1234):
@@ -65,6 +84,8 @@ def makeModuleIdMapFromDB():
     api_url = "http://%s:%d/modules"%(ip, port)
     response = requests.get(api_url)
     modules = eval(response.content.decode().replace("null","[]"))
+    if len(modules)==0:
+        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
     hwToModuleID = {} ## hwId --> moduleId
     hwToMongoID = {} ## hwId --> mongoId
     for module in modules:
@@ -88,6 +109,7 @@ def makeModuleIdMapFromDB():
 if __name__ == '__main__':
     moduleID = "M123"
     testID = "T2023_11_08_17_57_54_302065"
+    #testID = "T52"
     hwToModuleID, hwToMongoID = makeModuleIdMapFromDB()
 
     print("\nhwToModuleID:")
@@ -106,3 +128,5 @@ if __name__ == '__main__':
     test = getTestFromDB(testID)
     print("\n #####     Check Test %s on MongoDB    ##### \n"%testID)
     pprint(test)
+    
+    addTestToModuleDBNew()
