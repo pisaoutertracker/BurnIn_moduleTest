@@ -111,4 +111,6 @@ if __name__ == '__main__':
     print()
     makeXml(xmlOutput, xmlConfig, xmlTemplate)
     print("XML created in %s."%xmlOutput)
-
+    print()
+    print("Launch the test with:")
+    print("python3 makeXml.py && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId test --readIDs"%xmlOutput)
