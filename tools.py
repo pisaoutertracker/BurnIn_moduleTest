@@ -23,21 +23,46 @@ def getIDsFromROOT(rootFile, xmlConfig):
     IDs = {}
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
-            objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_InitialLpGBTConfiguration_OpticalGroup(%s);1"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
-            out = rootFile.Get(objName)
-            if not out: 
-                print("WARNING: Missing %s in %s. Skipping."%(objName, rootFile.GetName()))
-                IDs[(board_id, opticalGroup_id)] = "-1"
-                continue
-            IDs[(board_id, opticalGroup_id)] = {}
-            out = str(out.GetString()).split("CHIPID registers")[1].split("RegName")[1] ## Select CHIPID section
-            for l in out.split("\n"):
-                l = l.replace("     "," ").replace("    "," ").replace("   "," ").replace("  "," ")
-                l = l.split(" ")
-                if len(l)==5:
-                    IDs[(board_id, opticalGroup_id)][l[0]]= l[3]
-            ## just take "CHIPID0" for the moment
-            IDs[(board_id, opticalGroup_id)]= IDs[(board_id, opticalGroup_id)]["CHIPID0"]
+            newMethod = False
+            if newMethod:
+                objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
+                out = rootFile.Get(objName)
+                if not out: 
+                    print("WARNING: Missing %s in %s. Skipping."%(objName, rootFile.GetName()))
+                    IDs[(board_id, opticalGroup_id)] = "-1"
+                    continue
+                IDs[(board_id, opticalGroup_id)] = {}
+                out = str(out.GetString()) ## Select CHIPID section
+                
+                ## just take "CHIPID0" for the moment
+                IDs[(board_id, opticalGroup_id)]= out
+            else:
+                objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_InitialLpGBTConfiguration_OpticalGroup(%s);1"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
+                out = rootFile.Get(objName)
+                if not out: 
+                    print("WARNING: Missing %s in %s. Skipping."%(objName, rootFile.GetName()))
+                    IDs[(board_id, opticalGroup_id)] = "-1"
+                    continue
+                IDs[(board_id, opticalGroup_id)] = {}
+                out = str(out.GetString()).split("CHIPID registers")[1].split("RegName")[1] ## Select CHIPID section
+                for l in out.split("\n"):
+                    l = l.replace("     "," ").replace("    "," ").replace("   "," ").replace("  "," ")
+                    l = l.split(" ")
+                    if len(l)==5:
+                        IDs[(board_id, opticalGroup_id)][l[0]]= l[3]
+                ##
+                val = 0
+                for i, key in enumerate(["CHIPID0","CHIPID1","CHIPID2","CHIPID3","USERID0","USERID1","USERID2","USERID3"]):
+                    val = val + int(IDs[(board_id, opticalGroup_id)][key], 16) * (32**i)
+                
+                combineAllKeys = False
+                if combineAllKeys:
+                    IDs[(board_id, opticalGroup_id)] = val
+                else:
+                    ## just take "CHIPID0" for the moment
+                    IDs[(board_id, opticalGroup_id)] = IDs[(board_id, opticalGroup_id)]["CHIPID0"] 
+                
+
     return IDs
 
 ### Get mean of noise of chip board_id, opticalGroup_id, hybrid_id, ps_id for MPA (pixels) or SSA(strips)
@@ -103,6 +128,12 @@ def getROOTfile(testID):
 ### This code allow you to test this code using "python3 tools.py"
 
 if __name__ == '__main__':
+#    testID = "T2023_11_08_17_57_54_302065"
+#    testID = "T2023_11_08_17_57_54_302065"
+#    testID = "T2023_11_10_12_04_28_794907"
+#    testID = "T2023_11_10_12_17_23_775314"
+#    testID = "T2023_11_10_11_59_35_809872"
+#    testID = "T2023_11_08_18_59_35_892171"
     testID = "T2023_11_08_17_57_54_302065"
     xmlConfigFile = "PS_Module_settings.py"
     rootFile = getROOTfile(testID)
@@ -112,7 +143,7 @@ if __name__ == '__main__':
     from pprint import pprint
     print("\nnoisePerChip:")
     pprint(noisePerChip)
-    result = getResultPerModule(noisePerChip)
+    result = getResultPerModule(noisePerChip, xmlConfig)
     print("\nresult:")
     pprint(result)
     IDs = getIDsFromROOT(rootFile, xmlConfig)
