@@ -7,7 +7,7 @@ xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
 firmware="ps_twomod_oct23.bin"
 skipBurnIn = False
-runFpgaConfig = True 
+runFpgaConfig = False ## it will run automatically if necessary
 useExistingModuleTest = False
 skipMongo = False
 
@@ -18,10 +18,9 @@ temps = [1.2, 4.5]
 lpGBTids = ['42949672', '42949673', '42949674', '0x00', '0x67']
 
 ### Test 
-runFpgaConfig = False
 #skipBurnIn = True
-#skipMongo = True
-#useExistingModuleTest = "T2023_11_08_17_57_54_302065" ## read existing module test instead of launching a new test!
+skipMongo = True
+useExistingModuleTest = "T2023_11_10_12_17_23_775314" ## read existing module test instead of launching a new test!
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
@@ -55,7 +54,7 @@ if __name__ == '__main__':
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     out = runModuleTest(xmlFile, useExistingModuleTest) # 
     if out == "Run fpgaconfig":
-        print("\n\nWARNING: You forgot to run fpgaconfig. Lauching it not.\n")
+        print("\n\nWARNING: You forgot to run fpgaconfig. Launching it not.\n")
         fpgaconfig(xmlFile, firmware)
         out = runModuleTest(xmlFile, useExistingModuleTest) # 
     testID, date = out
@@ -89,10 +88,22 @@ if __name__ == '__main__':
         ### Read sensors from FNAL box
         if not skipBurnIn: temps = burnIn_readSensors()
         
+        zipFolder = testID
+        os.mkdir(zipFolder) ## create a folder to zip all outputs
+        
+        ## upload all files
         for file in [xmlConfigFile, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
             newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
-            print("Uploaded %s"%newFile)
-            
+            shutil.copy(file, zipFolder)
+            if verbose>1: print("Uploaded %s"%newFile)
+            import shutil
+        
+        ## make a zip file and upload it
+        zipFile = "%s/output"%testID
+        shutil.make_archive(zipFile, 'zip', zipFolder)
+        newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
+        if verbose>0: print("Uploaded %s"%newFile)
+        
         ### Create test result and upload it to "test" DB
         # see https://github.com/pisaoutertracker/testmongo/blob/f7e032c3dafa7954f834810903ea8ac9dc5bdbd0/populate_db.py#L70C6-L70C8
         testResult = {
@@ -109,6 +120,7 @@ if __name__ == '__main__':
                     "temperatures": temps,
                     "xmlConfig": xmlConfig
                 },
+                "outputFile": newFile,
                 "runFolder" : testID
         #        ## Not manadatory
         }
@@ -151,6 +163,8 @@ if __name__ == '__main__':
                     pprint(getModuleFromDB(moduleID = moduleID))
             else:
                 raise Exception("Test %s (%s) is already included in %s (%s) test list %s."%(test["testID"], test["_id"], module["moduleID"], module["_id"], module["tests"]))
-
-
+        
+        print("Output uploaded to %s"%newFile)
+        ### https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh
+        
 
