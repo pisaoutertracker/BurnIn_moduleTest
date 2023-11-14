@@ -6,7 +6,7 @@ port=5000
 xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
 firmware="ps_twomod_oct23.bin"
-skipBurnIn = False
+skipReadFNALsensors = True
 runFpgaConfig = False ## it will run automatically if necessary
 useExistingModuleTest = False
 skipMongo = False
@@ -17,10 +17,10 @@ temps = [1.2, 4.5]
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
 lpGBTids = ['42949672', '42949673', '42949674', '0x00', '0x67']
 
-### Test 
-#skipBurnIn = True
-skipMongo = True
-useExistingModuleTest = "T2023_11_10_12_17_23_775314" ## read existing module test instead of launching a new test!
+### Test (everything should be commented out during actual runs!)
+#skipReadFNALsensors = True
+#skipMongo = True
+#useExistingModuleTest = "T2023_11_14_16_14_57_132460" ## read existing module test instead of launching a new test!
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
@@ -86,21 +86,25 @@ if __name__ == '__main__':
         moduleMongoIDs = [ hwToMongoID[IDs[bo]] for bo in board_opticals ]
         
         ### Read sensors from FNAL box
-        if not skipBurnIn: temps = burnIn_readSensors()
+        if not skipReadFNALsensors: temps = burnIn_readSensors()
         
-        zipFolder = testID
-        os.mkdir(zipFolder) ## create a folder to zip all outputs
-        
+        import shutil
         ## upload all files
-        for file in [xmlConfigFile, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
+        for file in [xmlConfigFile, xmlOutput, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
             newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
-            shutil.copy(file, zipFolder)
             if verbose>1: print("Uploaded %s"%newFile)
-            import shutil
+        
+        ## copy some important files (xml, log, py) in .../Results folder
+        resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
+        for file in [xmlConfigFile, xmlOutput, "logs/%s.log"%testID]: #copy output files to CernBox
+            if file != rootFile.GetName():
+                shutil.copy(file, resultFolder)
         
         ## make a zip file and upload it
-        zipFile = "%s/output"%testID
-        shutil.make_archive(zipFile, 'zip', zipFolder)
+        zipFile = "output"
+        if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", zipFile, resultFolder)
+        shutil.make_archive(zipFile, 'zip', resultFolder)
+        if verbose>20: print("Done")
         newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
         if verbose>0: print("Uploaded %s"%newFile)
         
@@ -142,6 +146,11 @@ if __name__ == '__main__':
                 print("\n WARNING: Skipping missing (crashing) module.")
                 continue
             module = getModuleFromDB(moduleID = moduleID)
+            if 'message' in module and module['message']=="Module not found":
+                print("\n WARNING: Module %s not found. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules/%s'"%(moduleID, moduleID))
+                print("Skipping module %s"%moduleID)
+                continue
+                
 
             ### Print the module from DB BEFORE the update
             if verbose>2: 
@@ -165,6 +174,6 @@ if __name__ == '__main__':
                 raise Exception("Test %s (%s) is already included in %s (%s) test list %s."%(test["testID"], test["_id"], module["moduleID"], module["_id"], module["tests"]))
         
         print("Output uploaded to %s"%newFile)
-        ### https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh
-        
+        print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/%s"%testID)
+        print("CERN box link (zip file): https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/%s"%newFile)
 
