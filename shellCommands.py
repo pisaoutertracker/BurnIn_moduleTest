@@ -76,12 +76,12 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
     if verbose>10: print(output)
     error = output.stderr.decode()
     ## Remove known warning
-    error = error.replace("Warning in <EnableImplicitMT>: Cannot enable implicit multi-threading with 0 threads, please build ROOT with -Dimt=ON", "")
+    error = error.replace("Warning in <EnableImplicitMT>: Cannot enable implicit multi-threading with 0 threads, please build ROOT with -Dimt=ON\n", "")
     ## Raise an exception, with an explanation, if something went wrong
     if "ControlHub returned error code 3" in error:
         print()
         print(error)
-        raise Exception("ControlHub returned error code 3. Please check that 1) your FC7 is on, 2) that you are using the correct port (eg. 50001). Command: %s"%output.args)
+        raise Exception("ControlHub returned error code 3. Please check that: 1) your FC7 is on, 2) FC7 is connected to the Ethernet (check LEDs in the router), 3) you are using the correct port (eg. 50001). Command: %s"%output.args)
     if "Host not found (authoritative)" in error:
         print()
         print(error)
