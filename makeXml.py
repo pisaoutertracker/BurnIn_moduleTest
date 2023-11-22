@@ -11,6 +11,8 @@ def lpGBT_version(fileName):
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
 
 def makeXml(xmlOutput, xmlConfig, xmlTemplate):
+    legacyVersion = False
+    if "v0" in xmlTemplate: legacyVersion = True
     global BeBoard, connection, board, MPA, SSA, Hybrid
     if verbose>0: print("Calling makeXml()", xmlOutput, xmlTemplate)
     from pprint import pprint
@@ -25,10 +27,15 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     OpticalGroup = BeBoard.find("OpticalGroup")
     lpGBT = OpticalGroup.find("lpGBT")
     Hybrid = OpticalGroup.find("Hybrid")
-    SSA = Hybrid.find("SSA")
-    MPA = Hybrid.find("MPA")
+    if not legacyVersion:
+        SSA = Hybrid.find("SSA2")
+        MPA = Hybrid.find("MPA2")
+    else:
+        SSA = Hybrid.find("SSA")
+        MPA = Hybrid.find("MPA")
     if verbose > 5:
         for el in [HwDescription, BeBoard, OpticalGroup, lpGBT, Hybrid, SSA, MPA]:
+            print(el)
             print(el.getchildren(),el.keys())
     
     ## Clean template from the existing parameters
