@@ -23,7 +23,7 @@ def getIDsFromROOT(rootFile, xmlConfig):
     IDs = {}
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
-            newMethod = False
+            newMethod = True
             if newMethod:
                 objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
                 out = rootFile.Get(objName)
