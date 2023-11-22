@@ -16,7 +16,7 @@ This script will:
   - get the lpGBT hardware ID of each module;
   - compute the average noise of each pixel/strip chip;
 - compress the ROOT file and logs to zip
-- upload the zip file, ROOT file, and logs to CERN box using WebDAV [eg. https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/T2023_11_16_16_26_27_866650](https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/T2023_11_16_16_26_27_866650) 
+- upload the zip file, ROOT file, and logs to CERN box using WebDAV ([eg. https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/T2023_11_16_16_26_27_866650](https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh/T2023_11_16_16_26_27_866650))
 - evaluate an outcome of the test (pass/failed) depending on the noise of the chips;
 - upload the results to the [test DB](https://github.com/pisaoutertracker/testmongo) including:
   - the outcome of the module test (pass or failed),
