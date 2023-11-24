@@ -134,7 +134,9 @@ if __name__ == '__main__':
 #    testID = "T2023_11_10_12_17_23_775314"
 #    testID = "T2023_11_10_11_59_35_809872"
 #    testID = "T2023_11_08_18_59_35_892171"
-    testID = "T2023_11_08_17_57_54_302065"
+#    testID = "T2023_11_08_17_57_54_302065"
+    testID = "test10gradi"
+    #testID = "test0gradi"
     xmlConfigFile = "PS_Module_settings.py"
     rootFile = getROOTfile(testID)
     from makeXml import readXmlConfig

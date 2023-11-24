@@ -15,12 +15,12 @@ skipMongo = False
 operator = "Mickey Mouse"
 temps = [1.2, 4.5]
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
-lpGBTids = ['42949672', '42949673', '42949674', '0x00', '0x67']
+lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '0x00', '0x67']
 
 ### Test (everything should be commented out during actual runs!)
 #skipReadFNALsensors = True
 #skipMongo = True
-#useExistingModuleTest = "T2023_11_14_16_14_57_132460" ## read existing module test instead of launching a new test!
+#useExistingModuleTest = "test_m20gradi" ## read existing module test instead of launching a new test!
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
