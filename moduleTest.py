@@ -5,12 +5,17 @@ ip="192.168.0.45"
 port=5000
 xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
-firmware="ps_twomod_oct23.bin"
+#firmware="ps_twomod_oct23.bin" ##5 GBps
+firmware="ps8m10gcic2l12octa.bin" ##10 GBps
 skipReadFNALsensors = True
 runFpgaConfig = False ## it will run automatically if necessary
 useExistingModuleTest = False
 skipMongo = False
 useExistingXmlFile = False
+Nevents=-1
+## command used to launch commands through Docker (podman)
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/ -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/ -v $PWD/..:$PWD/.. -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct  -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/ --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-17 -c "%s"'
+prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd /home/thermal/Ph2_ACF_docker/BurnIn_moduleTest '
 
 ### Fake values used for testing
 operator = "Mickey Mouse"
@@ -22,9 +27,11 @@ lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x0
 #skipReadFNALsensors = True
 #skipMongo = True
 #useExistingModuleTest = "T2023_12_01_14_03_44_633194" ## read existing module test instead of launching a new test!
+#useExistingModuleTest = "T2023_12_04_17_27_49_862692" ## read existing module test instead of launching a new test!
 #useExistingXmlFile = "PS_Module_v2p1.xml"
 #useExistingXmlFile = "ModuleTest_settings.xml"
-
+#useExistingXmlFile = "ot3.xml"
+#podmanCommand = "%s" ##if your are running directly the software inside docker or with a standalone code
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
@@ -62,7 +69,7 @@ if __name__ == '__main__':
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     out = runModuleTest(xmlFile, useExistingModuleTest) # 
     if out == "Run fpgaconfig":
-        print("\n\nWARNING: You forgot to run fpgaconfig. Launching it not.\n")
+        print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         fpgaconfig(xmlFile, firmware)
         out = runModuleTest(xmlFile, useExistingModuleTest) # 
     testID, date = out
