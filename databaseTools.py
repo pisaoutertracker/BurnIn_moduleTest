@@ -89,7 +89,7 @@ def makeModuleIdMapFromDB():
     hwToModuleID = {} ## hwId --> moduleId
     hwToMongoID = {} ## hwId --> mongoId
     for module in modules:
-        hwId = module["_id"] ## to be replaced with the actual hwId from DAQ --readlpGBTIDs 
+        hwId = module["hwId"]
         hwToModuleID[hwId] = module["moduleID"]
         hwToMongoID[hwId] = module["_id"]
     
