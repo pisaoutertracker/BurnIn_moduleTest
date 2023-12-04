@@ -1,14 +1,16 @@
 <HwDescription>
   
   <BeBoard Id="0" boardReset="1" boardType="D19C" configure="1" eventType="VR" linkReset="1">
-    <connection address_table="file://settings/address_tables/uDTC_OT_address_table.xml" id="board" uri="chtcp-2.0://localhost:10203?target=fc7ot3:50001" />
+    <connection address_table="file://settings/address_tables/uDTC_OT_address_table.xml" id="board" uri="chtcp-2.0://localhost:10203?target=fc7ot2:50001" />
+
     <CDCE clockRate="320" configure="0" />
-    <OpticalGroup FMCId="L12" Id="0" reset="1">
+        
+    <OpticalGroup FMCId="L12" Id="2" reset="1">
         <lpGBT_Files path="${PH2ACF_BASE_DIR}/settings/lpGBTFiles/" />
-        <lpGBT Id="1" configfile="lpGBT_v1.txt" optical="1" version="1">
+        <lpGBT Id="0" configfile="lpGBT_v1.txt" optical="1" version="1">
           <Settings />
         </lpGBT>
-        <Hybrid Id="1" enable="1" invertClock="0" reset="1">
+        <Hybrid Id="0" enable="1" invertClock="0" reset="1">
             <Global>                 
               <StubLogic mode="0" window="4" /> 
               <HitLogic pixelClusterCut="5" pixelMode="0" stripMode="0" /> 
@@ -19,28 +21,19 @@
               <InjectedCharge pixelCharge="200" stripCharge="200" /> 
               <CIC2 clockFrequency="320" driveStrength="3" edgeSelect="0" enableBend="1" enableLastLine="1" enableSparsification="1" />
             </Global>
+
             <SSA_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="7" configfile="SSA2.txt" />
-            <SSA2 Id="6" configfile="SSA2.txt" />
-            <SSA2 Id="5" configfile="SSA2.txt" />
-            <SSA2 Id="4" configfile="SSA2.txt" />
-            <SSA2 Id="3" configfile="SSA2.txt" />
-            <SSA2 Id="2" configfile="SSA2.txt" />
-            <SSA2 Id="1" configfile="SSA2.txt" />
             <SSA2 Id="0" configfile="SSA2.txt" />
+
             <MPA_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="15" configfile="MPA2.txt" />
-            <MPA2 Id="14" configfile="MPA2.txt" />
-            <MPA2 Id="13" configfile="MPA2.txt" />
-            <MPA2 Id="12" configfile="MPA2.txt" />
-            <MPA2 Id="11" configfile="MPA2.txt" />
-            <MPA2 Id="10" configfile="MPA2.txt" />
-            <MPA2 Id="9" configfile="MPA2.txt" />
             <MPA2 Id="8" configfile="MPA2.txt" />
-            <CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
+            
+
+<CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
             <CIC2 Id="8" configfile="CIC2_default.txt" />
         </Hybrid>
-    <Hybrid Id="0" enable="1" invertClock="0" reset="1">
+        
+    <Hybrid Id="1" enable="1" invertClock="0" reset="1">
             <Global>                 
               <StubLogic mode="0" window="4" /> 
               <HitLogic pixelClusterCut="5" pixelMode="0" stripMode="0" /> 
@@ -51,28 +44,18 @@
               <InjectedCharge pixelCharge="200" stripCharge="200" /> 
               <CIC2 clockFrequency="320" driveStrength="3" edgeSelect="0" enableBend="1" enableLastLine="1" enableSparsification="1" />
             </Global>
+
             <SSA_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="7" configfile="SSA2.txt" />
-            <SSA2 Id="6" configfile="SSA2.txt" />
-            <SSA2 Id="5" configfile="SSA2.txt" />
-            <SSA2 Id="4" configfile="SSA2.txt" />
-            <SSA2 Id="3" configfile="SSA2.txt" />
-            <SSA2 Id="2" configfile="SSA2.txt" />
-            <SSA2 Id="1" configfile="SSA2.txt" />
             <SSA2 Id="0" configfile="SSA2.txt" />
+
             <MPA_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="15" configfile="MPA2.txt" />
-            <MPA2 Id="14" configfile="MPA2.txt" />
-            <MPA2 Id="13" configfile="MPA2.txt" />
-            <MPA2 Id="12" configfile="MPA2.txt" />
-            <MPA2 Id="11" configfile="MPA2.txt" />
-            <MPA2 Id="10" configfile="MPA2.txt" />
-            <MPA2 Id="9" configfile="MPA2.txt" />
-            <MPA2 Id="8" configfile="MPA2.txt" />
             <CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
             <CIC2 Id="8" configfile="CIC2_default.txt" />
         </Hybrid>
+        
     </OpticalGroup>
+
+    
     
     
     <Register name="clock_source_u7">15</Register>

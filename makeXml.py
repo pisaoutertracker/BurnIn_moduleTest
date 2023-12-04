@@ -62,11 +62,11 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
             OpticalGroup = deepcopy(OpticalGroup_)
             OpticalGroup.set("Id", str(opticalGroup_id))
-            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"]))
+#            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"])) ## keep it to 0
             lpGBT.set("version", lpGBT_version(opticalGroup["lpGBT"]))
             lpGBT.set("configfile", opticalGroup["lpGBT"])
             OpticalGroup.insert(1,lpGBT)
-            for hybrid_id, hybrid in opticalGroup["hybrids"].items():
+            for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items(), reverse=True):
                 Hybrid = deepcopy(Hybrid_)
                 Hybrid.set("Id", str(hybrid_id))
                 SSAFiles_position = Hybrid.getchildren().index(Hybrid.find("SSA_Files"))
