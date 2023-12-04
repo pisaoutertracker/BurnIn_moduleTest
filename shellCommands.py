@@ -1,5 +1,5 @@
 import subprocess
-from moduleTest import verbose, useExistingModuleTest
+from moduleTest import verbose, useExistingModuleTest, podmanCommand, prefixCommand
 
 ### Launch a command from shell
 
@@ -45,7 +45,8 @@ def burnIn_setTemperature(temperature):
 
 def fpgaconfig(xmlFile, firmware):
     if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
-    output = runCommand("fpgaconfig -c %s -i %s"%(xmlFile, firmware))
+    command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand, xmlFile, firmware)
+    output = runCommand(podmanCommand%command)
     error = output.stderr.decode()
     if error:
         print()
@@ -65,40 +66,42 @@ def getDateTimeAndTestID():
 # if useExistingModuleTest, skip the test and read the existing log file
 
 def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolder="logs"):
+    global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
     date, testID = getDateTimeAndTestID()
     logFile = "%s/%s.log"%(logFolder,testID)
     if verbose>0: print(testID,logFile)
-    if not useExistingModuleTest:
-        output = runCommand("ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(xmlFile,testID,logFile)) #or --readlpGBTIDs ?
+    if not useExistingModuleTest: # -w $PWD 
+        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
+        output = runCommand(podmanCommand%command)
     else:
-        output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile)) #or --readlpGBTIDs ?
+        output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))
     if verbose>10: print(output)
-    error = output.stderr.decode()
+    error = output.stdout.decode() ## if you are not launching command through podman/Docker you should use "stderr" instead.
     ## Remove known warning
     error = error.replace("Warning in <EnableImplicitMT>: Cannot enable implicit multi-threading with 0 threads, please build ROOT with -Dimt=ON\n", "")
     ## Raise an exception, with an explanation, if something went wrong
     if "ControlHub returned error code 3" in error:
         print()
         print(error)
-        raise Exception("ControlHub returned error code 3. Please check that: 1) your FC7 is on, 2) FC7 is connected to the Ethernet (check LEDs in the router), 3) you are using the correct port (eg. 50001). Command: %s"%output.args)
+        raise Exception("ControlHub returned error code 3.  \n Please check that: 1) your FC7 is on, 2) FC7 is connected to the Ethernet (check LEDs in the router), 3) you are using the correct port (eg. 50001).  \n Command: %s"%output.args)
     if "Host not found (authoritative)" in error:
         print()
         print(error)
-        raise Exception("Host not found. Please check that all hosts used (eg. fc7ot3) are defined in /etc/hosts. Command: %s"%output.args)
+        raise Exception("Host not found.  \n Please check that all hosts used (eg. fc7ot3) are defined in /etc/hosts.  \n Command: %s"%output.args)
     if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
         print()
         print(error)
         if "lpGBT TX Ready\x1b[1m\x1b[31m\t : FAILED" in output.stdout.decode():
-            print("ExceptionHandler Error: No object enabled in fDetectorContainer. Please check that you have installed the firmware (fpgaconfig). Command: %s"%output.args)
+            print("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n Please check that you have installed the firmware (fpgaconfig). Command: %s"%output.args)
             return "Run fpgaconfig"
         else:
-            raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected. Command: %s"%output.args)
+            raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected.  \n It might be due to a wrong version of the firmware installed in the FC7. \n Command: %s"%output.args)
 #    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
 #        print()
 #        print(error)
 #        raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the 
-    if error:
+    if error and not "Closing result file:" in error:
         print()
         print("|"+error+"|")
         raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)

@@ -10,10 +10,10 @@ def lpGBT_version(fileName):
 
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
 
-def makeXml(xmlOutput, xmlConfig, xmlTemplate):
+def makeXml(xmlOutput, xmlConfig, xmlTemplate, Nevents=-1):
     legacyVersion = False
     if "v0" in xmlTemplate: legacyVersion = True
-    global BeBoard, connection, board, MPA, SSA, Hybrid
+    global BeBoard, connection, board, MPA, SSA, Hybrid, tree
     if verbose>0: print("Calling makeXml()", xmlOutput, xmlTemplate)
     from pprint import pprint
     if verbose>2: pprint(xmlConfig)
@@ -71,17 +71,20 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
                 Hybrid.set("Id", str(hybrid_id))
                 SSAFiles_position = Hybrid.getchildren().index(Hybrid.find("SSA_Files"))
                 if not "strips" in hybrid: hybrid["strips"]=[]
-                for strip_id in hybrid["strips"]:
+                for strip_id in sorted(hybrid["strips"], reverse=True):
                     SSA.set("Id", str(strip_id))
                     Hybrid.insert(SSAFiles_position+1,deepcopy(SSA))
                 MPAFiles_position = Hybrid.getchildren().index(Hybrid.find("MPA_Files"))
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
-                for pixel_id in hybrid["pixels"]:
+                for pixel_id in sorted(hybrid["pixels"], reverse=True):
                     MPA.set("Id", str(pixel_id))
                     Hybrid.insert(MPAFiles_position+1,deepcopy(MPA))
                 OpticalGroup.insert(2,deepcopy(Hybrid))
             BeBoard.insert(2,deepcopy(OpticalGroup))
         HwDescription.insert(0,deepcopy(BeBoard))
+    for setting in tree.find("Settings").getchildren():
+        if Nevents>0 and setting.get("name") == "Nevents":
+            setting.text = str(Nevents)
     tree.write(xmlOutput)
     if verbose>0: print("Created XML %s"%xmlOutput)
     return xmlOutput
