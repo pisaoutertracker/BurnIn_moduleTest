@@ -10,17 +10,21 @@ skipReadFNALsensors = True
 runFpgaConfig = False ## it will run automatically if necessary
 useExistingModuleTest = False
 skipMongo = False
+useExistingXmlFile = False
 
 ### Fake values used for testing
 operator = "Mickey Mouse"
 temps = [1.2, 4.5]
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
-lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '0x00', '0x67']
+lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x00', '0x67']
 
 ### Test (everything should be commented out during actual runs!)
 #skipReadFNALsensors = True
 #skipMongo = True
-#useExistingModuleTest = "test_m20gradi" ## read existing module test instead of launching a new test!
+#useExistingModuleTest = "T2023_12_01_14_03_44_633194" ## read existing module test instead of launching a new test!
+#useExistingXmlFile = "PS_Module_v2p1.xml"
+#useExistingXmlFile = "ModuleTest_settings.xml"
+
 
 ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
@@ -45,8 +49,12 @@ if __name__ == '__main__':
     from databaseTools import uploadTestToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleIdMapFromDB
 
     ### read xml config file and create XML
-    xmlConfig = readXmlConfig(xmlConfigFile)
-    xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
+    if useExistingXmlFile:
+        xmlFile = useExistingXmlFile
+        xmlConfig = {"boards" : {} }
+    else:
+        xmlConfig = readXmlConfig(xmlConfigFile)
+        xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
     
     ### launch fpga_config
     if runFpgaConfig: fpgaconfig(xmlFile, firmware)
