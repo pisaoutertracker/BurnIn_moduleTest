@@ -3,10 +3,12 @@
   <!-- <BeBoard Id="0" boardType="D19C" eventType="VR"> -->
   <BeBoard Id="0" boardType="D19C" eventType="VR" linkReset="1" boardReset="1" configure="1">
     <connection id="board" uri="chtcp-2.0://localhost:10203?target=XXXXX" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" />
+
     <CDCE configure="0" clockRate="320"/>
+        
     <OpticalGroup Id="XXX" FMCId="L12" reset="1">
         <lpGBT_Files path="${PH2ACF_BASE_DIR}/settings/lpGBTFiles/" />
-        <lpGBT Id="XXX" version="1" optical="1" configfile="XXXXX.txt">
+        <lpGBT Id="0" version="XXX" optical="1" configfile="XXXXX.txt">
           <Settings/>
         </lpGBT>
         <Hybrid Id="XXX" enable="1" reset="1" invertClock="0">
@@ -20,14 +22,21 @@
               <InjectedCharge  stripCharge="200" pixelCharge="200"/> <!-- in DAC units for each chip type - their electron value is different though! -->
               <CIC2 enableBend="1" enableLastLine="1" enableSparsification="1" clockFrequency="320" driveStrength="3" edgeSelect="0"/>
             </Global>
+
             <SSA_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
             <SSA2 Id="XXX" configfile="SSA2.txt" />
+
             <MPA_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
             <MPA2 Id="XXX" configfile="MPA2.txt" />
-            <CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
+            
+
+<CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
             <CIC2 Id="8" configfile="CIC2_default.txt" />
         </Hybrid>
+        
     </OpticalGroup>
+
+    
     <!-- CONFIG-->
     <!-- 15 - default (internal oscillator), 0 - AMC13 -->
     <Register name="clock_source_u7">15</Register>
