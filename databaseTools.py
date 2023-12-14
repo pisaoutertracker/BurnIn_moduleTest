@@ -4,6 +4,8 @@ import requests
 
 ### upload the test result to the "tests" DB
 
+## (obsolete) ##
+
 def uploadTestToDB(testID, testResult = {}):
     if verbose>0: print("Calling uploadTestToDB()", testID)
     if verbose>2: pprint(testResult)
@@ -20,6 +22,27 @@ def uploadTestToDB(testID, testResult = {}):
     else:
         print("Failed to update the module. Status code:", response.status_code)
 
+### upload the new Run to the "module_test" and "test_run" DB 
+
+def uploadRunToDB(newRun = {}):
+    if verbose>0: print("Calling uploadRunToDB()")
+    if verbose>2: pprint(newRun)
+   
+    # URL of the API endpoint for updating a module
+    api_url = "http://%s:%d/addRun"%(ip, port)
+    
+    # Send a PUT request
+    response = requests.post(api_url, json=newRun)
+    
+    # Check the response
+    if response.status_code == 201:
+        if verbose>1: print("Run uploaded successfully")
+    else:
+        print("Failed to update the run. Status code:", response.status_code)
+        print("response = requests.post(api_url, json=newRun)")
+        print(api_url)
+        print(newRun)
+
 ### read the test result from DB
 
 def getTestFromDB(testID):
@@ -27,7 +50,31 @@ def getTestFromDB(testID):
     api_url = "http://%s:%d/tests/%s"%(ip, port, testID)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Module %supdated successfully")
+        if verbose>1: print("Module read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
+### read the module test result from DB
+
+def getModuleTestFromDB(testID):
+    if verbose>0: print("Calling getModuleTestFromDB()", testID)
+    api_url = "http://%s:%d/module_test/%s"%(ip, port, testID)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Module test read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
+### get run from DB
+
+def getRunFromDB(testID):
+    if verbose>0: print("Calling getRunFromDB()", testID)
+    api_url = "http://%s:%d/test_run/%s"%(ip, port, testID)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Module read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
     return eval(response.content.decode())
@@ -71,7 +118,7 @@ def getModuleFromDB(moduleID=1234):
     api_url = "http://%s:%d/modules/%s"%(ip, port, moduleID)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Module updated successfully")
+        if verbose>1: print("Module read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
     return eval(response.content.decode().replace("null","[]"))
@@ -89,9 +136,10 @@ def makeModuleIdMapFromDB():
     hwToModuleID = {} ## hwId --> moduleId
     hwToMongoID = {} ## hwId --> mongoId
     for module in modules:
-        hwId = module["hwId"]
-        hwToModuleID[hwId] = module["moduleID"]
-        hwToMongoID[hwId] = module["_id"]
+        if "hwId" in module:
+            hwId = int(module["hwId"])
+            hwToModuleID[hwId] = module["moduleID"]
+            hwToMongoID[hwId] = module["_id"]
     
     ### hard-code some modules, waiting to have these numbers in the database
     for i, lpGBTid in enumerate(lpGBTids):
