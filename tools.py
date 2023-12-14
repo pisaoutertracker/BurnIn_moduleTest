@@ -22,7 +22,9 @@ def getIDsFromROOT(rootFile, xmlConfig):
     if verbose>1: print("Calling getIDsFromROOT()", rootFile)
     IDs = {}
     for board_id, board in xmlConfig["boards"].items():
+        board_id = int(board_id)
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
+            opticalGroup_id = int(opticalGroup_id)
             newMethod = True
             if newMethod:
                 objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
@@ -35,7 +37,7 @@ def getIDsFromROOT(rootFile, xmlConfig):
                 out = str(out.GetString()) ## Select CHIPID section
                 
                 ## just take "CHIPID0" for the moment
-                IDs[(board_id, opticalGroup_id)]= out
+                IDs[(board_id, opticalGroup_id)]= int(out)
             else:
                 objName = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_InitialLpGBTConfiguration_OpticalGroup(%s);1"%(board_id, opticalGroup_id, board_id, opticalGroup_id)
                 out = rootFile.Get(objName)
@@ -86,33 +88,41 @@ def getNoisePerChip(rootFile, xmlConfig):
     for board_id, board in xmlConfig["boards"].items():
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
             for hybrid_id, hybrid in opticalGroup["hybrids"].items():
+                hybrid_plus_opt = str(int(opticalGroup_id)*2 + int(hybrid_id))
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
-                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, strip_id, "SSA")
+                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, strip_id, "SSA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in hybrid["pixels"]:
-                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_id, pixel_id, "MPA")
+                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, pixel_id, "MPA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
     return noisePerChip
 
 ### Make an output result "pass" or "failed" depending on the noise of all the chips of a single module.
 ##TODO
-def getResultPerModule(noisePerChip, xmlConfig):
-    results = []
+
+def getResultsPerModule(noisePerChip, xmlConfig):
+    results = {}
     for board_id, board in xmlConfig["boards"].items():
+        results[board_id] = {}
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
-            for hybrid_id, hybrid in opticalGroup["hybrids"].items():
-                for strip_id in hybrid["strips"]:
-                    pass
-                for pixel_id in hybrid["pixels"]:
-                    pass
+            results[opticalGroup_id] = getResultPerModule(noisePerChip, xmlConfig, board_id, opticalGroup_id)
+    return results
+
+def getResultPerModule(noisePerChip, xmlConfig, board_id, opticalGroup_id):
+    opticalGroup = xmlConfig["boards"][board_id]["opticalGroups"][opticalGroup_id]
+    for hybrid_id, hybrid in opticalGroup["hybrids"].items():
+        hybrid_plus_opt = str(int(opticalGroup_id)*2 + int(hybrid_id))
+        for strip_id in hybrid["strips"]:
+            noise = noisePerChip ["D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA"%(board_id, opticalGroup_id, hybrid_plus_opt, strip_id)]
+            if noise>5 or noise<0: return "failed"
+        for pixel_id in hybrid["pixels"]:
+            noise = noisePerChip ["D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA"%(board_id, opticalGroup_id, hybrid_plus_opt, pixel_id)]
+            if noise>5 or noise<0: return "failed"
     
-    for noise in noisePerChip.values():
-        if noise>5 or noise<2:
-            return "failed"
     return "pass"
 
 ### Open the ROOT file with the results of the corresponding testID
