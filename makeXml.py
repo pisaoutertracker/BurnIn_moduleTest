@@ -10,7 +10,7 @@ def lpGBT_version(fileName):
 
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
 
-def makeXml(xmlOutput, xmlConfig, xmlTemplate, Nevents=-1):
+def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     legacyVersion = False
     if "v0" in xmlTemplate: legacyVersion = True
     global BeBoard, connection, board, MPA, SSA, Hybrid, tree
@@ -82,29 +82,101 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate, Nevents=-1):
                 OpticalGroup.insert(2,deepcopy(Hybrid))
             BeBoard.insert(2,deepcopy(OpticalGroup))
         HwDescription.insert(0,deepcopy(BeBoard))
-    for setting in tree.find("Settings").getchildren():
-        if Nevents>0 and setting.get("name") == "Nevents":
-            setting.text = str(Nevents)
+    ## Modify  Nevents setting if it is defined in the python config
+    if "Nevents" in xmlConfig:
+        Nevents = int(xmlConfig["Nevents"])
+        for setting in tree.find("Settings").getchildren():
+            if Nevents>0 and setting.get("name") == "Nevents":
+                setting.text = str(Nevents)
     tree.write(xmlOutput)
     if verbose>0: print("Created XML %s"%xmlOutput)
     return xmlOutput
 
 # Read a string ("PS_Module_settings.py") and return the dictionary contained in that file
 
-def readXmlConfig(xmlConfigFile):
+def readXmlConfig(xmlConfigFile, folder="."):
+    import sys
+    pwd = sys.path[0]
+    sys.path.remove(pwd)
+    sys.path.append(folder)
     import importlib
     PS_Module_settings = xmlConfigFile[:-3] ## drop .py from "PS_Module_settings.py"
     PS_Module_settings = importlib.import_module(PS_Module_settings)
     xmlConfig = PS_Module_settings.config
+    sys.path.insert(0, pwd)
+    sys.path.remove(folder)
     return xmlConfig
 
 # Make a map containing the FC7 used in each board (eg. boardMap[1] = "fc7ot3:5001")
 
-def makeBoardMap(xmlConfig):
-    boardMap = {}
+#def makeBoardMap(xmlConfig):
+#    boardMap = {}
+#    for board_id, board in xmlConfig["boards"].items():
+#         boardMap[int(board_id)] = board["ip"]
+#    return boardMap
+
+## Make a map containing the module used in each board/optical (eg. {'fc7ot2_optical0' : ("M123", 67)})
+
+#def makeModuleMap(xmlConfig, IDs, hwToModuleID):
+#    moduleMap = dict()
+##    for b
+#    for id in IDs: ## id[0] = board number, id[1] = optical group number
+#        fc7 = xmlConfig["boards"][id[0]]["ip"] ##get fc7ot3:50001
+#        fc7 = fc7.split(":")[0] #keep fc7ot3
+#        hwId = IDs[id]
+#        moduleMap["%s_optical%s"%(fc7, id[1])] = (hwToModuleID[hwId], int(hwId))
+#    return moduleMap
+
+## Make a map containing the module chip used in each module (eg. {67 : ("SSA0": 4.348, "MPA9": 2.348,)})
+
+def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
+    boardMap = dict() ## boardMap[1] = "fc7ot3:5001"
+    moduleMap = dict() ## moduleMap['fc7ot2_optical0'] = ("M123", 67)
+    noiseMap = dict() ## noiseMap[749637543]["H1SSA7"] = 1.3156
     for board_id, board in xmlConfig["boards"].items():
-         boardMap[board_id] = board["ip"]
-    return boardMap
+        board_id = int(board_id)
+        fc7 = board["ip"] ##get fc7ot3:50001
+        fc7 = fc7.split(":")[0] #keep fc7ot3
+        boardMap[board_id] = fc7
+        for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
+            opticalGroup_id = int(opticalGroup_id)
+            hwId = IDs[(board_id, opticalGroup_id)] if (board_id, opticalGroup_id) else -1
+            moduleMap['%s_optical%s'%(fc7, opticalGroup_id)] = (hwToModuleID[hwId], hwId)
+            noiseMap[hwId] = {}
+            for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items()):
+                hybrid_id = int(hybrid_id)
+                hybrid_plus_opt = str(int(opticalGroup_id)*2 + int(hybrid_id))
+                for strip_id in sorted(hybrid["strips"]):
+                    strip_id = int(strip_id)
+                    noiseMap[hwId]["H%s_SSA%s"%(hybrid_id, strip_id)] = noisePerChip['D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA'%(board_id, opticalGroup_id, hybrid_plus_opt, strip_id)]
+                for pixel_id in sorted(hybrid["pixels"]):
+                    pixel_id = int(pixel_id)
+                    noiseMap[hwId]["H%s_MPA%s"%(hybrid_id, pixel_id)] = noisePerChip['D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA'%(board_id, opticalGroup_id, hybrid_plus_opt, pixel_id)]
+    return boardMap, moduleMap, noiseMap
+    
+
+#  'D_B(0)_O(0)_H(0)_NoiseDistribution_Chip(14)MPA': 2.7255240752051275,
+#    for id in IDs: ## id[0] = board number, id[1] = optical group number
+#        fc7 = xmlConfig["boards"][id[0]]["ip"] ##get fc7ot3:50001
+#        fc7 = fc7.split(":")[0] #keep fc7ot3
+#        hwId = IDs[id]
+#        moduleMap["%s_optical%s"%(fc7, id[1])] = (hwToModuleID[hwId], int(hwId))
+
+#            'runNoise' : makeNoiseMap(xmlConfig, noisePerChip, hwToModuleID)
+#            {
+#                67 : {
+#                    "SSA0": 4.348,
+#                    "SSA4": 3.348,
+#                    "MPA9": 2.348,
+#                },
+#                68 : {
+#                    "SSA0": 3.348,
+#                    "SSA1": 3.648,
+#                },
+#                69 : {
+#                    "SSA0": 3.548,
+#                    "SSA4": 3.248,
+#                }
 
 ### This code allows you to make the XML file directly with "python3 makeXml.py"
 
