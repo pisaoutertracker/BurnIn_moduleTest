@@ -1,8 +1,9 @@
 ### Default values 
 verbose = 100
+sessionName = 'session1'
 xmlConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
-port=5000
+port=5005
 xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
 firmware="ps_twomod_oct23.bin" ##5 GBps
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors
     from makeXml import makeXml, makeNoiseMap, readXmlConfig
-    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleIdMapFromDB
+    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB
     
     ### read xml config file and create XML
     if useExistingXmlFile:
@@ -92,12 +93,12 @@ if __name__ == '__main__':
     if verbose>5: pprint(IDs)
     
     if not skipMongo: 
-        ### create a map between lpGBT hardware ID to ModuleID and to MongoID, reading the module database
-        hwToModuleID, hwToMongoID = makeModuleIdMapFromDB()
+        ### create a map between lpGBT hardware ID to ModuleName and to MongoID, reading the module database
+        hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
         
         ### convert IDs of modules used in the test to ModuleID and to MongoID ()
         board_opticals = list(IDs.keys())
-        moduleIDs = [ hwToModuleID[IDs[bo]] for bo in board_opticals ]
+        moduleNames = [ hwToModuleName[IDs[bo]] for bo in board_opticals ]
         moduleMongoIDs = [ hwToMongoID[IDs[bo]] for bo in board_opticals ]
         
         ### Read sensors from FNAL box
@@ -144,7 +145,7 @@ if __name__ == '__main__':
 #        #        ## Not manadatory
 #        }
         
-        boardMap, moduleMap, noiseMap = makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID)
+        boardMap, moduleMap, noiseMap = makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleName)
         fakeRunResults = dict()
         for hwId in noiseMap:
             fakeRunResults[hwId] = "boh"
@@ -154,6 +155,7 @@ if __name__ == '__main__':
             'runDate': date.replace(" ","T").split(".")[0], # drop ms
 #            'test_runID': testID,
 #            'runOperator': 'Kristin Jackson',
+            'runSession': sessionName,
             'runStatus': 'done',
             'runType': 'Type1',
             'runBoards': boardMap, 

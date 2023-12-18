@@ -1,7 +1,7 @@
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
 import os
-from databaseTools import getTestFromDB, getModuleTestFromDB, getRunFromDB, getModuleFromDB, makeModuleIdMapFromDB
+from databaseTools import getTestFromDB, getModuleTestFromDB, getRunFromDB, getModuleFromDB, makeModuleNameMapFromDB
 import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 from makeXml import readXmlConfig
@@ -47,7 +47,7 @@ gROOT.SetBatch()
 gStyle.SetOptStat(0)
 
 tmpFolder = "/tmp/"
-testID = "PS_26_10-IPG_00103__run74"
+testID = "PS_26_10-IPG_00103__run1"
 tmpFolder = tmpFolder+testID+"/"
 
 base = "/test2/"
@@ -57,7 +57,7 @@ version = "V2"
 import pathlib
 pathlib.Path(tmpFolder).mkdir(parents=True, exist_ok=True)
 
-hwToModuleID, hwToMongoID = makeModuleIdMapFromDB()
+hwToModuleID, hwToMongoID = makeModuleNameMapFromDB()
 
 def addHistoPlot(plots, canvas, plot, fName):
     ## save histo plot, and add it to "plots"
@@ -252,7 +252,7 @@ def makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePer
     
     ### Module
     body += "<h1> %s %s  </h1>"%(grayText("Module:"), moduleKey) + "\n"
-    body += grayText("Module: ") + moduleKey + " (lpGBT Fuse Id: %s)"%module['hardwareID'] + "\n"
+    body += grayText("Module: ") + moduleKey + " (lpGBT Fuse Id: %s)"%module['hwId'] + "\n"
     
     ### Run
     body += "<h1> %s %s  </h1>"%(grayText("Run: "), runKey) + "\n"
@@ -282,7 +282,7 @@ def makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePer
 #    date, time =  run['runDate'].split("T")
     body += grayText("Single Module Run: ") + testID + "<br>" +"\n"
     board_id = boardToId[str(test['board'])]
-    optical_id = str(test['opticalGroupID'])
+    optical_id = str(test['opticalGroupName'])
     body += grayText("Board: ") + str(test['board']) + grayText(". BoardId: ") + board_id + grayText(". OpticalGroup: ")  + optical_id + "<br>" +"\n"
     body += "<br>" + "\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
