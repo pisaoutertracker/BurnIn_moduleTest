@@ -1,3 +1,8 @@
+version = "V4"
+testID = "PS_26_10-IPG_00103__run6"
+tmpFolder = "/tmp/"
+
+
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
 import os
@@ -7,6 +12,8 @@ from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 from makeXml import readXmlConfig
 from webdavclient import WebDAVWrapper
 from moduleTest import webdav_url, xmlConfigFile, hash_value_read, hash_value_write ## to be updated
+
+verbose = 10000
 
 import ROOT
 
@@ -45,15 +52,12 @@ exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 #allVariables = []
 gROOT.SetBatch()
 gStyle.SetOptStat(0)
-
-tmpFolder = "/tmp/"
-testID = "PS_26_10-IPG_00103__run1"
-tmpFolder = tmpFolder+testID+"/"
-
+tmpFolder = tmpFolder+testID+"__%s/"%version
 base = "/test2/"
 
-version = "V2"
-
+import shutil
+shutil.rmtree(tmpFolder[:-1]+"_bak")
+shutil.move(tmpFolder, tmpFolder[:-1]+"_bak")
 import pathlib
 pathlib.Path(tmpFolder).mkdir(parents=True, exist_ok=True)
 
@@ -80,7 +84,8 @@ def addHistoPlot(plots, canvas, plot, fName):
         canvas.SaveAs(fName)
         print("Creating %s"%fName)
     ## append fName, even if it does not exist to show the missing plot
-    plots.append(fName)
+    if not("2DPixelNoise" in fName and "SSA" in fName):
+        plots.append(fName)
     return
 
 def makeNoisePlot(rootFile, opticalGroup):
@@ -96,8 +101,8 @@ def makeNoisePlot(rootFile, opticalGroup):
                 plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, "NoiseDistribution", chipId))
                 n = noiseGraph.GetN()
                 x = 0.1 + int(hybrid_id) + int(chip == "MPA")*2 + (chipId-int(chip == "MPA")*8)/10
-                noiseGraph.SetPoint(n, x, plot.GetMean())
-                noiseGraph.SetPointError(n, 0, plot.GetStdDev())
+                noiseGraph.SetPoint(n, x, plot.GetMean() if plot else 0)
+                noiseGraph.SetPointError(n, 0, plot.GetStdDev() if plot else 5)
     ax = noiseGraph.GetXaxis()
     ax.SetBinLabel(ax.FindBin(0.5), "SSA, H0")
     ax.SetBinLabel(ax.FindBin(1.5), "SSA, H1")
@@ -143,6 +148,17 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id):
                 if merged and not name in exstensiveVariables:
                     merged.Scale(1./ counter)
                 addHistoPlot(plots, c1, merged, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, "Merged"))
+                
+                ## add 1D projection 
+                if merged and "2DPixelNoise" in name:
+                    prx = merged.ProjectionX()
+                    prx.SetTitle(merged.GetTitle() + " - X projection")
+                    addHistoPlot(plots, c1, prx, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projX", hybrid_id, chip, "Merged"))
+                    pry = merged.ProjectionY()
+                    pry.SetTitle(merged.GetTitle() + " - Y projection")
+                    addHistoPlot(plots, c1, pry, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projY", hybrid_id, chip, "Merged"))
+                    
+                del merged
         for name in ["StripNoise", "PixelNoise", "Noise"]:
             plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_Hybrid%sDistribution_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
             print(plot)
@@ -206,7 +222,7 @@ def addPlotSection(title, plots, width):
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -223,7 +239,7 @@ def makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePer
 
 </body>
 </html>
-"""%(moduleKey, runKey)
+"""%(moduleName, runName)
     plotsInclusive = []
     plotsPerChip = []
     for plot in plots:
@@ -251,13 +267,13 @@ def makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePer
     body = "<h1> %s %s  </h1>"%(grayText("Analysis:") ,version) + "\n"
     
     ### Module
-    body += "<h1> %s %s  </h1>"%(grayText("Module:"), moduleKey) + "\n"
-    body += grayText("Module: ") + moduleKey + " (lpGBT Fuse Id: %s)"%module['hwId'] + "\n"
+    body += "<h1> %s %s  </h1>"%(grayText("Module:"), moduleName) + "\n"
+    body += grayText("Module: ") + moduleName + " (lpGBT Fuse Id: %s)"%module['hwId'] + "\n"
     
     ### Run
-    body += "<h1> %s %s  </h1>"%(grayText("Run: "), runKey) + "\n"
+    body += "<h1> %s %s  </h1>"%(grayText("Run: "), runName) + "\n"
     date, time =  run['runDate'].split("T")
-    body += grayText("Run: ") + runKey 
+    body += grayText("Run: ") + runName 
     body += ". " + grayText("Date: ") +date + ". " + grayText("Time: ") + time + "<br>" +"\n"
     body += grayText("CalibrationStartTimestamp: ") + str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")) + "<br>" +"\n"
     body += grayText("GitCommitHash: ") + str(rootFile.Get("Detector/GitCommitHash_Detector")) + "<br>" +"\n"
@@ -325,11 +341,16 @@ def  uploadToWebDav(folder, files):
     return newfiles
 
 if __name__ == '__main__':
-    test = getModuleTestFromDB(testID)
-    runKey = test['run'] ## it doesn't work now
-    moduleKey, runKey = testID.split("__") ## assuming name like 'PS_26_10-IPG_00103__run70'
-    run = getRunFromDB(runKey)
-    module = getModuleFromDB(moduleKey)
+    import argparse
+    parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_10-IPG_00103__run9 . ')
+    parser.add_argument('module_test', type=str, help='Single-module test name')
+    args = parser.parse_args()
+    
+    test = getModuleTestFromDB(args.module_test)
+    runName = test['test_runName']
+    moduleName = test['moduleName']
+    run = getRunFromDB(runName)
+    module = getModuleFromDB(moduleName)
     fName = run['runFile'].split("//")[-1].replace("/", "_")
     if webdav_wrapper: zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
     else: zip_file_path = "/tmp/%s"%fName
@@ -353,24 +374,39 @@ if __name__ == '__main__':
         result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
         plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id)
         fff = plots+[xmlConfigFile]
-        folder = "Module_%s_Run_%s_Result_%s"%(moduleID, testID, version)
+        folder = "Module_%s_Run_%s_Result_%s"%(moduleID, args.module_test, version)
         nfolder = base+folder
         print("mkDir %s"%nfolder)
         if webdav_website: webdav_website.mkDir(nfolder)
-#        print(webdav_website.list_files(nfolder))
+##        print(webdav_website.list_files(nfolder))
         fff = [f for f in fff if os.path.exists(f)]
-        newNames = uploadToWebDav(nfolder, fff)
-        webpage = makeWebpage(rootFile, testID, moduleKey, runKey, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, [newNames[p] for p in plots if p in newNames], newNames[xmlConfigFile])
-        if webdav_website: newfile = webdav_website.write_file(webpage, nfolder+"/index.html")
+#        newNames = uploadToWebDav(nfolder, fff)
+        webpage = makeWebpage(rootFile, args.module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlConfigFile)
+        zipFile = "results" 
+        import shutil
+        tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
+        tmpUpFolder = '/'.join(tmpUpFolder.split("/")[:-1])
+        name = tmpUpFolder.split("/")[-1]
+        tmpUpFolder = '/'.join(tmpUpFolder.split("/")[:-1])+"/"
+        print(tmpUpFolder, name, tmpFolder, zipFile, nfolder)
+        if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", tmpUpFolder+name, tmpFolder)
+        shutil.make_archive(tmpUpFolder+name, 'zip', tmpFolder)
+        if verbose>20: print("Done")
+        newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
+        if verbose>0: print("Uploaded %s"%newFile)
+#        if webdav_website: newfile = webdav_website.write_file(webpage, nfolder+"/index.html")
 #        print(webdav_website.list_files(nfolder))
         
+#        for f in webdav_website.list_files("/test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/"):
+#            print (f)
         print(extracted_dir)
         print(webpage)
+        print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal/tmp/PS_26_10-IPG_00103__run71/index.html")
         if webdav_website:
             print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
             print("https://cmstkita.web.cern.ch/Pisa/TBPS/")
-            print("https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newfile))
-        else:
-            print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal/tmp/PS_26_10-IPG_00103__run71/index.html")
+            print("https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile))
+            print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile))
+#            print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads//test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/results_jvmze.zip/")
 
 

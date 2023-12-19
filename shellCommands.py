@@ -1,5 +1,5 @@
 import subprocess
-from moduleTest import verbose, useExistingModuleTest, podmanCommand, prefixCommand
+from moduleTest import verbose, podmanCommand, prefixCommand
 
 ### Launch a command from shell
 
