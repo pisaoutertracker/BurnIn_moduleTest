@@ -33,6 +33,9 @@ def uploadRunToDB(newRun = {}):
     
     # Send a PUT request
     response = requests.post(api_url, json=newRun)
+    print("AAAAA")
+    print(response)
+    print(response.json())
     
     # Check the response
     if response.status_code == 201:
@@ -42,6 +45,10 @@ def uploadRunToDB(newRun = {}):
         print("response = requests.post(api_url, json=newRun)")
         print(api_url)
         print(newRun)
+    
+    if verbose>1:
+        print(response.json()['message'])
+    return response.json()['test_runName']
 
 ### read the test result from DB
 
