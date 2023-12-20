@@ -88,7 +88,38 @@ def addHistoPlot(plots, canvas, plot, fName):
         plots.append(fName)
     return
 
-def makeNoisePlot(rootFile, opticalGroup):
+#def makeNoisePlot(rootFile, opticalGroup, opticalGroup_id, ):
+#    noiseGraph = TGraphErrors()
+#    for hybrid_id in opticalGroup['hybrids']:
+#        hybrid = opticalGroup['hybrids'][str(hybrid_id)]
+#        hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
+#        for chip in ["SSA", "MPA"]:
+#            if chip == "SSA": chipIds = hybrid['strips']
+#            elif chip == "MPA": chipIds = hybrid['pixels']
+#            ## "InitialReadoutChipConfiguration"
+#            for chipId in chipIds:
+#                plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, "NoiseDistribution", chipId))
+#                n = noiseGraph.GetN()
+#                x = 0.1 + int(hybrid_id) + int(chip == "MPA")*2 + (chipId-int(chip == "MPA")*8)/10
+#                noiseGraph.SetPoint(n, x, plot.GetMean() if plot else 0)
+#                noiseGraph.SetPointError(n, 0, plot.GetStdDev() if plot else 5)
+#    ax = noiseGraph.GetXaxis()
+#    ax.SetBinLabel(ax.FindBin(0.5), "SSA, H0")
+#    ax.SetBinLabel(ax.FindBin(1.5), "SSA, H1")
+#    ax.SetBinLabel(ax.FindBin(2.5), "MPA, H0")
+#    ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
+#    return noiseGraph
+
+def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id):
+    c1 = TCanvas("c1", "")
+    c1.SetGridx()
+    c1.SetGridy()
+    plots = []
+    opticalGroup = xmlConfig["boards"][str(board_id)]["opticalGroups"][str(opticalGroup_id)]
+    global noiseGraph
+    
+    ### Make Noise Plot
+#    noiseGraph = makeNoisePlot(rootFile, opticalGroup)
     noiseGraph = TGraphErrors()
     for hybrid_id in opticalGroup['hybrids']:
         hybrid = opticalGroup['hybrids'][str(hybrid_id)]
@@ -108,19 +139,7 @@ def makeNoisePlot(rootFile, opticalGroup):
     ax.SetBinLabel(ax.FindBin(1.5), "SSA, H1")
     ax.SetBinLabel(ax.FindBin(2.5), "MPA, H0")
     ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
-    return noiseGraph
 
-
-
-
-def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id):
-    c1 = TCanvas("c1", "")
-    c1.SetGridx()
-    c1.SetGridy()
-    plots = []
-    opticalGroup = xmlConfig["boards"][str(board_id)]["opticalGroups"][str(opticalGroup_id)]
-    global noiseGraph
-    noiseGraph = makeNoisePlot(rootFile, opticalGroup)
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
     for hybrid_id in opticalGroup['hybrids']:
         hybrid = opticalGroup['hybrids'][str(hybrid_id)]
@@ -340,13 +359,8 @@ def  uploadToWebDav(folder, files):
             newfiles[file] = file
     return newfiles
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_10-IPG_00103__run9 . ')
-    parser.add_argument('module_test', type=str, help='Single-module test name')
-    args = parser.parse_args()
-    
-    test = getModuleTestFromDB(args.module_test)
+def updateTestResult(module_test):
+    test = getModuleTestFromDB(module_test)
     runName = test['test_runName']
     moduleName = test['moduleName']
     run = getRunFromDB(runName)
@@ -374,14 +388,14 @@ if __name__ == '__main__':
         result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
         plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id)
         fff = plots+[xmlConfigFile]
-        folder = "Module_%s_Run_%s_Result_%s"%(moduleID, args.module_test, version)
+        folder = "Module_%s_Run_%s_Result_%s"%(moduleID, module_test, version)
         nfolder = base+folder
         print("mkDir %s"%nfolder)
         if webdav_website: webdav_website.mkDir(nfolder)
 ##        print(webdav_website.list_files(nfolder))
         fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-        webpage = makeWebpage(rootFile, args.module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlConfigFile)
+        webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlConfigFile)
         zipFile = "results" 
         import shutil
         tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -409,4 +423,11 @@ if __name__ == '__main__':
             print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile))
 #            print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads//test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/results_jvmze.zip/")
 
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_10-IPG_00103__run9 . ')
+    parser.add_argument('module_test', type=str, help='Single-module test name')
+    args = parser.parse_args()
+    updateTestResult(args.module_test)
 

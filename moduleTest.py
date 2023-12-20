@@ -33,6 +33,7 @@ if __name__ == '__main__':
     parser.add_argument('--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
+    parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
     parser.add_argument('--firmware', type=str, nargs='?', const=True, default="ps_twomod_oct23.bin", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
     parser.add_argument('--xmlConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     
     from pprint import pprint
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
-    from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors
+    from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig
     from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB
     
@@ -168,11 +169,16 @@ if __name__ == '__main__':
         print("moduleTest.py completed.")
         print("test_runName: %s."%test_runName)
         run = getRunFromDB(test_runName)
+        from updateTestResult import updateTestResult
         print()
         print("RUN:")
         print(run)
         print()
         print("SINGLE MODULE TEST:")
         for moduleTestName in run['moduleTestName']:
-            print("Single Module Test: %s" %moduleTestName)
+            print("######## Single Module Test: %s ########################" %moduleTestName)
+            if not args.skipUploadResults:
+                print("Running updateTestResult")
+                updateTestResult(moduleTestName)
+                print("################################################")
 
