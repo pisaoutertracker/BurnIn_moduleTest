@@ -54,12 +54,12 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     BeBoard_ = deepcopy(BeBoard)
     
     ## Add back the objects to the xml, using the proper values
-    for board_id, board in xmlConfig["boards"].items():
+    for board_id, board in sorted(xmlConfig["boards"].items(), reverse=True):
         BeBoard = deepcopy(BeBoard_)
         BeBoard.set("Id", str(board_id))
         connection.set("uri", connection.get("uri").replace("XXXXX",board["ip"]) )
         BeBoard.insert(0, connection)
-        for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
+        for opticalGroup_id, opticalGroup in sorted(board["opticalGroups"].items(), reverse=True):
             OpticalGroup = deepcopy(OpticalGroup_)
             OpticalGroup.set("Id", str(opticalGroup_id))
 #            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"])) ## keep it to 0
