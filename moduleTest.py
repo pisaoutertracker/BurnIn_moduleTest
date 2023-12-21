@@ -3,7 +3,7 @@ verbose = 1000
 #sessionName = 'session1'
 xmlConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
-port=5005
+port=5000
 xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
 firmware_5G="ps_twomod_oct23.bin" ##5 GBps
@@ -49,11 +49,22 @@ if __name__ == '__main__':
     
     ### read xml config file and create XML
     import shutil
-    if args.useExistingXmlFile:
-        xmlFile = args.useExistingXmlFile
-        xmlOutput = xmlFile
-        xmlConfigFile = xmlOutput
-        xmlConfig = {"boards" : {} }
+    if args.useExistingModuleTest:
+        matches = [folder for folder in os.listdir("Results") if args.useExistingModuleTest in folder ]
+        if len(matches) != 1: raise Exception("%d matches of %s in ./Results/. %s"%( len(matches), args.useExistingModuleTest, str(matches)))
+        folder = matches[0]
+        xmlConfigFilePath = "%s/%s"%("Results/"+folder, xmlConfigFile)
+        if os.path.exists("%s/%s"%(xmlConfigFilePath, xmlConfigFile)):
+            xmlConfig = readXmlConfig(xmlConfigFile, folder=xmlConfigFilePath)
+        else:
+            from makeXml import makeConfigFromROOTfile
+            print("%s not found. Creating it from ROOT file."%xmlConfigFilePath)
+            xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Hybrid.root")
+        file = open(xmlConfigFilePath, 'w')
+        file.write("config =" + str(xmlConfig))
+        file.close
+#        xmlConfigFile = "Results/%s/PS_Module_settings.py"%folder
+        xmlFile = "Results/%s/ModuleTest_settings.xml"%folder
     else:
         xmlConfigFile = args.xmlConfigFile
         xmlConfig = readXmlConfig(xmlConfigFile)
@@ -86,6 +97,12 @@ if __name__ == '__main__':
     # Note: each module is identified by (board_id, opticalGroup_id)
     # IDs is a map: IDs[(board_id, opticalGroup_id)] --> hardware ID
     IDs = getIDsFromROOT(rootFile, xmlConfig)
+    if args.useExistingXmlFile: ## remove missing IDs if running useExistingXmlFile (xmlConfigFil is fake)
+        for x in list(IDs.keys()):
+            if IDs[x] == "-1":
+                print("Deleting ", x)
+                del IDs[x]
+                del xmlConfig["boards"][str(x[0])]["opticalGroups"][str(x[1])]
     if verbose>5: pprint(IDs)
     
     if not args.skipMongo: 
@@ -105,6 +122,7 @@ if __name__ == '__main__':
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
         for file in [xmlConfigFile, xmlOutput, "logs/%s.log"%testID]: #copy output files to CernBox
+            if args.useExistingModuleTest and (file == xmlConfigFile or file == xmlOutput): continue
             if file != rootFile.GetName():
                 shutil.copy(file, resultFolder)
         
@@ -120,8 +138,11 @@ if __name__ == '__main__':
         fakeRunResults = dict()
         for hwId in noiseMap:
             fakeRunResults[hwId] = "boh"
+        date = date.replace(" ","T").split(".")[0] # drop ms
+        if args.useExistingModuleTest:
+            date = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
         newRun = {
-            'runDate': date.replace(" ","T").split(".")[0], # drop ms
+            'runDate': date, 
             'runSession': args.session_name,
             'runStatus': 'done',
             'runType': 'Type1',
@@ -177,7 +198,7 @@ if __name__ == '__main__':
         print("SINGLE MODULE TEST:")
         for moduleTestName in run['moduleTestName']:
             print("######## Single Module Test: %s ########################" %moduleTestName)
-            if not args.skipUploadResults:
+            if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
                 updateTestResult(moduleTestName)
                 print("################################################")
