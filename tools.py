@@ -89,16 +89,26 @@ def getNoisePerChip(rootFile, xmlConfig):
         for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
             for hybrid_id, hybrid in opticalGroup["hybrids"].items():
                 hybrid_plus_opt = str(int(opticalGroup_id)*2 + int(hybrid_id))
+                noises = []
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, strip_id, "SSA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
+                    if noise>0: noises.append(noise)
+                noisePerChip["Average_B%s_O%s_H%s_SSA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = sum(noises)/len(noises) if len(noises)>0 else 0
+                noisePerChip["Maximum_B%s_O%s_H%s_SSA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = max(noises) if len(noises)>0 else 0
+                noisePerChip["Minimum_B%s_O%s_H%s_SSA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = min(noises) if len(noises)>0 else 0
+                noises = []
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in hybrid["pixels"]:
                     noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, pixel_id, "MPA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
+                    if noise>0: noises.append(noise)
+                noisePerChip["Average_B%s_O%s_H%s_MPA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = sum(noises)/len(noises) if len(noises)>0 else 0
+                noisePerChip["Maximum_B%s_O%s_H%s_MPA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = max(noises) if len(noises)>0 else 0
+                noisePerChip["Minimum_B%s_O%s_H%s_MPA"%(board_id, opticalGroup_id, hybrid_plus_opt)] = min(noises) if len(noises)>0 else 0
     return noisePerChip
 
 ### Make an output result "pass" or "failed" depending on the noise of all the chips of a single module.
@@ -113,7 +123,10 @@ def getResultsPerModule(noisePerChip, xmlConfig):
     return results
 
 def getResultPerModule(noisePerChip, xmlConfig, board_id, opticalGroup_id):
-    opticalGroup = xmlConfig["boards"][board_id]["opticalGroups"][opticalGroup_id]
+    try:
+        opticalGroup = xmlConfig["boards"][board_id]["opticalGroups"][opticalGroup_id]
+    except:
+        opticalGroup = xmlConfig["boards"][int(board_id)]["opticalGroups"][int(opticalGroup_id)]
     for hybrid_id, hybrid in opticalGroup["hybrids"].items():
         hybrid_plus_opt = str(int(opticalGroup_id)*2 + int(hybrid_id))
         for strip_id in hybrid["strips"]:
