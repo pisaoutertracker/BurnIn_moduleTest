@@ -8,6 +8,47 @@ def lpGBT_version(fileName):
         raise Exception("Something wrong with %s"%opticalGroup["lpGBT"])
     return id
 
+#
+
+## make PS_Module_settings.py from already existing ROOT file (necessary to upload old tests)
+
+def makeConfigFromROOTfile(fileName):
+    from ROOT import TFile
+    ROOTfile = TFile.Open(fileName)
+    xmlConfig = {
+        "commonSettings" : "fake",
+        "Nevents" : "-1",
+        "boards" : {}
+    }
+    for objB in ROOTfile.Get("Detector").GetListOfKeys(): 
+        objB_ = objB.GetName()
+        if "Board_" in objB_:
+            board_id = objB_.split("Board_")[1]
+            if not board_id in xmlConfig["boards"]: 
+                xmlConfig["boards"][board_id] = {"ip" : "fake", "opticalGroups" : {}}
+            for objO in ROOTfile.Get("Detector/%s"%objB_).GetListOfKeys(): 
+                objO_ = objO.GetName()
+                if "OpticalGroup_" in objO_:
+                    optical_id = objO_.split("OpticalGroup_")[1]
+                    if not optical_id in xmlConfig["boards"][board_id]["opticalGroups"]: 
+                        xmlConfig["boards"][board_id]["opticalGroups"][optical_id] = {"lpGBT" : "fake", "hybrids" : {}}
+                    for objH in ROOTfile.Get("Detector/%s/%s"%(objB_, objO_)).GetListOfKeys(): 
+                        objH_ = objH.GetName()
+                        if "Hybrid_" in objH_:
+                            hybrid_id = objH_.split("Hybrid_")[1]
+                            hybrid_id_fixed = int(hybrid_id) - int(optical_id)*2
+                            hybrid_id_fixed = str(hybrid_id_fixed)
+                            if not hybrid_id_fixed in xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"]: 
+                                xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed] = {"strips" : [], "pixels" : []}
+                            for objPS in ROOTfile.Get("Detector/%s/%s/%s"%(objB_, objO_, objH_)).GetListOfKeys(): 
+                                objPS_ = objPS.GetName()
+                                hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
+                                if "SSA" in objPS_:
+                                    hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
+                                if "MPA" in objPS_:
+                                    hybrid["pixels"].append(int(objPS_.split("MPA_")[1]))
+    return xmlConfig
+
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
 
 def makeXml(xmlOutput, xmlConfig, xmlTemplate):
