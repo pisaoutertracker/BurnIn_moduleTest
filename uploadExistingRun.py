@@ -31,7 +31,7 @@ from ROOT import TFile
 for a in ROOTfiles:
     try:
         TFile.Open(a)
-        print("python3 moduleTest.py session --useExistingModuleTest %s  >& uploadLogs/%s "%(a.split("/")[1],a.split("/")[1]))
+        print("python3 moduleTest.py session1 --useExistingModuleTest %s --skipUploadResults  >& uploadLogs/%s "%(a.split("/")[1],a.split("/")[1]))
     except:
         errors.append(a)
 
