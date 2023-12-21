@@ -64,6 +64,18 @@ def getTestFromDB(testID):
 
 ### read the module test result from DB
 
+def getSessionFromDB(testID):
+    if verbose>0: print("Calling getSessionFromDB()", testID)
+    api_url = "http://%s:%d/sessions/%s"%(ip, port, testID)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Session read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
+### read the module test result from DB
+
 def getModuleTestFromDB(testID):
     if verbose>0: print("Calling getModuleTestFromDB()", testID)
     api_url = "http://%s:%d/module_test/%s"%(ip, port, testID)
