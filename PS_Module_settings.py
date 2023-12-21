@@ -1,12 +1,28 @@
 ### Configuration one-shot ###
 config = {
     "commonSettings" : "pippo",
-    "Nevents" : "100",
+    "Nevents" : "50",
     "boards" : {
         "0": {
             "ip" : "fc7ot2:50001",
             "opticalGroups" : {
-                "0" : {
+                "1" : {
+                    "lpGBT" : "lpGBT_v1.txt",
+                    "hybrids" : {
+                        "0" : {
+#                            "strips" : [0],
+#                            "pixels" : [8],
+                            "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
+                            "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
+                        },
+                        "1" : {
+#			     "strips" : [0]
+                            "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
+                            "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
+                        },
+                    } ## hybrids
+                }, 
+                "2" : {
                     "lpGBT" : "lpGBT_v1.txt",
                     "hybrids" : {
                         "0" : {
