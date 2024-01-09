@@ -2,7 +2,7 @@ import pprint
 allVariables = ["NoiseDistribution", "2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "V3"
+version = "Test2"
 
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
@@ -442,7 +442,7 @@ def updateTestResult(module_test, skipWebdav = False):
     gStyle.SetOptStat(0)
     tmpFolder = tmpFolder+module_test+"__%s/"%version
     base = "/test3/"
-    base = "/ReReco1/"
+#    base = "/ReReco1/"
 
     import shutil
     try:
@@ -534,9 +534,32 @@ def updateTestResult(module_test, skipWebdav = False):
     if webdav_website:
         print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
         print("https://cmstkita.web.cern.ch/Pisa/TBPS/")
-        print("https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile))
-        print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile))
+        download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
+        print(download)
+        navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
+        print(navigator)
+    else:
+        download = "dummy"
+        navigator = "dummy"
 #            print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads//test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/results_jvmze.zip/")
+    
+    from databaseTools import createAnalysis
+    json = {
+        "moduleTestAnalysisName": folder, #"PS_26_05-IBA_00004__run79__Test", 
+        "moduleTestName": module_test, #"PS_26_05-IBA_00004__run79", 
+        "analysisVersion": version, #"Test", 
+        "analysisResults": {module_test:result},
+        "analysisSummary": noisePerChip,
+        "analysisFile": navigator
+    }
+    status = createAnalysis(json)
+    if int(status) != 201:
+        pass
+#        raise Exception("createAnalysis failed of moduleTestAnalysisName %s."%folder)
+    from databaseTools import appendAnalysisToModule
+    status = appendAnalysisToModule(folder)
+    if int(status) != 200:
+        raise Exception("appendAnalysisToModule failed of moduleTestAnalysisName %s."%folder)
 
 
 if __name__ == '__main__':
@@ -546,4 +569,5 @@ if __name__ == '__main__':
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
     updateTestResult(args.module_test , args.skipWebdav )
+
 

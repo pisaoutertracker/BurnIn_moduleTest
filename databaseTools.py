@@ -111,24 +111,51 @@ def addTestToModuleDB(updatedTestList, moduleName):
     else:
         print("Failed to update the module. Status code:", response.status_code)
 
-
-new_test = {
-    "testID": "T001",
-    "modules_list": ["M1", "M2"],
-    "testType": "Type1",
-    "testDate": "2023-11-01",
-    "testStatus": "completed",
-    "testResults": {}
-}
-
-def addTestToModuleDBNew():
-    if verbose>0: print("Calling addTestToModuleDBNew()")
-    api_url = "http://%s:%d/addTest"%(ip, port)
-    response = requests.put(api_url, json=new_test)
+def createAnalysis(json):
+    if verbose>0: print("Calling createAnalysis()")
+    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+#    json = {'moduleTestAnalysisName': analysisName}
+    response = requests.post(api_url, json=json)
+    print(response)
+    print(response.content.decode())
+    print(response.status_code)
     if response.status_code == 201:
         if verbose>1: print("Module added successfully")
     else:
         print("Failed to add the module. Status code:", response.status_code)
+    return response.status_code
+
+def appendAnalysisToModule(analysisName):
+    if verbose>0: print("Calling appendAnalysisToModule()")
+    api_url = "http://%s:%d/addAnalysis"%(ip, port)
+    json = {'moduleTestAnalysisName': analysisName}
+    response = requests.get(api_url, params=json)
+    print(response)
+    print(response.content.decode())
+    print(response.status_code)
+    if response.status_code == 200:
+        if verbose>1: print("Module added successfully")
+    else:
+        print("Failed to add the module. Status code:", response.status_code)
+    return response.status_code
+
+#new_test = {
+#    "testID": "T001",
+#    "modules_list": ["M1", "M2"],
+#    "testType": "Type1",
+#    "testDate": "2023-11-01",
+#    "testStatus": "completed",
+#    "testResults": {}
+#}
+
+#def addTestToModuleDBNew():
+#    if verbose>0: print("Calling addTestToModuleDBNew()")
+#    api_url = "http://%s:%d/addTest"%(ip, port)
+#    response = requests.put(api_url, json=new_test)
+#    if response.status_code == 201:
+#        if verbose>1: print("Module added successfully")
+#    else:
+#        print("Failed to add the module. Status code:", response.status_code)
 
 ### read a module from DB, given the moduleName
 
