@@ -1,4 +1,3 @@
-import pprint 
 allVariables = ["NoiseDistribution", "2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
@@ -56,8 +55,8 @@ def addHistoPlot(plots, canvas, plot, fName):
                 else:
                     plot.Draw()
         canvas.Update()
-        canvas.SaveAs(fName)
         print("Creating %s"%fName)
+        canvas.SaveAs(fName)
     ## append fName, even if it does not exist to show the missing plot
     if not("2DPixelNoise" in fName and "SSA" in fName):
         plots.append(fName)
@@ -88,6 +87,7 @@ def addHistoPlot(plots, canvas, plot, fName):
 def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTime):
     plots = []
     ## add Influxdb plot
+    
     plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
 
     c1 = TCanvas("c1", "")
@@ -133,66 +133,57 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             elif chip == "MPA": chipIds = hybrid['pixels']
             ## "InitialReadoutChipConfiguration"
             for name in allVariables:
+                if "Pixel" in name and chip != "MPA": continue ## Skip 2DPixelNoise plot for strip
                 print("Doing %s"%name)
                 merged = None
                 counter = 0
                 for chipId in chipIds:
-                    plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId))
+                    print("chipId",str(chipId))
+                    plot = None
+                    count = 0
+                    while(plot==None):
+                        plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId))
+                        if count>0: 
+                            print("WARNINGHERE:", count)
+                            print(rootFile.Print())
+                            from time import sleep
+                            sleep(1)
+                            rootFile.Recover()
+                        if count>10: 
+                            raise Exception("Problems with file %s"%rootFile.GetName())
+                        count+=1
+                    print("T",str(plot))
                     if plot:
                         if not merged: 
-                            merged = plot.Clone(plot.GetName().replace("Chip(%s)"%chipId, "Merged"))
-                            print(type(merged), type(plot))
-                            merged.SetTitle(merged.GetTitle().replace("Chip(%s)"%chipId, "Merged"))
-                        else: merged.Add(plot)
+                            merged = plot.Clone(plot.GetName().replace("Chip(%s)"%chipId, "Merged")+chip)
+                            merged.SetTitle(merged.GetTitle().replace("Chip(%s)"%chipId, "Merged")+chip)
+                        else: 
+                            merged.Add(plot)
                     counter += 1
-                    print(plot)
                     addHistoPlot(plots, c1, plot, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, chipId))
                 ## re-normalize all non-extensive variable
                 if merged and not name in exstensiveVariables:
                     merged.Scale(1./ counter)
-                addHistoPlot(plots, c1, merged, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, "Merged"))
+                addHistoPlot(plots, c1, merged, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, "Merged"+chip))
                 
                 ## add 1D projection 
                 if merged and "2DPixelNoise" in name:
                     prx = merged.ProjectionX()
                     prx.SetTitle(merged.GetTitle() + " - X projection")
                     prx.Scale(1./merged.GetNbinsY())
-                    addHistoPlot(plots, c1, prx, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projX", hybrid_id, chip, "Merged"))
+                    addHistoPlot(plots, c1, prx, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projX", hybrid_id, chip, "Merged"+chip))
                     pry = merged.ProjectionY()
                     pry.SetTitle(merged.GetTitle() + " - Y projection")
                     pry.Scale(1./merged.GetNbinsX())
-                    addHistoPlot(plots, c1, pry, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projY", hybrid_id, chip, "Merged"))
+                    addHistoPlot(plots, c1, pry, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projY", hybrid_id, chip, "Merged"+chip))
                     
-                del merged
+                merged = None
         for name in ["StripNoise", "PixelNoise", "Noise"]:
             plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_Hybrid%sDistribution_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
-            print(plot)
             addHistoPlot(plots, c1, plot, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
     
-#    print(plots)
     return plots
 
-#_file0->Get("Detector/Board_0/OpticalGroup_0/Hybrid_1")->ls()
-
-# KEY: TH1F	D_B(0)_O(0)_HybridStripNoiseDistribution_Hybrid(1);1	D_B(0)_O(0)_HybridStripNoise_Hybrid(1)
-# KEY: TH1F	D_B(0)_O(0)_HybridPixelNoiseDistribution_Hybrid(1);1	D_B(0)_O(0)_HybridPixelNoise_Hybrid(1)
-# KEY: TH1F	D_B(0)_O(0)_HybridNoiseDistribution_Hybrid(1);1	D_B(0)_O(0)_HybridNoiseDistribution_Hybrid(1)
-
-#root [7] _file0->Get("Detector/Board_0/OpticalGroup_0/Hybrid_1/SSA_1")->ls()
-
-#TDirectoryFile*		SSA_1	SSA_1
-# KEY: TDirectoryFile	Channel;1	Channel
-# KEY: TObjString	D_B(0)_O(0)_H(1)_InitialReadoutChipConfiguration_Chip(1);1	Collectable string class
-# KEY: TH2F	D_B(0)_O(0)_H(1)_ManualPhaseScan_Chip(1);1	D_B(0)_O(0)_H(1)__Chip(1)
-# KEY: TH1I	D_B(0)_O(0)_H(1)_VplusValue_Chip(1);1	D_B(0)_O(0)_H(1)_Vplus Value_Chip(1)
-# KEY: TH1I	D_B(0)_O(0)_H(1)_OffsetValues_Chip(1);1	D_B(0)_O(0)_H(1)_Offset Values_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_OccupancyAfterOffsetEqualization_Chip(1);1	D_B(0)_O(0)_H(1)_Occupancy After Offset Equalization_Chip(1)
-# KEY: TH2F	D_B(0)_O(0)_H(1)_SCurve_Chip(1);1	D_B(0)_O(0)_H(1)_SCurve_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_PedestalDistribution_Chip(1);1	D_B(0)_O(0)_H(1)_PedestalDistribution_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_ChannelPedestalDistribution_Chip(1);1	D_B(0)_O(0)_H(1)_ChannelPedestal_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_NoiseDistribution_Chip(1);1	D_B(0)_O(0)_H(1)_NoiseDistribution_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_ChannelNoiseDistribution_Chip(1);1	D_B(0)_O(0)_H(1)_ChannelNoise_Chip(1)
-# KEY: TH1F	D_B(0)_O(0)_H(1)_Occupancy_Chip(1);1	D_B(0)_O(0)_H(1)_Occupancy_Chip(1)
 
 def makeNoiseTable(noisePerChip, board_id, optical_id):
     # Create the HTML table header
@@ -213,6 +204,7 @@ def makeNoiseTable(noisePerChip, board_id, optical_id):
     
     
     html_table += "</tr>\n"
+    
 #    for histoName, value in noisePerChip.items():
 #        parts = histoName.split('_')
 #        board = parts[1][2:-1]
@@ -334,6 +326,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     print(noisePerChip)
     
     finalbody = "<h1> XML configuration </h1>" + "\n"
+    import pprint
     finalbody += pprint.pformat(xmlConfig)+"\n"
     finalbody += "<h1> InitialLpGBTConfiguration </h1>" + "\n"
     finalbody += "InitialLpGBTConfiguration: %s"%rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_InitialLpGBTConfiguration_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id)) + "<br>" +"\n"
@@ -367,16 +360,12 @@ def makePlotInfluxdb(time, folder):
     
     from datetime import datetime, timedelta
     
-    from influxdb_client import InfluxDBClient, Point, WritePrecision
-    from influxdb_client.client.write_api import SYNCHRONOUS
+    from influxdb_client import InfluxDBClient
     
     import numpy as np
-    import matplotlib.pyplot as plt
     
     org = "pisaoutertracker"
     bucket = "sensor_data"
-    
-    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
     
     timeFormat = "%Y-%m-%dT%H:%M:%S"
     
@@ -403,10 +392,12 @@ def makePlotInfluxdb(time, folder):
      |> yield(name: "mean")
     '''%sensorName
     
-    tables = client.query_api().query(query, org=org)
-    
     time = []
     value = []
+    
+    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
+    tables = client.query_api().query(query, org=org)
+    client.__del__()
     
     for table in tables:
        for record in table.records:
@@ -414,6 +405,7 @@ def makePlotInfluxdb(time, folder):
            value.append(record.get_value())
     
     # Plot the data
+    import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
     plt.axvline(x=currentTime, color='r', linestyle='--', label=currentTime.strftime('%H:%M:%S'))
@@ -426,10 +418,13 @@ def makePlotInfluxdb(time, folder):
     plt.savefig(fName)
     print("InfluxDb: saved ", fName)
     
-#    client.__del__()
+    del plt
     
-    import locale
-    locale.setlocale(locale.LC_ALL, 'C')
+    if not 'LC_ALL' in os.environ or os.environ['LC_ALL'] != 'C': 
+        raise Exception('Please type on shell: export LC_ALL="C"')
+
+#    import locale
+#    locale.setlocale(locale.LC_ALL, 'C')
     
     return fName
 
@@ -478,7 +473,9 @@ def updateTestResult(module_test, skipWebdav = False):
     board_id = boardToId[board]
     module = getModuleFromDB(moduleName)
     fName = run['runFile'].split("//")[-1].replace("/", "_")
-    if webdav_wrapper: zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
+    if webdav_wrapper: 
+        print("Downloading %s to %s"%(run['runFile'].split("//")[-1], "/tmp/%s"%fName))
+        zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
     else: zip_file_path = "/tmp/%s"%fName
     
     # Specify the directory where you want to extract the contents
@@ -521,6 +518,8 @@ def updateTestResult(module_test, skipWebdav = False):
     shutil.make_archive(tmpUpFolder+name, 'zip', tmpFolder)
     if verbose>20: print("Done")
     if webdav_website: 
+#        import locale
+#        locale.setlocale(locale.LC_ALL, 'C')
         newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
         if verbose>0: print("Uploaded %s"%newFile)
 #        if webdav_website: newfile = webdav_website.write_file(webpage, nfolder+"/index.html")
