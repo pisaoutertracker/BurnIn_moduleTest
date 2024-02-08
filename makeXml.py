@@ -4,6 +4,7 @@ from moduleTest import verbose
 
 def lpGBT_version(fileName):
     id = fileName.split("lpGBT_v")[1].split(".txt")[0]
+    if "_PS" in id: id = id.split("_PS")[0]
     if not id.isdigit():
         raise Exception("Something wrong with %s"%opticalGroup["lpGBT"])
     return id

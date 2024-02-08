@@ -7,7 +7,7 @@ config = {
             "ip" : "fc7ot2:50001",
             "opticalGroups" : {
                 "1" : {
-                    "lpGBT" : "lpGBT_v1.txt",
+                    "lpGBT" : "lpGBT_v1_PS.txt", ##it was lpGBT_v1.txt
                     "hybrids" : {
                         "0" : {
 #                            "strips" : [0],
@@ -23,7 +23,7 @@ config = {
                     } ## hybrids
                 }, 
                 "2" : {
-                    "lpGBT" : "lpGBT_v1.txt",
+                    "lpGBT" : "lpGBT_v1_PS.txt",
                     "hybrids" : {
                         "0" : {
 #                            "strips" : [0],

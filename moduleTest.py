@@ -10,8 +10,10 @@ firmware_5G="ps_twomod_oct23.bin" ##5 GBps
 firmware_10G="ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/ -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/ -v $PWD/..:$PWD/.. -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct  -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/ --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-17 -c "%s"'
-prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd /home/thermal/Ph2_ACF_docker/BurnIn_moduleTest '
+## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-21 -c "%s"'
+import os
+prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd %s' %os.getcwd()
 
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
 #lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x00', '0x67']
@@ -21,7 +23,6 @@ lpGBTids = []
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
 webdav_url = "https://cernbox.cern.ch/remote.php/dav/public-files"
 from webdavclient import WebDAVWrapper
-import os
 hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[0].split("|")
 webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
 
