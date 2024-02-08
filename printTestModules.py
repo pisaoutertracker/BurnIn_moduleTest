@@ -1,5 +1,20 @@
 import os
-from databaseTools import getModuleTestFromDB, getModuleFromDB, getRunFromDB, getSessionFromDB
+from databaseTools import getModuleTestFromDB, getModuleFromDB, getRunFromDB, getSessionFromDB, getListOfSessionsFromDB, getListOfAnalysisFromDB
+
+
+from analysis import all_analysis
+def getLink(moduleTestName):
+    links = []
+    base = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/%s/"
+    test = moduleTestName.replace("__run", "_Run_run")
+    for an in all_analysis:
+        if test in an:
+            links.append(base%an)
+    text = ""
+    for l in links:
+        name = l.split("_Result_")[1].split("/results_")[0]
+        text += "[%s](%s) "%(name, l)
+    return text
 
 def getTemperature(time):
     token_location = "~/private/influx.sct" 
@@ -59,35 +74,67 @@ def getTemperature(time):
 ## run245
 moduleName = "PS_26_10-IPG_00103"
 
-session = getSessionFromDB("session1")
 
-testDate = {}
-for run in session["test_runName"]:
-    if int(run.split("run")[1])> 243:
-        run = getRunFromDB(run)
-        for moduleTest in run['moduleTestName']:
-            test = getModuleTestFromDB(moduleTest)
-#            session = getSessionFromDB(run['runSession'])
-#            print(moduleName, run['runDate'])
-            testDate[run['runDate']] = (moduleTest, run['runFile'])
-#    run = getRunFromDB(runName)
+#analysis_map = {}
+#for an in all_analysis:
+#    test = an["moduleTestName"]
+#    if not test in analysis_map:
+#        analysis_map[test] = [test]
+#    else:
+#        analysis_map[test].append(test)
+#        
 
-print()
-print()
 
-for date in sorted(list(testDate)):
-    test, zip = testDate[date]
-    module, run = test.split("__")
-    print("%s\t%s\t%s\t%.1f\t%s"%(module, date.replace("T","\t"), test, getTemperature(date), zip.split("/output")[0]))
-#    print("python3 %s"%testDate[date])
+#for p in analysis_map:
+#    print(p)
 
-print()
-print()
 
-for date in sorted(list(testDate)):
-    test, zip = testDate[date]
-    print("python3 updateTestResult.py %s >& uploadLogs/Analysis_%s "%(test, test))
 
-#testDate = {}
-#module = getModuleFromDB(moduleName)
+for session in getListOfSessionsFromDB():
+#for session in [getSessionFromDB("session34")]:
+#    s =sessions[0]["sessionName"]
+#    
+#    session = getSessionFromDB("session1")
+    
+    testDate = {}
+    if "test_runName" in session:
+        print()
+        print("SESSION: %s (%s) %s"%(session['sessionName'], session['operator'], session['timestamp'].replace("T"," ")))
+        print("Descrizione: %s"%session['description'])
+        
+        for run in session["test_runName"]:
+            if not (session['sessionName']=="session1" and int(run.split("run")[1])< 243): ## avoid duplicate runs
+                run = getRunFromDB(run)
+                for moduleTest in run['moduleTestName']:
+                    test = getModuleTestFromDB(moduleTest)
+        #            session = getSessionFromDB(run['runSession'])
+        #            print(moduleName, run['runDate'])
+                    testDate[run['runDate']+"+++"+test["moduleName"]] = (moduleTest, run['runFile'])
+        #    run = getRunFromDB(runName)
+
+    #    print()
+    #    print()
+
+        for date in sorted(list(testDate)):
+            test, zip = testDate[date]
+            date = date.split("+++")[0]
+            module, run = test.split("__")
+#            t = getModuleTestFromDB(test)
+#            refAnalysis = ""
+#            if 'referenceAnalysis' in t:
+#                refAnalysis = t['referenceAnalysis']
+#            elif 'analysesList' in t:
+#                refAnalysis = t['analysesList'][-1]
+            print("%s\t%s\t[%s](%s)\t%.1f\t%s"%(module, date.replace("T","\t"), test, zip.split("/output")[0], getTemperature(date), getLink(test)))
+        #    print("python3 %s"%testDate[date])
+
+    #    print()
+    #    print()
+
+#        for date in sorted(list(testDate)):
+#            test, zip = testDate[date]
+#            print("python3 updateTestResult.py %s >& uploadLogs/Analysis_%s "%(test, test))
+
+    #    #testDate = {}
+    #    #module = getModuleFromDB(moduleName)
 

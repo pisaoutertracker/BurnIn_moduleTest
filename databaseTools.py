@@ -2,6 +2,7 @@ from moduleTest import verbose, ip, port, lpGBTids
 from pprint import pprint
 import requests
 
+#verbose = 0
 ### upload the test result to the "tests" DB
 
 ## (obsolete) ##
@@ -58,6 +59,32 @@ def getTestFromDB(testID):
     response = requests.get(api_url)
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
+
+### read the list of sessions
+
+def getListOfSessionsFromDB():
+    if verbose>0: print("Calling getListOfSessionsFromDB()")
+    api_url = "http://%s:%d/sessions"%(ip, port)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Session read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
+
+### read the test modules analysis
+
+def getListOfAnalysisFromDB():
+    if verbose>0: print("Calling getListOfAnalysisFromDB()")
+    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Session read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
     return eval(response.content.decode())
