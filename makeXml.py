@@ -77,7 +77,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     if verbose > 5:
         for el in [HwDescription, BeBoard, OpticalGroup, lpGBT, Hybrid, SSA, MPA]:
             print(el)
-            print(el.getchildren(),el.keys())
+            print(list(el),el.keys())
     
     ## Clean template from the existing parameters
     Hybrid.remove(SSA)
@@ -110,12 +110,12 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
             for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items(), reverse=True):
                 Hybrid = deepcopy(Hybrid_)
                 Hybrid.set("Id", str(hybrid_id))
-                SSAFiles_position = Hybrid.getchildren().index(Hybrid.find("SSA_Files"))
+                SSAFiles_position = list(Hybrid).index(Hybrid.find("SSA_Files"))
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in sorted(hybrid["strips"], reverse=True):
                     SSA.set("Id", str(strip_id))
                     Hybrid.insert(SSAFiles_position+1,deepcopy(SSA))
-                MPAFiles_position = Hybrid.getchildren().index(Hybrid.find("MPA_Files"))
+                MPAFiles_position = list(Hybrid).index(Hybrid.find("MPA_Files"))
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in sorted(hybrid["pixels"], reverse=True):
                     MPA.set("Id", str(pixel_id))
@@ -126,7 +126,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     ## Modify  Nevents setting if it is defined in the python config
     if "Nevents" in xmlConfig:
         Nevents = int(xmlConfig["Nevents"])
-        for setting in tree.find("Settings").getchildren():
+        for setting in list(tree.find("Settings")):
             if Nevents>0 and setting.get("name") == "Nevents":
                 setting.text = str(Nevents)
     tree.write(xmlOutput)
