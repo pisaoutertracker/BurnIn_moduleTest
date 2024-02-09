@@ -177,42 +177,42 @@ if __name__ == '__main__':
 #            for b, o in board_opticals:
         board = 0 
         print()
-        print("###  Module check ###")
+        print("#####  Module check #####")
         error = False
         allModules = hwToModuleName.values()
         for i, opticalGroup in enumerate(opticalGroups):
             moduleExpected = modules[i]
             id_ = IDs[(board, opticalGroup)]
+            if int(id_)==-1:
+                message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, int(id_), moduleExpected)
+                print(message)
+                if not args.skipModuleCheck: raise Exception(message)
+                continue
+            moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module"
+            try:
+                print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, moduleFound, int(id_), moduleExpected))
+            except:
+                print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][str(board)]["ip"], opticalGroup, moduleFound, id_, moduleExpected))
             if moduleExpected in allModules: ## if the expected module is already in the database, check if it matches with the expected module
-                moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module"
-                try:
-                    print("Board %s Optical %d Module %s (%d). Expected %s"%(xmlConfig["boards"][board]["ip"], opticalGroup, moduleFound, id_, moduleExpected))
-                except:
-                    print("Board %s Optical %d Module %s (%d). Expected %s"%(xmlConfig["boards"][str(board)]["ip"], opticalGroup, moduleFound, id_, moduleExpected))
                 if moduleFound!=moduleExpected:
                     print("DIFFERENT MODULE FOUND!!")
                     error = True
             else: ## if the expected module is not in the database, add it to the DB
-                print()
                 print("List of known modules:")
-                for mod in allModules:
-                    print(mod)
-                print()
-                print("##############")
-                print()
+                for hwId in hwToModuleName:
+                    print("%s (%d)"%(hwToModuleName[hwId], int(hwId)))
                 print("Module %s is not yet in the database."%(moduleExpected))
-                print("HwId %d is found."%(id_))
-                if id_ in hwToModuleName:
-                    message = "\nHwId %d is already associated to module %s.\nPlease fix the module name used.\n"%(id_, hwToModuleName[id_])
+                print("HwId %d found."%(int(id_)))
+                if id_ in hwToModuleName and int(id_)!=-1:
+                    message = "HwId %d is already associated to module %s.\nPlease fix the module name used."%(id_, hwToModuleName[id_])
                     print(message)
-                    raise Exception(message)
-                print()
-                print()
-                answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected)) 
-                if answer == "y" or answer == "yes" or answer == "Y":
-                    addNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
-                else:
-                    if not args.skipModuleCheck: raise Exception("I cannot work with unknown modules.")
+                    if not args.skipModuleCheck: raise Exception(message)
+                if int(id_)!=-1 and not args.skipModuleCheck:
+                    answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected))
+                    if answer == "y" or answer == "yes" or answer == "Y":
+                        addNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
+                    else:
+                        raise Exception("I cannot work with unknown modules.")
 
         if error:
             message = "The modules declared in --modules (%s) do not correspond to the module found in --slots (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board))
