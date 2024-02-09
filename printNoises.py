@@ -12,7 +12,7 @@ if __name__ == '__main__':
 #    testID = "T2023_11_10_11_59_35_809872"
 #    testID = "T2023_11_08_18_59_35_892171"
 #    testID = "T2023_11_08_17_57_54_302065"
-    xmlConfigFile = "PS_Module_settings.py"
+    xmlPyConfigFile = "PS_Module_settings.py"
     from makeXml import readXmlConfig
     fNames = [
     
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 #        rootFile = getROOTfile(testID)
         rootFile = TFile.Open(fName)
         folder = '/'.join(fName.split("/")[:-1])
-        xmlConfig = readXmlConfig(xmlConfigFile, folder = folder)
+        xmlConfig = readXmlConfig(xmlPyConfigFile, folder = folder)
         noisePerChip = getNoisePerChip(rootFile , xmlConfig)
         from pprint import pprint
         print(fName)

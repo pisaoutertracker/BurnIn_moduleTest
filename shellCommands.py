@@ -72,7 +72,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
     logFile = "%s/%s.log"%(logFolder,testID)
     if verbose>0: print(testID,logFile)
     if not useExistingModuleTest: # -w $PWD 
-        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
+        command = "%s && runCalibration -f %s -c calibrationandpedenoise  | tee %s"%(prefixCommand, xmlFile,logFile)
+#        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
         output = runCommand(podmanCommand%command)
     else:
         output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))

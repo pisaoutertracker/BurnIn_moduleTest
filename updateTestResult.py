@@ -11,7 +11,7 @@ import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 from webdavclient import WebDAVWrapper
-from moduleTest import webdav_url, xmlConfigFile, hash_value_read, hash_value_write ## to be updated
+from moduleTest import webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
 
 verbose = 10000
 
@@ -486,8 +486,8 @@ def updateTestResult(module_test, skipWebdav = False):
         # Extract all the contents into the specified directory
         zip_ref.extractall(extracted_dir)
     
-    rootFile = TFile.Open(extracted_dir+"/Hybrid.root")
-#    xmlConfig = readXmlConfig(xmlConfigFile=xmlConfigFile, folder=extracted_dir)
+    rootFile = TFile.Open(extracted_dir+"/Results.root")
+#    xmlConfig = readXmlConfig(xmlPyConfigFile=xmlPyConfigFile, folder=extracted_dir)
     xmlConfig = run["runConfiguration"] ## take configuration from db instead of python file
     print(xmlConfig)
     global noisePerChip
@@ -498,7 +498,7 @@ def updateTestResult(module_test, skipWebdav = False):
 #    board_id, opticalGroup_id = board_optical
     result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
     plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'])
-    fff = plots+[xmlConfigFile]
+    fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     nfolder = base+folder
     print("mkDir %s"%nfolder)
@@ -506,7 +506,7 @@ def updateTestResult(module_test, skipWebdav = False):
 ##        print(webdav_website.list_files(nfolder))
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlConfigFile, tmpFolder)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder)
     zipFile = "results" 
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")

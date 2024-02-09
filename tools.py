@@ -144,7 +144,7 @@ def getROOTfile(testID):
     import ROOT, os
     matches = [folder for folder in os.listdir("Results") if testID in folder ]
     if len(matches) != 1: raise Exception("%d matches of %s in ./Results/ folder. %s"%( len(matches), testID, str(matches)))
-    fName = "Results/%s/Hybrid.root"%matches[0]
+    fName = "Results/%s/Results.root"%matches[0]
     return ROOT.TFile.Open(fName)
 
 
@@ -160,10 +160,10 @@ if __name__ == '__main__':
 #    testID = "T2023_11_08_17_57_54_302065"
     testID = "test10gradi"
     #testID = "test0gradi"
-    xmlConfigFile = "PS_Module_settings.py"
+    xmlPyConfigFile = "PS_Module_settings.py"
     rootFile = getROOTfile(testID)
     from makeXml import readXmlConfig
-    xmlConfig = readXmlConfig(xmlConfigFile)
+    xmlConfig = readXmlConfig(xmlPyConfigFile)
     noisePerChip = getNoisePerChip(rootFile , xmlConfig)
     from pprint import pprint
     print("\nnoisePerChip:")

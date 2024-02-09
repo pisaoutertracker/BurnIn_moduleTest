@@ -1,7 +1,7 @@
 ### Default values 
 verbose = 1000
 #sessionName = 'session1'
-xmlConfigFile = "PS_Module_settings.py"
+xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
 xmlOutput="ModuleTest_settings.xml"
@@ -28,24 +28,58 @@ webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='Script used to launch the test of the Phase-2 PS module, using Ph2_ACF. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3 moduleTest.py session1 . ')
-    parser.add_argument('session_name', type=str, help='Name of the session')
-    parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing)!')
+    parser = argparse.ArgumentParser(description='Script used to launch the test of the Phase-2 PS module, using Ph2_ACF. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0,1 --session session1 . ')
+    required = parser.add_argument_group('required arguments')
+    required.add_argument('--session', type=str, help='Name of the session (eg. session1). ', required=True)
+    required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102).', required=True)
+    required.add_argument('--slot', type=str, help='Module name (eg. 0,1,2).', required=True)
+    required.add_argument('--board', type=str, help='Board name (eg. fc7ot2).', required=True)
+    required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
+    required.add_argument('--pixel', type=str, default='8,9,10,11,12,13', help='pixel number (eg. 8,9,15 default=all).', required=False)
+    required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
+    required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
+    
+    parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
     parser.add_argument('--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
+    parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
-    parser.add_argument('--firmware', type=str, nargs='?', const=True, default="ps_twomod_oct23.bin", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
-    parser.add_argument('--xmlConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
+    parser.add_argument('--firmware', type=str, nargs='?', const='', default="", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
+    parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     
+    print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7o2  --session session1")
     args = parser.parse_args()
+    
+    board = args.board
+    lpGBTfile = args.lpGBT
+    slots = args.slot.split(",")
+    modules = args.slot.split(",")
+    session = args.session
+    hybrids = [int(h) for h in args.hybrid.split(",")]
+    pixels = [int(h) for h in args.pixel.split(",")]
+    strips = [int(h) for h in args.strip.split(",")]
+    if max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
+    if max(pixels)>15 or min(strips)<0: raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
+    
+    if args.firmware and args.g10:
+        raise Exception("You cannot use --firmware and --10g option at the same time.")
+    elif args.firmware:
+        firmware = args.firmware
+    elif args.g10:
+        firmware = firmware_10G
+    else:
+        firmware = firmware_5G
+    
+
+#    print("firmware",firmware)
 #    verbose = args.verbose
     
     from pprint import pprint
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
-    from makeXml import makeXml, makeNoiseMap, readXmlConfig
+    from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
     from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB
     
     ### read xml config file and create XML
@@ -54,32 +88,37 @@ if __name__ == '__main__':
         matches = [folder for folder in os.listdir("Results") if args.useExistingModuleTest in folder ]
         if len(matches) != 1: raise Exception("%d matches of %s in ./Results/. %s"%( len(matches), args.useExistingModuleTest, str(matches)))
         folder = matches[0]
-        xmlConfigFilePath = "%s/%s"%("Results/"+folder, xmlConfigFile)
-        if os.path.exists("%s/%s"%(xmlConfigFilePath, xmlConfigFile)):
-            xmlConfig = readXmlConfig(xmlConfigFile, folder=xmlConfigFilePath)
+        xmlFilePath = "%s/%s"%("Results/"+folder, xmlPyConfigFile)
+        if os.path.exists("%s/%s"%(xmlFilePath, xmlPyConfigFile)):
+            xmlConfig = readXmlConfig(xmlPyConfigFile, folder=xmlFilePath)
         else:
             from makeXml import makeConfigFromROOTfile
-            print("%s not found. Creating it from ROOT file."%xmlConfigFilePath)
-            xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Hybrid.root")
-        file = open(xmlConfigFilePath, 'w')
+            print("%s not found. Creating it from ROOT file."%xmlFilePath)
+            xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Results.root")
+        file = open(xmlFilePath, 'w')
         file.write("config =" + str(xmlConfig))
         file.close
-#        xmlConfigFile = "Results/%s/PS_Module_settings.py"%folder
+#        xmlPyConfigFile = "Results/%s/PS_Module_settings.py"%folder
         xmlFile = "Results/%s/ModuleTest_settings.xml"%folder
     else:
-        xmlConfigFile = args.xmlConfigFile
-        xmlConfig = readXmlConfig(xmlConfigFile)
+        xmlPyConfigFile = args.xmlPyConfigFile
+#        xmlConfig = readXmlConfig(xmlPyConfigFile)
+        outFile="PS_Module_settings_autogenerated.py"
+        xmlConfig = makeXmlPyConfig(board, slots, hybrids, strips, pixels, lpGBTfile, outFile, Nevents=50)
+        xmlPyConfigFile = outFile
         xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
     
+    pprint(xmlConfig)
+    
     ### launch fpga_config
-    if args.runFpgaConfig: fpgaconfig(xmlFile, args.firmware)
+    if args.runFpgaConfig: fpgaconfig(xmlFile, firmware)
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
     out = runModuleTest(xmlFile, args.useExistingModuleTest) # 
     if out == "Run fpgaconfig":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
-        fpgaconfig(xmlFile, args.firmware)
+        fpgaconfig(xmlFile, firmware)
         out = runModuleTest(xmlFile, args.useExistingModuleTest) # 
     testID, date = out
     
@@ -116,14 +155,14 @@ if __name__ == '__main__':
         moduleMongoIDs = [ hwToMongoID[IDs[bo]] for bo in board_opticals ]
         
         ## upload all files
-        for file in [xmlConfigFile, xmlOutput, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
+        for file in [xmlPyConfigFile, xmlOutput, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
             newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
             if verbose>1: print("Uploaded %s"%newFile)
         
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
-        for file in [xmlConfigFile, xmlOutput, "logs/%s.log"%testID]: #copy output files to CernBox
-            if args.useExistingModuleTest and (file == xmlConfigFile or file == xmlOutput): continue
+        for file in [xmlPyConfigFile, xmlOutput, "logs/%s.log"%testID]: #copy output files to CernBox
+            if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlOutput): continue
             if file != rootFile.GetName():
                 shutil.copy(file, resultFolder)
         
@@ -144,7 +183,7 @@ if __name__ == '__main__':
             date = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
         newRun = {
             'runDate': date, 
-            'runSession': args.session_name,
+            'runSession': session,
             'runStatus': 'done',
             'runType': 'Type1',
             'runBoards': boardMap, 
