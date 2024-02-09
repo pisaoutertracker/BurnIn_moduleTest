@@ -28,7 +28,7 @@ webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='Script used to launch the test of the Phase-2 PS module, using Ph2_ACF. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0,1 --session session1 . ')
+    parser = argparse.ArgumentParser(description='Script used to launch the test of the Phase-2 PS module, using Ph2_ACF. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: \npython3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0,1 --session session1 . ')
     required = parser.add_argument_group('required arguments')
     required.add_argument('--session', type=str, help='Name of the session (eg. session1). ', required=True)
     required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102).', required=True)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     parser.add_argument('--firmware', type=str, nargs='?', const='', default="", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     
-    print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7o2  --session session1")
+    print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --readOnlyID  --session session1")
     args = parser.parse_args()
     
     board = args.board
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
-    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB, addNewModule, getListOfModulesFromDB
+    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB, addNewModule
     
     ### read xml config file and create XML
     import shutil
@@ -179,7 +179,7 @@ if __name__ == '__main__':
         print()
         print("###  Module check ###")
         error = False
-        allModules = getListOfModulesFromDB()
+        allModules = hwToModuleName.values()
         for i, opticalGroup in enumerate(opticalGroups):
             moduleExpected = modules[i]
             id_ = IDs[(board, opticalGroup)]
@@ -194,10 +194,19 @@ if __name__ == '__main__':
                     error = True
             else: ## if the expected module is not in the database, add it to the DB
                 print()
+                print("List of known modules:")
+                for mod in allModules:
+                    print(mod)
                 print()
                 print("##############")
                 print()
-                print("A new module has been found")
+                print("Module %s is not yet in the database."%(moduleExpected))
+                print("HwId %d is found."%(id_))
+                if id_ in hwToModuleName:
+                    message = "\nHwId %d is already associated to module %s.\nPlease fix the module name used.\n"%(id_, hwToModuleName[id_])
+                    print(message)
+                    raise Exception(message)
+                print()
                 print()
                 answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected)) 
                 if answer == "y" or answer == "yes" or answer == "Y":
