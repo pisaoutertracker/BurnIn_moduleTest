@@ -48,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
+    parser.add_argument('--skipModuleCheck', type=bool, default=True, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
     parser.add_argument('--firmware', type=str, nargs='?', const='', default="", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     
@@ -142,8 +143,10 @@ if __name__ == '__main__':
     # Note: each module is identified by (board_id, opticalGroup_id)
     # IDs is a map: IDs[(board_id, opticalGroup_id)] --> hardware ID
     IDs = getIDsFromROOT(rootFile, xmlConfig)
-    for bo in IDs:
-        IDs[bo] = IDs[bo]+1
+    
+## To change hardware ID for testing ##
+#    for bo in IDs:
+#        IDs[bo] = IDs[bo]+1
     if args.useExistingXmlFile: ## remove missing IDs if running useExistingXmlFile (xmlConfigFil is fake)
         for x in list(IDs.keys()):
             if IDs[x] == "-1":
@@ -154,6 +157,9 @@ if __name__ == '__main__':
     
     if readOnlyID and args.skipMongo:
         pprint (IDs)
+        print()
+        print("readOnlyID finished successfully.")
+        print()
         exit(0) ##if you just want the hardware ID, stop here.
     
     ### Read noise "NoiseDistribution_Chip" for each chip
@@ -197,11 +203,16 @@ if __name__ == '__main__':
                 if answer == "y" or answer == "yes" or answer == "Y":
                     addNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
                 else:
-                    raise Exception("I cannot work with unknown modules.")
+                    if not args.skipModuleCheck: raise Exception("I cannot work with unknown modules.")
 
         if error:
-            raise Exception("The modules declared in --modules (%s) do not correspond to the module found in --slots (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board)))
+            message = "The modules declared in --modules (%s) do not correspond to the module found in --slots (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board))
+            print(message)
+            if not args.skipModuleCheck: raise Exception(message) 
         if readOnlyID:
+            print()
+            print("readOnlyID finished successfully.")
+            print()
             exit(0) ##if you just want the hardware module names, stop here.
         
         ### convert IDs of modules used in the test to ModuleID and to MongoID ()
