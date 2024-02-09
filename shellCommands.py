@@ -65,14 +65,18 @@ def getDateTimeAndTestID():
 ### Launch ot_module_test, given an xml file.
 # if useExistingModuleTest, skip the test and read the existing log file
 
-def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolder="logs"):
+def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolder="logs", minimal=False):
     global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
     date, testID = getDateTimeAndTestID()
     logFile = "%s/%s.log"%(logFolder,testID)
     if verbose>0: print(testID,logFile)
     if not useExistingModuleTest: # -w $PWD 
-        command = "%s && runCalibration -b -f %s -c calibrationandpedenoise  | tee %s"%(prefixCommand, xmlFile,logFile)
+        if not minimal:
+            step = "calibrationandpedenoise"
+        else:
+            step = "configureonly"
+        command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, step, logFile)
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
         output = runCommand(podmanCommand%command)
     else:
@@ -106,7 +110,15 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
         print()
         print("|"+error+"|")
         raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
-    return testID, date
+    
+    ## find ROOT file from log file:
+    if "Closing result file: " in error:
+        rootFile = error.split("Closing result file: ")[1].split(".root")[0]+".root" ##eg. Results/Run_28/Results.root
+        newTestID = rootFile.split("/")[1] ## get "Run_28"
+        import os
+        os.rename(logFile, logFile.replace(testID, newTestID))
+        
+    return newTestID, date
 
 
 ### This code allow you to test this code using "python3 shellCommands.py"

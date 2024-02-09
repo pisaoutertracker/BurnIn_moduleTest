@@ -76,6 +76,18 @@ def getListOfSessionsFromDB():
         print("Failed to update the module. Status code:", response.status_code)
     return eval(response.content.decode())
 
+### read the list of modules
+
+def getListOfModulesFromDB():
+    if verbose>0: print("Calling getListOfModulesFromDB()")
+    api_url = "http://%s:%d/modules"%(ip, port)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("Session read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return eval(response.content.decode())
+
 
 ### read the test modules analysis
 
@@ -229,7 +241,42 @@ def makeModuleNameMapFromDB():
     hwToMongoID["-1"] = "-1"
     return hwToModuleName, hwToMongoID
 
+### This code allow you to test this code using "python3 databaseTools.py"
+def addNewModule(moduleName, id_):
+    if verbose>0: print("addNewModule(%s, %s)"%(moduleName, id_))
+   
+    # URL of the API endpoint for updating a module
+    api_url = "http://%s:%d/modules"%(ip, port)
+    
+    # Send a PUT request
+    json = {
+        "moduleName": moduleName,
+        "position": "cleanroom",
+        "logbook": {"entry": "Initial setup"},
+        "local_logbook": {"entry": "Local setup"},
+        "ref_to_global_logbook": [],
+        "status": "operational",
+        "overall_grade": "A",
+        "hwId": id_,
+        "tests": []
+    }
 
+    response = requests.post(api_url, json=json)
+    print("AAAAA")
+    print(response)
+    print(response.json())
+    
+    # Check the response
+    if response.status_code == 201:
+        if verbose>1: print("Module %s uploaded successfully (hwId=%d)"%(moduleName, id_))
+    else:
+        print("Failed to update the run. Status code:", response.status_code)
+        print("response = requests.post(api_url, json=newRun)")
+        print(api_url)
+    
+    if verbose>1:
+        print(response.json()['message'])
+    return response.json()
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
