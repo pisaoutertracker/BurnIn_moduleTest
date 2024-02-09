@@ -10,6 +10,7 @@ config = {
                     "lpGBT" : "lpGBT_v1_PS.txt", ##it was lpGBT_v1.txt
                     "hybrids" : {
                         "0" : {
+                            "edgeSelect" : 1,
 #                            "strips" : [0],
 #                            "pixels" : [8],
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
@@ -17,6 +18,7 @@ config = {
                         },
                         "1" : {
 #			     "strips" : [0]
+                            "edgeSelect" : 1,
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
                             "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
                         },
@@ -28,11 +30,13 @@ config = {
                         "0" : {
 #                            "strips" : [0],
 #                            "pixels" : [8],
+                            "edgeSelect" : 1,
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
                             "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
                         },
                         "1" : {
 #			     "strips" : [0]
+                            "edgeSelect" : 1,
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
                             "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
                         },
