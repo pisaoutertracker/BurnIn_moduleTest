@@ -182,9 +182,12 @@ if __name__ == '__main__':
         allModules = hwToModuleName.values()
         for i, opticalGroup in enumerate(opticalGroups):
             moduleExpected = modules[i]
-            id_ = IDs[(board, opticalGroup)]
-            if int(id_)==-1:
-                message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, int(id_), moduleExpected)
+            id_ = IDs[(board, opticalGroup)] if (board, opticalGroup) in IDs else -2
+            if int(id_)==-1 or int(id_)==-2:
+                try:
+                    message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][str(board)]["ip"], opticalGroup, int(id_), moduleExpected)
+                except:
+                    message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, int(id_), moduleExpected)
                 print(message)
                 if not args.skipModuleCheck: raise Exception(message)
                 continue
