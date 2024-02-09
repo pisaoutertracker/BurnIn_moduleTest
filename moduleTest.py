@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
     parser.add_argument('--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
-    parser.add_argument('--edgeSelect', type=bool, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
+    parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--readOnlyID', type=bool, default=False, nargs='?', const=True, help='Skip test and read module ID.')
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')

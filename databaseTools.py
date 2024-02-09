@@ -280,6 +280,9 @@ def addNewModule(moduleName, id_):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    r = getRunFromDB("run303")
+    print(r)
+    1/0
     moduleName = "M123"
     testID = "T2023_11_08_17_57_54_302065"
     #testID = "T52"
@@ -301,5 +304,4 @@ if __name__ == '__main__':
     test = getTestFromDB(testID)
     print("\n #####     Check Test %s on MongoDB    ##### \n"%testID)
     pprint(test)
-    
-    addTestToModuleDBNew()
+

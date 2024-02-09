@@ -172,8 +172,8 @@ def makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, ed
         }
     }
 
-    if edgeSelect!=None:
-        config["boards"][0]["opticalGroups"]["X"]["hybrids"]["X"]["edgeSelect"] = edgeSelect
+    if edgeSelect!='None':
+        config["boards"][0]["opticalGroups"]["X"]["hybrids"]["X"]["edgeSelect"] = int(edgeSelect)
     
     for h in hybrids:
         config["boards"][0]["opticalGroups"]["X"]["hybrids"][h] = dict(config["boards"][0]["opticalGroups"]["X"]["hybrids"]["X"])
