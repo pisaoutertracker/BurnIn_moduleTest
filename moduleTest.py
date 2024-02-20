@@ -11,7 +11,7 @@ firmware_10G="ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-21 -c "%s"'
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-22 -c "%s"'
 import os
 prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd %s' %os.getcwd()
 
