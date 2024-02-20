@@ -2,13 +2,14 @@
 <HwDescription>
   <!-- <BeBoard Id="0" boardType="D19C" eventType="VR"> -->
   <BeBoard Id="0" boardType="D19C" eventType="VR" linkReset="1" boardReset="1" configure="1">
+    <!-- <connection id="board" uri="chtcp-2.0://localhost:10203?target=192.168.0.10:50001" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" /> -->
     <connection id="board" uri="ipbusudp-2.0://XXXXX" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" />
     <configuration file_name="${PH2ACF_BASE_DIR}/settings/BeBoardFiles/uDTC_registers_PS.xml"/>
     <CDCE configure="0" clockRate="320"/>
-        
+
     <OpticalGroup Id="XXX" FMCId="L12" reset="1">
         <lpGBT_Files path="${PH2ACF_BASE_DIR}/settings/lpGBTFiles/" />
-        <lpGBT Id="0" version="XXX" optical="1" configFile="XXXXX.txt">
+        <lpGBT Id="0" version="XXX" optical="1" configfile="XXXXX.txt">
           <Settings/>
         </lpGBT>
         <Hybrid Id="XXX" enable="1" reset="1" invertClock="0">
@@ -16,7 +17,7 @@
                 <StubLogic       mode="0" window="4"/> <!-- Mode (0) pixel-strip, (1) strip-strip, (2) pixel-pixel, (3) strip-pixel  --><!-- Window in half pixels, window will be strictly lower than the set value (ie set 4 -> window is 3.5 pixels) -->
                 <HitLogic        stripMode="0" pixelMode="0" pixelClusterCut="5"/> <!-- (0) edge, (1) level, (2) OR, (3) XOR  -->
                 <Latencies       stripLatency="296" pixelLatency="295" retimePix="4" LatencyRx320L1="6" LatencyRx320Trigger="6" EdgeSelT1Raw="0" EdgeSelTrig="0"/> <!-- LatencyRx320: MPA register for phase selction of Strip input, L1 should be 7 for v2 and 6 for v2.1 --> <!-- EdgeSelT1Raw selects the sampling edge for the T1 and Raw Input, it should be 2 for PSv2 and 0 for PSv2.1 --> <!-- EdgeSelTrig selects the sampling edge for the Strip Input -->
-	            <Thresholds      stripThreshold="60" stripThresholdHigh="120" pixelThreshold="120"/> 
+	            <Thresholds      stripThreshold="60" stripThresholdHigh="120" pixelThreshold="120"/>
                 <HipLogic        stripCut="1" pixelCut="0"/> <!-- HipCut defines the max number of clock cycles with a hit in level mode -->
                 <SamplingDelay   stripCoarse="0" stripFine="0" pixelCoarse="0" pixelFine="0"/> <!-- Coarse delay for sampling [when in edge mode] in units of 3.12 ns --><!-- Fine delay for sample [when in edge mode] in units of 200 ps -->
                 <InjectedCharge  stripCharge="70" pixelCharge="70"/> <!-- in DAC units for each chip type - their electron value is different though! -->
@@ -24,15 +25,14 @@
             </Global>
 
             <SSA_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="XXX" configFile="SSA2.txt" />
+            <SSA2 Id="XXX" configfile="SSA2.txt" />
 
             <MPA_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="XXX" configFile="MPA2.txt" />
+            <MPA2 Id="XXX" configfile="MPA2.txt" />
 
             <CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
-            <CIC2 Id="8" configFile="CIC2_PS.txt" />
+            <CIC2 Id="8" configfile="CIC2_PS.txt" />
         </Hybrid>
-        
     </OpticalGroup>
   </BeBoard>
 
@@ -41,7 +41,7 @@
     <!--<Setting name="MinStubPhase">1</Setting>
     <Setting name="MaxStubPhase">8</Setting> -->
 
-    <!-- 0 : digital; 1 : analog --> 
+    <!-- 0 : digital; 1 : analog -->
     <Setting name="InjectionType">1</Setting>
 
     <Setting name="TriggerMultiplicity">0</Setting>
@@ -142,7 +142,7 @@
     <Setting name="PhaseStartLatency">290</Setting>
     <Setting name="PhaseLatencyRange">10</Setting>
 
-    <!-- Sync Test --> 
+    <!-- Sync Test -->
     <Setting name="Attempts">1</Setting>
     <!-- injection configuration, number of MPAs -->
     <Setting name="ActiveMPAs">1</Setting>
@@ -165,10 +165,10 @@
     <Setting name="MinSclusters">1</Setting>
     <Setting name="MaxSclusters">1</Setting>
     <Setting name="MaxStubs">4</Setting>
-    <!-- L1 eye, SLVS drive strength --> 
+    <!-- L1 eye, SLVS drive strength -->
     <Setting name="SLVSDrive">3</Setting>
     <Setting name="MaxOffset">0</Setting>
-    
+
     <Setting name="StartTHDAC">0x40</Setting>
     <Setting name="StopTHDAC">0x90</Setting>
     <Setting name="NMsec">0</Setting>
@@ -182,13 +182,7 @@
     <Setting name="PSOccupancyPulseAmplitude">200</Setting>
 
     <Setting name="DoManualVrefTuning"      >  0</Setting>
-    <Setting name="OTverifyBoardDataWordNumberOfIterations">100</Setting>
-    <Setting name="OTalignLpGBTinputsNumberOfAlignmentIterations">100</Setting>
-    <Setting name="OTalignLpGBTinputsMinAlignmentSuccessRate">0.99</Setting>
 
-    <Setting name="OTCICphaseAlignmentNumberOfAlignmentIterations">100</Setting>
-    <Setting name="OTCICphaseAlignmentMinLockingSuccessRate">0.95</Setting>
-    
 </Settings>
 
 
@@ -197,8 +191,8 @@
     <MonitoringSleepTime> 1000 </MonitoringSleepTime>
     <MonitoringElement device="MPA2"  register="CalDAC6" enable="1"/>
     <MonitoringElement device="MPA2"  register="VBG" enable="1"/>
-    <MonitoringElement device="MPA2"  register="avdd" enable="1"/> 
-    <MonitoringElement device="MPA2"  register="dvdd" enable="1"/>    
+    <MonitoringElement device="MPA2"  register="avdd" enable="1"/>
+    <MonitoringElement device="MPA2"  register="dvdd" enable="1"/>
     <MonitoringElement device="SSA2"  register="AVDD" enable="1"/>
     <MonitoringElement device="SSA2"  register="DVDD" enable="1"/>
     <MonitoringElement device="SSA2"  register="VBG" enable="1"/>

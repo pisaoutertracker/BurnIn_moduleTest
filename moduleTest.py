@@ -35,7 +35,7 @@ if __name__ == '__main__':
     required.add_argument('--slot', type=str, help='Module name (eg. 0,1,2).', required=True)
     required.add_argument('--board', type=str, help='Board name (eg. fc7ot2).', required=True)
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
-    required.add_argument('--pixel', type=str, default='8,9,10,11,12,13', help='pixel number (eg. 8,9,15 default=all).', required=False)
+    required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
     required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
     required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
     
