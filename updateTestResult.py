@@ -1,7 +1,11 @@
-allVariables = ["NoiseDistribution", "2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
+skipInfluxDb= False
+#skipInfluxDb= True
+allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "Test2"
+version = "Test6"
+
+#allVariables = ["NoiseDistribution"]
 
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
@@ -36,12 +40,77 @@ ROOT.kBlack,
 ROOT.kGray,
 ]
 
+def makeMergedPlot(plots, chip):
+    print("makeMergedPlot")
+    merged = None
+    for plot in plots:
+        print(plot.GetName())
+        if not merged: 
+            chipN = "Chip(" + plot.GetName().split("Chip(")[1]
+            chipN = chipN.split(")")[0] + ")"
+            print(chipN)
+            newName = plot.GetName().replace(chipN, "Merged")+chip
+            print(newName)
+            merged = plot.Clone(newName)
+            merged.SetTitle(newName)
+        else: 
+            merged.Add(plot)
+    return merged
+
+import ctypes
+def makeMultiplePlot2D(plots, chip):
+    hybridN = list(plots)[0]
+    if len(plots[hybridN])==0: return None
+    if type(plots[hybridN][0])!=ROOT.TH2F: return None
+    print("makeMultiplePlot2D")
+    tempPlot = plots[hybridN][0]
+    ## PS module:  https://ep-news.web.cern.ch/content/developing-new-electronics-cms-tracking-system 
+    # along z: 5 cm long, divided in 2 hybrids, divided in 16 pixels 1.5mm each
+    # along x: 10 cm long, divided in 8 chips, divided in 125 pixels/strips 0.1mm each
+#    maxX = tempPlot.GetXaxis().GetXmax() ##119.5
+#    maxY = tempPlot.GetYaxis().GetXmax() ##15.5 
+    sizeX = tempPlot.GetNbinsX() ##120
+    sizeY = tempPlot.GetNbinsY() ##16
+    title = tempPlot.GetTitle()
+    name = tempPlot.GetName()
+    chipN = "Chip(" + name.split("Chip(")[1]
+    chipN = chipN.split(")")[0] + ")"
+    print(chipN)
+    newName = name.replace(chipN, "Multiple")+chip
+    Nchip = 8
+    if "2DPixelNoise" in name:
+        multiple = ROOT.TH2F(newName, title, sizeX*Nchip, -0.5, sizeX*Nchip-0.5, sizeY*2, -0.5, sizeY*2-0.5)
+    else: ##SCurve
+        multiple = ROOT.TH2F(newName, title, sizeX*Nchip*2, -0.5, sizeX*Nchip*2-0.5, sizeY, -0.5, sizeY-0.5)
+        
+    x, y, z = ctypes.c_int(0), ctypes.c_int(0), ctypes.c_int(0)
+    for hybridN in plots:
+        for plot in plots[hybridN]:
+            hybridN = int(hybridN)
+            name = plot.GetName()
+            chipN = int(name.split("_Chip(")[1].split(")")[0])
+            if chip == "MPA": chipN = chipN - 8 ## MPA chip [8, 15], SSSA [0, 7]
+            for i in range(0, (sizeX+2)*(sizeY+2)):
+                plot.GetBinXYZ(i, x, y, z)
+                if x.value>0 and x.value<=sizeX and y.value>0 and y.value<=sizeY:
+                    if "2DPixelNoise" in name:
+                        x_ = x.value + int(sizeX*chipN)
+                        y_ = y.value + sizeY*hybridN
+                    else: ##SCurve
+                        x_ = x.value + int(sizeX*chipN) + int(sizeX*8)*hybridN
+                        y_ = y.value
+                    #print(i, chipN, x_, y_, plot.GetBinContent(i), hybridN, name)
+                    multiple.SetBinContent(x_, y_, plot.GetBinContent(i))
+                    multiple.SetBinError(x_, y_, plot.GetBinError(i))
+
+    return multiple
+
 
 def addHistoPlot(plots, canvas, plot, fName):
     ## save histo plot, and add it to "plots"
     if plot:
         ## skip single chip plots if useOnlyMergedPlots is activated
-        if (("SSA" in fName) or ("MPA" in fName)) and (not ("Merged" in fName)) and (useOnlyMergedPlots): 
+        if (("SSA" in fName) or ("MPA" in fName)) and (not ("Merged" in fName)) and (not ("Multiple" in fName)) and (useOnlyMergedPlots): 
             return
         canvas.cd()
         if type(plot) == TGraphErrors:
@@ -60,6 +129,45 @@ def addHistoPlot(plots, canvas, plot, fName):
     ## append fName, even if it does not exist to show the missing plot
     if not("2DPixelNoise" in fName and "SSA" in fName):
         plots.append(fName)
+    return
+
+def addMultipleHistoPlot(plots, canvas, plotCollections, fName):
+    ## save histo plot, and add it to "plots"
+    max_ = 0
+    min_ = 0
+    import copy
+    plotCollections = copy.deepcopy(plotCollections)
+    for hybridN in plotCollections:
+        for i, plot in enumerate(plotCollections[hybridN]):
+            hybridN = int(hybridN)
+            assert(type(plot)==ROOT.TH1F)
+            canvas.cd()
+            max_ = max(max_, plot.GetMaximum())
+            min_ = min(min_, plot.GetMaximum())
+    
+#    leg = ROOT.TLegend(0.75,0.5,0.9,0.9)
+    leg = ROOT.TLegend(0.9,0.1,0.99,0.9)
+    leg.SetFillStyle(0)
+    leg.SetLineStyle(0)
+    leg.SetLineWidth(0)
+    for hybridN in plotCollections:
+        for i, plot in enumerate(plotCollections[hybridN]):
+            plot.SetLineColor(colors[i])
+            plot.SetMarkerColor(colors[i])
+            if i == 0:
+                plot.SetMaximum(max_*1.1)
+                plot.SetMinimum(max(0, min_ - max_*0.2))
+                plot.Draw()
+            else:
+                plot.Draw("same")
+            chipN = int(plot.GetName().split("_Chip(")[1].split(")")[0])
+            if "MPA" in fName: chipN = chipN - 8
+            leg.AddEntry(plot,"H%s C%d"%(hybridN, chipN))
+    leg.Draw()
+    canvas.Update()
+    print("Creating %s"%fName)
+    canvas.SaveAs(fName)
+    plots.append(fName)
     return
 
 #def makeNoisePlot(rootFile, opticalGroup, opticalGroup_id, ):
@@ -88,7 +196,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     plots = []
     ## add Influxdb plot
     
-    plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
+    if not skipInfluxDb: plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
 
     c1 = TCanvas("c1", "")
     c1.SetGridx()
@@ -125,18 +233,19 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
 
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
-    for hybrid_id in opticalGroup['hybrids']:
-        hybrid = opticalGroup['hybrids'][str(hybrid_id)]
-        hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
-        for chip in ["SSA", "MPA"]:
-            if chip == "SSA": chipIds = hybrid['strips']
-            elif chip == "MPA": chipIds = hybrid['pixels']
-            ## "InitialReadoutChipConfiguration"
-            for name in allVariables:
-                if "Pixel" in name and chip != "MPA": continue ## Skip 2DPixelNoise plot for strip
-                print("Doing %s"%name)
-                merged = None
-                counter = 0
+    for chip in ["SSA", "MPA"]:
+        if chip == "SSA": chipIds = hybrid['strips']
+        elif chip == "MPA": chipIds = hybrid['pixels']
+        for name in allVariables:
+            if "Pixel" in name and chip != "MPA": continue ## Skip 2DPixelNoise plot for strip
+            print("Doing %s"%name)
+            counter = 0
+            global plotsToBeMerged
+            plotsToBeMerged = {}
+            for hybrid_id in opticalGroup['hybrids']:
+                hybrid = opticalGroup['hybrids'][str(hybrid_id)]
+                hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
+                plotsToBeMerged[hybrid_id] = []
                 for chipId in chipIds:
                     print("chipId",str(chipId))
                     plot = None
@@ -153,17 +262,15 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                             raise Exception("Problems with file %s"%rootFile.GetName())
                         count+=1
                     print("T",str(plot))
-                    if plot:
-                        if not merged: 
-                            merged = plot.Clone(plot.GetName().replace("Chip(%s)"%chipId, "Merged")+chip)
-                            merged.SetTitle(merged.GetTitle().replace("Chip(%s)"%chipId, "Merged")+chip)
-                        else: 
-                            merged.Add(plot)
+                    ## selct 2DPixelNoise plots to make the combined 2D histogram
+                    if plot: plotsToBeMerged[hybrid_id].append(plot)
                     counter += 1
                     addHistoPlot(plots, c1, plot, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, chipId))
                 ## re-normalize all non-extensive variable
+                merged = makeMergedPlot(plotsToBeMerged[hybrid_id], chip)
                 if merged and not name in exstensiveVariables:
                     merged.Scale(1./ counter)
+                print(merged)
                 addHistoPlot(plots, c1, merged, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, "Merged"+chip))
                 
                 ## add 1D projection 
@@ -176,32 +283,57 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     pry.SetTitle(merged.GetTitle() + " - Y projection")
                     pry.Scale(1./merged.GetNbinsX())
                     addHistoPlot(plots, c1, pry, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projY", hybrid_id, chip, "Merged"+chip))
-                    
-                merged = None
-        for name in ["StripNoise", "PixelNoise", "Noise"]:
-            plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_Hybrid%sDistribution_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
-            addHistoPlot(plots, c1, plot, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
+            
+#            if "2DPixelNoise" in name:
+            if type(plot)==ROOT.TH2F and not "SCurve" in name: ## too many bins, very slow!
+#            if type(plot)==ROOT.TH2F:
+                multiple = makeMultiplePlot2D(plotsToBeMerged, chip)
+                addHistoPlot(plots, c1, multiple, fName = tmpFolder+"/%s_%s%s.png"%(name, chip, "Multiple"+chip))
+#            elif "NoiseDistribution" in name:
+            elif type(plot)==ROOT.TH1F:
+                addMultipleHistoPlot(plots, c1, plotsToBeMerged, fName = tmpFolder+"/%s_%s%s.png"%(name, chip, "Multiple"+chip))
+                
+            merged = None
+    for name in ["StripNoise", "PixelNoise", "Noise"]:
+        for hybrid_id in opticalGroup['hybrids']:
+            hybrid = opticalGroup['hybrids'][str(hybrid_id)]
+            hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
+            plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_Hybrid%sDistribution_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
+            addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
     
     return plots
 
 
-def makeNoiseTable(noisePerChip, board_id, optical_id):
+def makeNoiseTable(noisePerChip, board_id, optical_id, ratio = False):
     # Create the HTML table header
     html_table = "<table border='1'>\n"
     html_table += "<tr><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th></tr>\n" #<th>Board</th><th>Optical</th>
     # Loop through the dictionary items and add rows to the HTML table
-    for lineN in range(0,8):
-        html_table += "<tr><th>SSA%d</th><th>%.3f</th><th>%.3f</th><th>MPA%d</th><th>%.3f</th><th>%.3f</th></tr>\n"%(lineN, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+0, lineN),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+1, lineN),0), lineN+8, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+0, lineN+8),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+1, lineN+8),0)) #<th>Board</th><th>Optical</th>
-    
-    html_table += "</tr>\n"
-    html_table += "</table>\n<br>\n"
-    
-    html_table += "<table border='1'>\n"
-    html_table += "<tr><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th></tr>\n" #<th>Board</th><th>Optical</th>
-    html_table += "<tr><th>Aver.</th><th>%.3f</th><th>%.3f</th><th>Aver.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
-    html_table += "<tr><th>Max.</th><th>%.3f</th><th>%.3f</th><th>Max.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
-    html_table += "<tr><th>Min.</th><th>%.3f</th><th>%.3f</th><th>Min.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
-    
+    if not ratio:
+        for lineN in range(0,8):
+            html_table += "<tr><th>SSA%d</th><th>%.3f</th><th>%.3f</th><th>MPA%d</th><th>%.3f</th><th>%.3f</th></tr>\n"%(lineN, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+0, lineN),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+1, lineN),0), lineN+8, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+0, lineN+8),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+1, lineN+8),0)) #<th>Board</th><th>Optical</th>
+        
+        html_table += "</tr>\n"
+        html_table += "</table>\n<br>\n"
+        
+        html_table += "<table border='1'>\n"
+        html_table += "<tr><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th></tr>\n" #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Aver.</th><th>%.3f</th><th>%.3f</th><th>Aver.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Max.</th><th>%.3f</th><th>%.3f</th><th>Max.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Min.</th><th>%.3f</th><th>%.3f</th><th>Min.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+    else:
+        for lineN in range(0,8):
+            html_table += "<tr><th>SSA%d</th><th>%.3f</th><th>%.3f</th><th>MPA%d</th><th>%.3f</th><th>%.3f</th></tr>\n"%(lineN, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+0, lineN),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+1, lineN),0), lineN+8, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+0, lineN+8),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+1, lineN+8),0)) #<th>Board</th><th>Optical</th>
+        
+        html_table += "</tr>\n"
+        html_table += "</table>\n<br>\n"
+        
+        html_table += "<table border='1'>\n"
+        html_table += "<tr><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th><th>Chip</th><th>Hybrid0</th><th>Hybrid1</th></tr>\n" #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Aver.</th><th>%.3f</th><th>%.3f</th><th>Aver.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Average_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Max.</th><th>%.3f</th><th>%.3f</th><th>Max.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+        html_table += "<tr><th>Min.</th><th>%.3f</th><th>%.3f</th><th>Min.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
+        
     
     html_table += "</tr>\n"
     
@@ -232,7 +364,7 @@ def addPlotSection(title, plots, width):
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -252,7 +384,9 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 """%(moduleName, runName)
     plotsInclusive = []
     plotsPerChip = []
+    print("All plots available:")
     for plot in plots:
+        print(plot)
         if "SSA" in plot or "MPA" in plot: 
 #            if "Merged" in plot or not useOnlyMergedPlots:
                 plotsPerChip.append(plot)
@@ -260,8 +394,11 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     print(plotsInclusive)
     print(plotsPerChip)
     imageCode = ""
-    imageCode += addPlotSection("Combined Noise plot", [p for p in plots if "CombinedNoisePlot"in p], 30.0)
+#    imageCode += addPlotSection("Combined Noise plot", [p for p in plots if "CombinedNoisePlot"in p], 30.0)
     imageCode += addPlotSection("Sensors", [p for p in plots if "sensor"in p], 30.0)
+    imageCode += addPlotSection("All-in-one plots", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and (not "MPA" in p and not "SSA" in p))], 30.0)
+    imageCode += addPlotSection("All-in-one plots (MPA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("MPA" in p))], 30.0)
+    imageCode += addPlotSection("All-in-one plots (SSA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("SSA" in p))], 30.0)
     imageCode += addPlotSection("Hybrid 0", [p for p in plotsInclusive if "_Hybrid0"in p], 30.0)
     imageCode += addPlotSection("Hybrid 1", [p for p in plotsInclusive if "_Hybrid1"in p], 30.0)
     imageCode += addPlotSection("Hybrid 0 - MPA - Merged plots", [p for p in plotsPerChip if "_Hybrid0"in p and "MPA" in p], 30.0)
@@ -287,11 +424,14 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("Run: ") + runName 
     body += ". " + grayText("Date: ") +date + ". " + grayText("Time: ") + time + "<br>" +"\n"
     body += grayText("CalibrationStartTimestamp: ") + str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")) + "<br>" +"\n"
+    body += grayText("CalibrationStopTimestamp: ") + str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")) + "<br>" +"\n"
     body += grayText("GitCommitHash: ") + str(rootFile.Get("Detector/GitCommitHash_Detector")) + "<br>" +"\n"
     body += grayText("HostName: ") + str(rootFile.Get("Detector/HostName_Detector")) + "<br>" +"\n"
     body += grayText("Username: ") + str(rootFile.Get("Detector/Username_Detector")) + "<br>" +"\n"
-    body += grayText("DetectorConfiguration: ") + str(rootFile.Get("Detector/DetectorConfiguration_Detector")) + "<br>" +"\n"
+#    body += grayText("InitialDetectorConfiguration: ") + str(rootFile.Get("Detector/InitialDetectorConfiguration_Detector")) + "<br>" +"\n"
+#    body += grayText("FinalDetectorConfiguration: ") + str(rootFile.Get("Detector/FinalDetectorConfiguration_Detector")) + "<br>" +"\n"
     body += grayText("CalibrationName: ") + str(rootFile.Get("Detector/CalibrationName_Detector")) + "<br>" +"\n"
+    body += grayText("NameId_Board: ") + str(rootFile.Get("Detector/Board_0/D_NameId_Board_(0)")) + "<br>" +"\n"
     directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
     ##TODO aggiungere il link diretto al ROOT file
     ##TODO aggiungere il link diretto al log file
@@ -312,6 +452,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     optical_id = str(test['opticalGroupName'])
     body += grayText("Board: ") + str(test['board']) + grayText(". BoardId: ") + board_id + grayText(". OpticalGroup: ")  + optical_id + "<br>" +"\n"
     body += "<br>" + "\n"
+#    body += grayText("NameId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_NameId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("VTRxFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_VTRxFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
 #    body += ". Date:" + date + ". Time:" + time + "<br>" +"\n"
@@ -322,8 +463,15 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 #    body += 'Folder: <a href="%s">'%folderLink + folderLink + "</a><br>" + "\n"
     
     body += "<h1> %s  </h1>"%("SSA and MPA noise table") + "\n"
-    html = html.replace("[ADD BODY]",body + makeNoiseTable(noisePerChip, board_id, optical_id))
-    print(noisePerChip)
+    body += makeNoiseTable(noisePerChip, board_id, optical_id)
+
+    body += "<h1> %s  </h1>"%("SSA and MPA noise edge ratio table") + "\n"
+    body += makeNoiseTable(noiseRatioPerChip, board_id, optical_id, ratio = True)
+    
+    html = html.replace("[ADD BODY]", body)
+
+    print(noiseRatioPerChip)
+#    1/0
     
     finalbody = "<h1> XML configuration </h1>" + "\n"
     import pprint
@@ -354,7 +502,8 @@ def  uploadToWebDav(folder, files):
     return newfiles
 
 def makePlotInfluxdb(time, folder):
-#    se  committi in github il token ti taglio le dita 🙂
+    print("makePlotInfluxdb")
+
     token_location = "~/private/influx.sct" 
     token = open(os.path.expanduser(token_location)).read()[:-1]
     
@@ -429,6 +578,7 @@ def makePlotInfluxdb(time, folder):
     return fName
 
 def updateTestResult(module_test, skipWebdav = False):
+    global plots
 #    testID = "PS_26_10-IPG_00103__run6"
     tmpFolder = "/tmp/"
 
@@ -492,6 +642,7 @@ def updateTestResult(module_test, skipWebdav = False):
     print(xmlConfig)
     global noisePerChip
     noisePerChip = getNoisePerChip(rootFile , xmlConfig )
+    noiseRatioPerChip = getNoisePerChip(rootFile , xmlConfig, ratio = True)
     moduleHwIDs = getIDsFromROOT(rootFile, xmlConfig)
     
 #    for board_optical in moduleHwIDs:
@@ -506,7 +657,7 @@ def updateTestResult(module_test, skipWebdav = False):
 ##        print(webdav_website.list_files(nfolder))
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder)
     zipFile = "results" 
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -527,6 +678,8 @@ def updateTestResult(module_test, skipWebdav = False):
     
 #        for f in webdav_website.list_files("/test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/"):
 #            print (f)
+    for p in plots:
+        print(p)
     print(extracted_dir)
     print(webpage)
     print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal%s"%webpage)

@@ -80,9 +80,39 @@ def getMean(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
         print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
         return -1, histoName.split("/")[-1]+chip
 
+## Compute noise ration between the edge and the rest of the chip
+
+def getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
+    if not chip in allowedChips: raise Exception("Chip %s now allowed. Allowed chips: %s"%(chip, allowedChips))
+    if chip == "MPA":
+        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
+        histo2D = rootFile.Get(histoName)
+        histo = histo2D.ProjectionX()
+    elif chip == "SSA":
+        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
+        histo = rootFile.Get(histoName)
+    else:
+        print(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip)
+        raise Exception("Error in getNoiseRatio")
+    edge = []
+    central = []
+    for i in range(1,histo.GetNbinsX()+1):
+        if i<=2 or i>=histo.GetNbinsX()-1:
+            edge.append(histo.GetBinContent(i))
+        else:
+            central.append(histo.GetBinContent(i))
+    central = sum(central)/len(central)
+    edge = sum(edge)/len(edge)
+    
+    if histo:
+        return edge/central, histoName.split("/")[-1]+chip
+    else:
+        print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
+        return -1, histoName.split("/")[-1]+chip
+        
 ### Make a map [D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s) containing the mean noise of each chip per each module
 
-def getNoisePerChip(rootFile, xmlConfig):
+def getNoisePerChip(rootFile, xmlConfig, ratio = False):
     if verbose>0: print("Calling getNoisePerChip()", rootFile.GetName())
     noisePerChip = {}
     for board_id, board in xmlConfig["boards"].items():
@@ -92,7 +122,10 @@ def getNoisePerChip(rootFile, xmlConfig):
                 noises = []
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in hybrid["strips"]:
-                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, strip_id, "SSA")
+                    if ratio:
+                        noise, histoName = getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, strip_id, "SSA")
+                    else:
+                        noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, strip_id, "SSA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
                     if noise>0: noises.append(noise)
@@ -102,7 +135,10 @@ def getNoisePerChip(rootFile, xmlConfig):
                 noises = []
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in hybrid["pixels"]:
-                    noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, pixel_id, "MPA")
+                    if ratio:
+                        noise, histoName = getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, pixel_id, "MPA")
+                    else:
+                        noise, histoName = getMean(rootFile, board_id, opticalGroup_id, hybrid_plus_opt, pixel_id, "MPA")
                     if histoName in noisePerChip: raise Exception("%s is already in noisePerChip (getNoisePerChip function): %s."%(histoName, noisePerChip.keys()))
                     noisePerChip[histoName] = noise
                     if noise>0: noises.append(noise)
@@ -165,6 +201,7 @@ if __name__ == '__main__':
     from makeXml import readXmlConfig
     xmlConfig = readXmlConfig(xmlPyConfigFile)
     noisePerChip = getNoisePerChip(rootFile , xmlConfig)
+    noiseRatioPerChip = getNoisePerChip(rootFile , xmlConfig, ratio = True)
     from pprint import pprint
     print("\nnoisePerChip:")
     pprint(noisePerChip)
