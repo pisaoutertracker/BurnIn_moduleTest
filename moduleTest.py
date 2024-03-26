@@ -11,7 +11,7 @@ firmware_10G="ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-23 -c "%s"'
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-22 -c "%s"'
 import os
 prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd %s' %os.getcwd()
 
@@ -44,6 +44,7 @@ if __name__ == '__main__':
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
     parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--readOnlyID', type=bool, default=False, nargs='?', const=True, help='Skip test and read module ID.')
+    parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
@@ -69,6 +70,29 @@ if __name__ == '__main__':
     if max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
     if max(pixels)>15 or min(strips)<0: raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
     
+    ## check if the expected modules match the modules declared in the database for the slots
+    from databaseTools import getModuleConnectedToFC7
+    for i, slot in enumerate(slots):
+        moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
+        moduleFromCLI = modules[i]
+        print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
+        if moduleFromDB == None:
+            from databaseTools import getFiberLink
+            fc7, og = getFiberLink(moduleFromCLI)
+            if fc7 == None:
+                print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
+                if args.addNewModule:
+                    print("It is ok, as you are going to add new modules to the database.")
+                else: 
+                    raise Exception("No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot))
+            else:
+                raise Exception("Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot))
+        else:
+            if moduleFromDB != moduleFromCLI:
+                raise Exception("Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+            else:
+                print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+                
     readOnlyID = args.readOnlyID
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
         hybrids = [hybrids[0]]
@@ -181,8 +205,8 @@ if __name__ == '__main__':
         error = False
         allModules = hwToModuleName.values()
         for i, opticalGroup in enumerate(opticalGroups):
-            moduleExpected = modules[i]
-            id_ = IDs[(board, opticalGroup)] if (board, opticalGroup) in IDs else -2
+            moduleExpected = modules[i] ## module passed from command line
+            id_ = IDs[(board, opticalGroup)] if (board, opticalGroup) in IDs else -2 ## hardware IDs found in the test
             if int(id_)==-1 or int(id_)==-2:
                 try:
                     message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][str(board)]["ip"], opticalGroup, int(id_), moduleExpected)
@@ -191,12 +215,12 @@ if __name__ == '__main__':
                 print(message)
                 if not args.skipModuleCheck: raise Exception(message)
                 continue
-            moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module"
+            moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module" ## module found in the database matching the hardware ID
             try:
                 print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, moduleFound, int(id_), moduleExpected))
             except:
                 print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][str(board)]["ip"], opticalGroup, moduleFound, id_, moduleExpected))
-            if moduleExpected in allModules: ## if the expected module is already in the database, check if it matches with the expected module
+            if moduleExpected in allModules: ## if the expected module is already in the database, check that the module found matches with the expected module
                 if moduleFound!=moduleExpected:
                     print("DIFFERENT MODULE FOUND!!")
                     error = True
@@ -211,7 +235,10 @@ if __name__ == '__main__':
                     print(message)
                     if not args.skipModuleCheck: raise Exception(message)
                 if int(id_)!=-1 and not args.skipModuleCheck:
-                    answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected))
+                    if args.addNewModule:
+                        answer = "y" ## add the module without asking
+                    else:
+                        answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected))
                     if answer == "y" or answer == "yes" or answer == "Y":
                         addNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
                     else:
@@ -320,4 +347,5 @@ if __name__ == '__main__':
                 print("Running updateTestResult")
                 updateTestResult(moduleTestName)
                 print("################################################")
+
 
