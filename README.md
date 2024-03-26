@@ -3,9 +3,10 @@ Run PS module test, read the output, and upload the result on MongoDB and CERN b
 
 ```
 git clone https://github.com/pisaoutertracker/BurnIn_moduleTest.git
-python3 moduleTest.py
+cd BurnIn_moduleTest
+python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --session session1 --readOnlyID
 ```
-(Check configuration parameters).
+(Check configuration parameters, remove `--readOnlyID` if you want to run a complete test).
 
 This script will:
 - make a XML file to be used in `ot_module_test` using the configuration in [PS_Module_settings.py](PS_Module_settings.py);
@@ -29,3 +30,6 @@ python3 makeXml.py
 ```
 to create the XML file to be used in the `ot_module_test` using the configuration defined in [PS_Module_settings.py](PS_Module_settings.py).
 (Check the configuration parameters)
+
+#### docker
+This code uses a Docker image created by [buildNewDockerImage/build.sh](buildNewDockerImage/build.sh);
