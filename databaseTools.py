@@ -88,6 +88,7 @@ def getFiberLink(slot):
     optical = None
     for link in out:
         if "connections" in out[link]:
+           if len(out[link]["connections"])>0:
              last = out[link]["connections"][-1]
              if "FC7" in last["cable"]:
                  ## expect 2 "fiber" pointing to the same FC7 and optical group
