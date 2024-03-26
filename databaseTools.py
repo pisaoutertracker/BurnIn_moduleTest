@@ -2,6 +2,10 @@ from moduleTest import verbose, ip, port, lpGBTids
 from pprint import pprint
 import requests
 
+def evalMod(string):
+    string = string.replace("true","True").replace("false","False")
+    return eval(string)
+
 #verbose = 0
 ### upload the test result to the "tests" DB
 
@@ -61,7 +65,74 @@ def getTestFromDB(testID):
         if verbose>1: print("Module read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
+
+### read the fiber connections of slot X
+
+def getFiberLink(slot):
+    if verbose>0: print("Calling getFiberLink()", slot)
+    api_url = "http://%s:%d/snapshot"%(ip, port)
+    
+    snapshot_data = {
+        "cable": slot,
+        "side": "crateSide"
+    }
+    response = requests.post(api_url, json=snapshot_data)
+    
+    if response.status_code == 200:
+        if verbose>1: print("Module read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    out = evalMod(response.content.decode())
+    fc7 = None
+    optical = None
+    for link in out:
+        if "connections" in out[link]:
+             last = out[link]["connections"][-1]
+             if "FC7" in last["cable"]:
+                 ## expect 2 "fiber" pointing to the same FC7 and optical group
+                 if fc7: assert(fc7==last["cable"]) 
+                 if optical: assert(optical==last["det_port"][0])
+                 fc7 = last["cable"]
+                 optical = last["det_port"][0]
+        else:
+            if "error" in out[link]: print(out[link]["error"])
+            #it might be a new module to be added into the database
+            #raise Exception("Error in Calling getModuleConnectedToFC7()",fc7, og)
+    return fc7, optical
+
+
+### read the expected module connected of slot board X optical group Y
+
+def getModuleConnectedToFC7(fc7, og):
+    if verbose>0: print("Calling getModuleConnectedToFC7()",fc7, og)
+    api_url = "http://%s:%d/snapshot"%(ip, port)
+    
+    snapshot_data = {
+        "cable": fc7,
+        "side": "detSide"
+    }
+    response = requests.post(api_url, json=snapshot_data)
+    
+    if response.status_code == 200:
+        if verbose>1: print("Module read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    out = evalMod(response.content.decode())
+    
+    moduleName = None
+    for link in out:
+        if "connections" in out[link]:
+            if out[link]["det_port"]==og and len(out[link]["connections"])>0:
+                last = out[link]["connections"][-1]
+                ## expect 2 "fiber" pointing to the same FC7 and optical group
+                if moduleName: assert(moduleName==last["cable"]) 
+                moduleName = last["cable"]
+        else:
+            if "error" in out[link]: print(out[link]["error"])
+            #it might be a new module to be added into the database
+            #raise Exception("Error in Calling getModuleConnectedToFC7()",fc7, og)
+    return moduleName
 
 
 ### read the list of sessions
@@ -74,7 +145,7 @@ def getListOfSessionsFromDB():
         if verbose>1: print("Session read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 ### read the list of modules
 
@@ -86,7 +157,7 @@ def getListOfModulesFromDB():
         if verbose>1: print("Session read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 
 ### read the test modules analysis
@@ -99,7 +170,7 @@ def getListOfAnalysisFromDB():
         if verbose>1: print("Session read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 ### read the module test result from DB
 
@@ -111,7 +182,7 @@ def getSessionFromDB(testID):
         if verbose>1: print("Session read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 ### read the module test result from DB
 
@@ -123,7 +194,7 @@ def getModuleTestFromDB(testID):
         if verbose>1: print("Module test read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 ### get run from DB
 
@@ -135,7 +206,7 @@ def getRunFromDB(testID):
         if verbose>1: print("Module read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode())
+    return evalMod(response.content.decode())
 
 ### update the "tests" parameter of module in DB using updatedTestList 
 
@@ -206,7 +277,7 @@ def getModuleFromDB(moduleName=1234):
         if verbose>1: print("Module read successfully")
     else:
         print("Failed to update the module. Status code:", response.status_code)
-    return eval(response.content.decode().replace("null","[]"))
+    return evalMod(response.content.decode().replace("null","[]"))
 
 ### create the maps hwTomoduleName and hwToMongoID to convert the hardware lpGBT ID to module ID and mongo ID.
 # -1 = missing module (module didn't work during the test)
@@ -215,7 +286,7 @@ def makeModuleNameMapFromDB():
     if verbose>0: print("Calling makeModuleNameMapFromDB()")
     api_url = "http://%s:%d/modules"%(ip, port)
     response = requests.get(api_url)
-    modules = eval(response.content.decode().replace("null","[]"))
+    modules = evalMod(response.content.decode().replace("null","[]"))
 #    if len(modules)==0:
 #        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
     hwToModuleName = {} ## hwId --> moduleName
@@ -282,12 +353,17 @@ def addNewModule(moduleName, id_):
 if __name__ == '__main__':
     r = getRunFromDB("run303")
     print(r)
-    1/0
     moduleName = "M123"
     testID = "T2023_11_08_17_57_54_302065"
     #testID = "T52"
     hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
 
+    print("getFiberLink", 'PS_26_05-IPG_00102')
+    pprint(getFiberLink('PS_26_05-IPG_00102'))
+
+    print("getModuleConnectedToFC7:", "FC7OT2", "0")
+    pprint(getModuleConnectedToFC7("FC7OT2", "0"))
+       
     print("\nhwToModuleName:")
     from pprint import pprint
     pprint(hwToModuleName)
