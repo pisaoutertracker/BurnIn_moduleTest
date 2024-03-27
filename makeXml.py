@@ -115,7 +115,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
                 Hybrid.set("Id", str(hybrid_id))
                 if "edgeSelect" in hybrid:
                     Hybrid.find("Global").find("CIC2").set("edgeSelect", str(hybrid["edgeSelect"]))
-                SSAFiles_position = list(Hybrid).index(Hybrid.find("SSA_Files"))
+                SSAFiles_position = list(Hybrid).index(Hybrid.find("SSA2_Files"))
                 if not "strips" in hybrid: hybrid["strips"]=[]
                 for strip_id in sorted(hybrid["strips"], reverse=True):
                     SSA.set("Id", str(strip_id))

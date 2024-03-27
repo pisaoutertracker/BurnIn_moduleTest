@@ -23,14 +23,14 @@
                 <CIC2 enableBend="1" enableLastLine="1" enableSparsification="1" clockFrequency="320" driveStrength="3" edgeSelect="0"/>
             </Global>
 
-            <SSA_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="XXX" configFile="SSA2.txt" />
+            <SSA2_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
+            <SSA2 Id="XXX" enable="1" configFile="SSA2.txt" />
 
-            <MPA_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="XXX" configFile="MPA2.txt" />
+            <MPA2_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
+            <MPA2 Id="XXX" enable="1" configFile="MPA2.txt" />
 
-            <CIC_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
-            <CIC2 Id="8" configFile="CIC2_PS.txt" />
+            <CIC2_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
+            <CIC2 Id="8" enable="1" configFile="CIC2_PS.txt" />
         </Hybrid>
         
     </OpticalGroup>
@@ -47,8 +47,8 @@
     <Setting name="TriggerMultiplicity">0</Setting>
 
     <Setting name="StartLatency">290</Setting>
-    <Setting name="LatencyRange">10</Setting>
-    <Setting name="StubAlignmentScanStart">85</Setting>
+    <Setting name="LatencyRange">20</Setting>
+    <Setting name="StubAlignmentScanStart">95</Setting>
 
 
     <Setting name="PSmoduleSSAthreshold">150</Setting>
@@ -188,7 +188,10 @@
 
     <Setting name="OTCICphaseAlignmentNumberOfAlignmentIterations">100</Setting>
     <Setting name="OTCICphaseAlignmentMinLockingSuccessRate">0.95</Setting>
-    
+
+    <Setting name="OTverifyCICdataWordNumberOfIterations">1000</Setting>
+    <Setting name="OTverifyMPASSAdataWordNumberOfIterations">1000</Setting>
+
 </Settings>
 
 
