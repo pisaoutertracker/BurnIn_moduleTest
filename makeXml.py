@@ -45,9 +45,9 @@ def makeConfigFromROOTfile(fileName):
                                 objPS_ = objPS.GetName()
                                 hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
                                 if "SSA" in objPS_:
-                                    hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
+                                    hybrid["strips"].append(int(objPS_.split("SSA2_")[1]))
                                 if "MPA" in objPS_:
-                                    hybrid["pixels"].append(int(objPS_.split("MPA_")[1]))
+                                    hybrid["pixels"].append(int(objPS_.split("MPA2_")[1]))
     return xmlConfig
 
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
@@ -120,7 +120,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
                 for strip_id in sorted(hybrid["strips"], reverse=True):
                     SSA.set("Id", str(strip_id))
                     Hybrid.insert(SSAFiles_position+1,deepcopy(SSA))
-                MPAFiles_position = list(Hybrid).index(Hybrid.find("MPA_Files"))
+                MPAFiles_position = list(Hybrid).index(Hybrid.find("MPA2_Files"))
                 if not "pixels" in hybrid: hybrid["pixels"]=[]
                 for pixel_id in sorted(hybrid["pixels"], reverse=True):
                     MPA.set("Id", str(pixel_id))
