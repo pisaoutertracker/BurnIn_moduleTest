@@ -52,6 +52,8 @@ if __name__ == '__main__':
     parser.add_argument('--skipModuleCheck', type=bool, default=True, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
     parser.add_argument('--firmware', type=str, nargs='?', const='', default="", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
+    parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
+
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --readOnlyID  --session session1")
     args = parser.parse_args()
@@ -70,9 +72,11 @@ if __name__ == '__main__':
     if max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
     if max(pixels)>15 or min(strips)<0: raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
     
+    
     ## check if the expected modules match the modules declared in the database for the slots
     from databaseTools import getModuleConnectedToFC7
     for i, slot in enumerate(slots):
+        error = None
         moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
         moduleFromCLI = modules[i]
         print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
@@ -84,15 +88,19 @@ if __name__ == '__main__':
                 if args.addNewModule:
                     print("It is ok, as you are going to add new modules to the database.")
                 else: 
-                    raise Exception("No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot))
+                    error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
+                    print(error)
             else:
-                raise Exception("Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot))
+                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
+                print(error)
         else:
             if moduleFromDB != moduleFromCLI:
-                raise Exception("Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+                error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
+                print(error)
             else:
                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-                
+        if error and not args.readOnlyID and args.ignoreConnection:
+            raise Exception(error)
     readOnlyID = args.readOnlyID
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
         hybrids = [hybrids[0]]
