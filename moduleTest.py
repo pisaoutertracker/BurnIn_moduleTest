@@ -7,7 +7,7 @@ port=5000
 xmlOutput="ModuleTest_settings.xml"
 xmlTemplate="PS_Module_template.xml"
 firmware_5G="ps_twomod_oct23.bin" ##5 GBps
-firmware_10G="ps8m10gcic2l12octa.bin" ##10 GBps
+firmware_10G="ps8m10gcic2l12octal8tlu.bin" ## "ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
         hybrids = [hybrids[0]]
         pixels = []
-        strips = []
+        strips = [0]
     
     if args.firmware and args.g10:
         raise Exception("You cannot use --firmware and --10g option at the same time.")
