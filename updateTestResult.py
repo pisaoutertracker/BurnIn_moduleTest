@@ -1,9 +1,14 @@
 skipInfluxDb= False
 #skipInfluxDb= True
 allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
+hybridPlots = ["HybridStripNoiseDistribution", "HybridPixelNoiseDistribution", "HybridNoiseDistribution",
+"BitSlipValues", "WordAlignmentRetryNumbers", "PatternMatchingEfficiency", "CICinputPhaseHistogram", "BestCICinputPhases", "LockingEfficiencyCICinput", "CICwordAlignmentDelay", "PatternMatchingEfficiencyCIC", "PatternMatchingEfficiencyMPA_SSA"]
+
+opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBTinputFoundPhasesDistribution"]
+
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "Test6"
+version = "Test7"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -294,12 +299,16 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                 addMultipleHistoPlot(plots, c1, plotsToBeMerged, fName = tmpFolder+"/%s_%s%s.png"%(name, chip, "Multiple"+chip))
                 
             merged = None
-    for name in ["StripNoise", "PixelNoise", "Noise"]:
+    for name in hybridPlots:
         for hybrid_id in opticalGroup['hybrids']:
             hybrid = opticalGroup['hybrids'][str(hybrid_id)]
             hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
-            plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_Hybrid%sDistribution_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
+            plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_%s_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
             addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
+    
+    for name in opticalGroupPlots:
+        plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_%s_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, name, opticalGroup_id))
+        addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_OpticalGroup%s.png"%(name, hybrid_id))
     
     return plots
 
@@ -399,6 +408,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     imageCode += addPlotSection("All-in-one plots", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and (not "MPA" in p and not "SSA" in p))], 30.0)
     imageCode += addPlotSection("All-in-one plots (MPA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("MPA" in p))], 30.0)
     imageCode += addPlotSection("All-in-one plots (SSA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("SSA" in p))], 30.0)
+    imageCode += addPlotSection("OpticalGroup", [p for p in plotsInclusive if "_OpticalGroup"in p], 30.0)
     imageCode += addPlotSection("Hybrid 0", [p for p in plotsInclusive if "_Hybrid0"in p], 30.0)
     imageCode += addPlotSection("Hybrid 1", [p for p in plotsInclusive if "_Hybrid1"in p], 30.0)
     imageCode += addPlotSection("Hybrid 0 - MPA - Merged plots", [p for p in plotsPerChip if "_Hybrid0"in p and "MPA" in p], 30.0)
