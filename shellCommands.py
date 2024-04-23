@@ -12,7 +12,13 @@ def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PI
 #    output = runCommand(". %s"%location)
     
 ### Burn-in commands
-    
+
+def updateSettingsLink(settingFolder):
+    if verbose>0: print("Calling updateSettingsLink()")
+    print(updateSettingsLink)
+    output = runCommand("rm settings ; ln -s %s ."%settingFolder)
+    if verbose>1: print(output)
+
 def burnIn_lockOn():
     if verbose>0: print("Calling burnIn_lockOn()")
     output = runCommand("/home/thermal/suvankar/power_supply//simbxcntrl lock-on")
@@ -43,10 +49,14 @@ def burnIn_setTemperature(temperature):
 
 ### Launch FPGA config (to be used after FC7 reset)
 
-def fpgaconfig(xmlFile, firmware):
+def fpgaconfig(xmlFile, firmware, localPh2ACF=False):
     if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
-    command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand, xmlFile, firmware)
-    output = runCommand(podmanCommand%command)
+    if localPh2ACF:
+        command = "fpgaconfig -c %s -i %s"%(xmlFile, firmware)
+        output = runCommand(command)
+    else:
+        command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand, xmlFile, firmware)
+        output = runCommand(podmanCommand%command)
     error = output.stderr.decode()
     if error:
         print()
@@ -65,7 +75,7 @@ def getDateTimeAndTestID():
 ### Launch ot_module_test, given an xml file.
 # if useExistingModuleTest, skip the test and read the existing log file
 
-def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolder="logs", minimal=False):
+def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, localPh2ACF=False, logFolder="logs", minimal=False):
     global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
     date, testID = getDateTimeAndTestID()
@@ -76,9 +86,13 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, logFolde
             step = "calibrationandpedenoise"
         else:
             step = "configureonly"
-        command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, step, logFile)
+        if localPh2ACF:
+            command = "runCalibration -b -f %s -c %s  | tee %s"%(xmlFile, step, logFile)
+            output = runCommand(command)
+        else:
+            command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, step, logFile)
+            output = runCommand(podmanCommand%command)
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
-        output = runCommand(podmanCommand%command)
     else:
         output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))
     if verbose>10: print(output)
