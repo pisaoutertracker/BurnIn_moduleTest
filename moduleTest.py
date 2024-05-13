@@ -63,8 +63,9 @@ if __name__ == '__main__':
     if args.localPh2ACF:
         print()
         print("I will use local Ph2ACF instead of Docker!")
-        ph2acf = os.environ['PH2ACF_BASE_DIR']
-        if ph2acf == "":
+        if "PH2ACF_BASE_DIR" in os.environ: 
+            ph2acf = os.environ['PH2ACF_BASE_DIR']
+        else:
             raise Exception("No Ph2ACF available (eg. no runCalibration). Please do 'source setup.sh' from Ph2ACF folder!")
         settingFolder = "%s/settings"%ph2acf
         from shellCommands import updateSettingsLink
@@ -80,11 +81,11 @@ if __name__ == '__main__':
         raise Exception("--slots and --modules must have the same number of objects. Check %s and %s."%(slots,modules))
     session = args.session
     edgeSelect = args.edgeSelect
-    hybrids = [int(h) for h in args.hybrid.split(",")]
-    pixels = [int(h) for h in args.pixel.split(",")]
-    strips = [int(h) for h in args.strip.split(",")]
-    if max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
-    if max(pixels)>15 or min(strips)<0: raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
+    hybrids = [int(h) for h in args.hybrid.split(",") if h != ""]
+    pixels = [int(h) for h in args.pixel.split(",") if h != ""]
+    strips = [int(h) for h in args.strip.split(",") if h != ""]
+    if len(strips)>0 and max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
+    if len(pixels)>0 and (max(pixels)>15 or min(strips)<0): raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
     
     
     ## check if the expected modules match the modules declared in the database for the slots
