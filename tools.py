@@ -105,7 +105,10 @@ def getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
     edge = sum(edge)/len(edge)
     
     if histo:
-        return edge/central, histoName.split("/")[-1]+chip
+        if central>0:
+            return edge/central, histoName.split("/")[-1]+chip
+        else:
+            return 999, histoName.split("/")[-1]+chip
     else:
         print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
         return -1, histoName.split("/")[-1]+chip
