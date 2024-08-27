@@ -132,6 +132,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, localPh2
         import os
         os.rename(logFile, logFile.replace(testID, newTestID))
         
+    elif useExistingModuleTest:
+        newTestID = testID
     return newTestID, date
 
 

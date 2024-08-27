@@ -44,10 +44,11 @@ def makeConfigFromROOTfile(fileName):
                             for objPS in ROOTfile.Get("Detector/%s/%s/%s"%(objB_, objO_, objH_)).GetListOfKeys(): 
                                 objPS_ = objPS.GetName()
                                 hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
-                                if "SSA" in objPS_:
-                                    hybrid["strips"].append(int(objPS_.split("SSA2_")[1]))
-                                if "MPA" in objPS_:
-                                    hybrid["pixels"].append(int(objPS_.split("MPA2_")[1]))
+                                print(objPS_)
+                                if "SSA" in objPS_ and len(objPS_)<6: ## if it is SSA_3 (not D_B(0)_O(0)_PatternMatchingEfficiencyMPA_SSA_Hybrid(0) !)
+                                    hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
+                                if "MPA" in objPS_ and len(objPS_)<6:
+                                    hybrid["pixels"].append(int(objPS_.split("MPA_")[1]))
     return xmlConfig
 
 # Create the XML file - to be used in the ot_module_test - reading the configuration defined in xmlConfig (PS_Module_settings.py)
