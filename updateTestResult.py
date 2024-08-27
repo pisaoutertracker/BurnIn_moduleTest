@@ -564,6 +564,8 @@ def makePlotInfluxdb(time, folder):
            value.append(record.get_value())
     
     # Plot the data
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
@@ -577,10 +579,10 @@ def makePlotInfluxdb(time, folder):
     plt.savefig(fName)
     print("InfluxDb: saved ", fName)
     
-    del plt
+    # del plt
     
-    if not 'LC_ALL' in os.environ or os.environ['LC_ALL'] != 'C': 
-        raise Exception('Please type on shell: export LC_ALL="C"')
+    # if not 'LC_ALL' in os.environ or os.environ['LC_ALL'] != 'C': 
+    #     raise Exception('Please type on shell: export LC_ALL="C"')
 
 #    import locale
 #    locale.setlocale(locale.LC_ALL, 'C')
@@ -646,7 +648,13 @@ def updateTestResult(module_test, skipWebdav = False):
         # Extract all the contents into the specified directory
         zip_ref.extractall(extracted_dir)
     
-    rootFile = TFile.Open(extracted_dir+"/Results.root")
+    ## check if the file is there
+    if os.path.exists(extracted_dir+"/Results.root"):
+        rootFile = TFile.Open(extracted_dir+"/Results.root")
+    elif os.path.exists(extracted_dir+"/Hybrid.root"):
+        rootFile = TFile.Open(extracted_dir+"/Hybrid.root")
+    else:
+        raise Exception("No Results.root or Hybrid.root found in %s"%extracted_dir)
 #    xmlConfig = readXmlConfig(xmlPyConfigFile=xmlPyConfigFile, folder=extracted_dir)
     xmlConfig = run["runConfiguration"] ## take configuration from db instead of python file
     print(xmlConfig)
