@@ -11,9 +11,9 @@ firmware_10G="ps8m10gcic2l12octal8tlu.bin" ## "ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint sh  docker.io/sdonato/pisa_module_test:ph2_acf_v4-23 -c "%s"'
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v5-00 -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 import os
-prefixCommand = 'source /home/cmsTkUser/Ph2_ACF/setup.sh && cd %s' %os.getcwd()
+prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder = "/home/cmsTkUser/Ph2_ACF/settings"
 
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
@@ -59,7 +59,6 @@ if __name__ == '__main__':
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --readOnlyID  --session session1")
     args = parser.parse_args()
-    
     if args.localPh2ACF:
         print()
         print("I will use local Ph2ACF instead of Docker!")
