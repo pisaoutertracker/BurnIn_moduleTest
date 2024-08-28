@@ -44,10 +44,10 @@ def makeConfigFromROOTfile(fileName):
                             for objPS in ROOTfile.Get("Detector/%s/%s/%s"%(objB_, objO_, objH_)).GetListOfKeys(): 
                                 objPS_ = objPS.GetName()
                                 hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
-                                print(objPS_)
-                                if "SSA" in objPS_ and len(objPS_)<6: ## if it is SSA_3 (not D_B(0)_O(0)_PatternMatchingEfficiencyMPA_SSA_Hybrid(0) !)
+                                print("makeConfigFromROOTfile:",objPS_)
+                                if "SSA" in objPS_ and len(objPS_)<7: ## if it is SSA_3 (not D_B(0)_O(0)_PatternMatchingEfficiencyMPA_SSA_Hybrid(0) !)
                                     hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
-                                if "MPA" in objPS_ and len(objPS_)<6:
+                                if "MPA" in objPS_ and len(objPS_)<7:
                                     hybrid["pixels"].append(int(objPS_.split("MPA_")[1]))
     return xmlConfig
 
