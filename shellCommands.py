@@ -47,6 +47,25 @@ def burnIn_setTemperature(temperature):
     output = runCommand("/home/thermal/suvankar/power_supply//setTemperatureJulabo.sh .3%f"%temperature)
     if verbose>1: print(output)
 
+### Copy settings/PS_Module_v2p1.xml locally (note: settings is in Docker, unless --localPh2ACF is used)
+
+def copyXml(localPh2ACF=False):
+    if verbose>0: print("Calling copyXml()")
+    if localPh2ACF:
+        print("Copying settings/PS_Module_v2p1.xml locally.")
+        command = "cp settings/PS_Module_v2p1.xml ."
+        output = runCommand(command)
+    else:
+        print("Copying settings/PS_Module_v2p1.xml (from Docker) locally.")
+        command = "%s && cp settings/PS_Module_v2p1.xml ."%(prefixCommand)
+        output = runCommand(podmanCommand%command)
+    error = output.stderr.decode()
+    if error:
+        print()
+        print("|"+error+"|")
+        raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
+    if verbose>1: print(output)
+
 ### Launch FPGA config (to be used after FC7 reset)
 
 def fpgaconfig(xmlFile, firmware, localPh2ACF=False):
