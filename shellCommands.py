@@ -63,7 +63,7 @@ def copyXml(localPh2ACF=False):
     if error:
         print()
         print("|"+error+"|")
-        raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
+        raise Exception("Generic Error running copyXml. Check the error above. Command: %s"%output.args)
     if verbose>1: print(output)
 
 ### Launch FPGA config (to be used after FC7 reset)
