@@ -98,7 +98,10 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     BeBoard.remove(connection)
     HwDescription.remove(BeBoard)
     
-    
+    ### Manual temporary fix to work with v5-03 (02/09/2024)
+    print('Manual temporary fix to work with v5-03 (02/09/2024). Set: OpticalGroup.set("FMCId", "L8") ')
+    OpticalGroup.set("FMCId", "L12")
+
     ## Make a copy of them
     from copy import deepcopy
     Hybrid_ = deepcopy(Hybrid)
@@ -144,6 +147,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
         for setting in list(tree.find("Settings")):
             if Nevents>0 and setting.get("name") == "Nevents":
                 setting.text = str(Nevents)
+
     tree.write(xmlOutput)
     if verbose>0: print("Created XML %s"%xmlOutput)
     return xmlOutput
