@@ -5,7 +5,7 @@
     <configuration file_name="${PH2ACF_BASE_DIR}/settings/BeBoardFiles/uDTC_registers_PS.xml" />
     <CDCE configure="0" clockRate="320" />
         
-     <OpticalGroup Id="0" enable="1" FMCId="L8" reset="1">
+     <OpticalGroup Id="0" enable="1" FMCId="L12" reset="1">
         <lpGBT_Files path="${PH2ACF_BASE_DIR}/settings/lpGBTFiles/" />
         <lpGBT Id="0" version="1" optical="1" configFile="lpGBT_v1_PS.txt">
           <Settings />
@@ -23,7 +23,26 @@
             </Global>
 
             <SSA2_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="0" enable="1" configFile="SSA2.txt" />
+            <SSA2 Id="1" enable="1" configFile="SSA2.txt" />
+            <MPA2_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
+            <CIC2_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
+            <CIC2 Id="8" enable="1" configFile="CIC2_PS.txt" />
+        </Hybrid>
+        
+        <Hybrid Id="1" enable="1" reset="1" invertClock="0">
+            <Global>                 
+                <StubLogic mode="0" window="4" /> 
+                <HitLogic stripMode="0" pixelMode="0" pixelClusterCut="5" /> 
+                <Latencies stripLatency="296" pixelLatency="295" retimePix="4" LatencyRx320L1="6" LatencyRx320Trigger="6" EdgeSelT1Raw="0" EdgeSelTrig="0" />   
+	            <Thresholds stripThreshold="60" stripThresholdHigh="120" pixelThreshold="120" /> 
+                <HipLogic stripCut="1" pixelCut="0" /> 
+                <SamplingDelay stripCoarse="0" stripFine="0" pixelCoarse="0" pixelFine="0" /> 
+                <InjectedCharge stripCharge="70" pixelCharge="70" /> 
+                <CIC2 enableBend="1" enableLastLine="1" enableSparsification="1" driveStrength="3" edgeSelect="0" />
+            </Global>
+
+            <SSA2_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
+            <SSA2 Id="1" enable="1" configFile="SSA2.txt" />
             <MPA2_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
             <CIC2_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
             <CIC2 Id="8" enable="1" configFile="CIC2_PS.txt" />
