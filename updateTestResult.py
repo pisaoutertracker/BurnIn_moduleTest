@@ -528,7 +528,13 @@ def makePlotInfluxdb(time, folder):
     
     timeFormat = "%Y-%m-%dT%H:%M:%S"
     
-    currentTime = datetime.strptime(time, timeFormat) - timedelta(hours=1) ## to move to UTC
+    currentTime = datetime.strptime(time, timeFormat)
+    import pytz
+    rome_timezone = pytz.timezone('Europe/Rome')
+    rome_time = currentTime.astimezone(rome_timezone)
+    ## Move to UTC time
+    currentTime = currentTime - rome_time.utcoffset()
+
     start_time = (currentTime - timedelta(hours=2)).isoformat("T") + "Z"
     stop_time = (currentTime + timedelta(hours=2)).isoformat("T") + "Z"
 #    stop_time = time + "Z"
@@ -570,6 +576,10 @@ def makePlotInfluxdb(time, folder):
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
     plt.axvline(x=currentTime, color='r', linestyle='--', label=currentTime.strftime('%H:%M:%S'))
+    ## Set the x and y axis labels
+    timezone_h = "%+.1f"%(-rome_time.utcoffset().seconds/3600)
+    plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
+    plt.ylabel('Temperature')
     plt.title('Sensor Data Over Time')
     plt.legend()
     plt.grid(True)
