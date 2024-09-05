@@ -88,6 +88,7 @@ cd buildNewDockerImage
 ## Edit build.sh to replace "v5-03" with a different version 
 source build.sh
 ```
+It will create a new image (eg. `gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v5-03` from `gitlab-registry.cern.ch/cms_tk_ph2/docker_exploration/cmstkph2_user_al9:ph2_acf_v5-03`)
 
 #### makeXml.py
 You can also use directly
