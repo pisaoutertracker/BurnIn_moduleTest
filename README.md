@@ -93,10 +93,38 @@ It will create a new image (eg. `gitlab-registry.cern.ch/cms-pisa/pisatracker/pi
 #### makeXml.py
 You can also use directly
 ```
+## Edit the following variables in makeXml.py
+#    xmlPyConfigFile = "PS_Module_settings_test.py"
+#    xmlOutput="ModuleTest_settings_test.xml"
+#    xmlTemplate="PS_Module_v2p1.xml"
+
 python3 makeXml.py
 ```
-to create the XML file to be used in the `ot_module_test` using the configuration defined in [PS_Module_settings.py](PS_Module_settings.py).
+to create the XML file to be used in the `runCalibration` using the configuration defined in `xmlPyConfigFile`.
 (Check the configuration parameters)
 
-#### docker
-This code uses a Docker image created by [buildNewDockerImage/build.sh](buildNewDockerImage/build.sh);
+#### Upload runs existing in local folder 
+To upload the runs existing locally in `Results/` folder: 
+```
+python3 uploadExistingRun.py
+```
+and then run the commands printed out
+
+#### Re-upload runs already existing in the databae (aka Re-Reco)
+To re-analyse the test run already uploaded to the database:
+```
+python3  updateTestResult.py PS_26_05-IBA_00102__run378
+```  
+where `PS_26_05-IBA_00102__run378` is the name of the single module test run (see "Test Modules" in [TBPS database](https://cmstkita.web.cern.ch/Pisa/TBPS/localdb.html))
+
+#### printNoises.py
+`printNoises.py` is a script used to print the noise given an existing ROOT file
+
+#### printTestModules.py
+`printTestModules.py` is used to print all the details about analysis.
+where `analysis.py` is
+```
+all_analysis = [
+        "Module_PS_26_10-IPG_00103_Run_run321_Result_Test7",
+        "Module_PS_26_10-IPG_00103_Run_run315_Result_Test7"]
+```
