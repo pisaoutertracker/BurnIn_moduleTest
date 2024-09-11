@@ -56,7 +56,7 @@ def makeConfigFromROOTfile(fileName):
 def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     legacyVersion = False
     if "v0" in xmlTemplate: legacyVersion = True
-    global BeBoard, connection, board, MPA, SSA, Hybrid, tree, OpticalGroup
+    global BeBoard, connection, board, MPA, SSA, Hybrid, tree, OpticalGroup, lpGBT
     if verbose>0: print("Calling makeXml()", xmlOutput, xmlTemplate)
     from pprint import pprint
     if verbose>2: pprint(xmlConfig)
@@ -122,7 +122,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
 #            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"])) ## keep it to 0
             lpGBT.set("version", lpGBT_version(opticalGroup["lpGBT"]))
             lpGBT.set("configFile", opticalGroup["lpGBT"])
-            OpticalGroup.insert(1,lpGBT)
+            OpticalGroup.insert(len(OpticalGroup), lpGBT)
             for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items(), reverse=True):
                 Hybrid = deepcopy(Hybrid_)
                 Hybrid.set("Id", str(hybrid_id))
@@ -138,7 +138,8 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
                 for pixel_id in sorted(hybrid["pixels"], reverse=True):
                     MPA.set("Id", str(pixel_id))
                     Hybrid.insert(MPAFiles_position+1,deepcopy(MPA))
-                OpticalGroup.insert(2,deepcopy(Hybrid))
+                OpticalGroup.insert(len(OpticalGroup),deepcopy(Hybrid))
+
             BeBoard.insert(3,deepcopy(OpticalGroup))
         HwDescription.insert(0,deepcopy(BeBoard))
     ## Modify  Nevents setting if it is defined in the python config
