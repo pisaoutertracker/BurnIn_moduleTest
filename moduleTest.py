@@ -1,5 +1,6 @@
 ### Default values 
-verbose = 1000
+verbose = 3
+lastPh2ACFversion = "ph2_acf_v6-00"
 #sessionName = 'session1'
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -7,12 +8,12 @@ port=5000
 xmlOutput="ModuleTest_settings.xml"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
-firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps
-firmware_10G="ps8mi10gcic2l12octal8dio5tluv300" ## "ps8m10gcic2l12octa.bin" ##10 GBps
+firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
+firmware_10G="ps8mi10gcic2l12octal8dio5tluv300" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v6-00 -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 import os
 prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder = "/home/cmsTkUser/Ph2_ACF/settings"
@@ -42,11 +43,11 @@ if __name__ == '__main__':
     required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
     
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
-    parser.add_argument('--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
+    parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
     parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--readOnlyID', type=bool, default=False, nargs='?', const=True, help='Skip test and read module ID.')
-    parser.add_argument('--localPh2ACF', type=bool, default=False, nargs='?', const=True, help='Use local Ph2ACF instead of Docker.')
+    parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed.')
     parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
@@ -60,19 +61,19 @@ if __name__ == '__main__':
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --readOnlyID  --session session1")
     args = parser.parse_args()
-    if args.localPh2ACF:
+    ph2ACFversion = args.version
+    if ph2ACFversion == "local":
         print()
         print("I will use local Ph2ACF instead of Docker!")
         if "PH2ACF_BASE_DIR" in os.environ: 
             ph2acf = os.environ['PH2ACF_BASE_DIR']
         else:
-            raise Exception("No Ph2ACF available (eg. no runCalibration). Please do 'source setup.sh' from Ph2ACF folder!")
+            raise Exception("No Ph2ACF available (eg. no runCalibration). Please do 'source setup.sh' from an Ph2ACF folder!")
         settingFolder = "%s/settings"%ph2acf
         from shellCommands import updateSettingsLink
         updateSettingsLink(settingFolder)
         print("Local Ph2ACF folder: %s"%ph2acf)
         print()
-    localPh2ACF = args.localPh2ACF
     board = args.board
     lpGBTfile = args.lpGBT
     slots = args.slot.split(",")
@@ -165,24 +166,27 @@ if __name__ == '__main__':
         xmlPyConfigFile = args.xmlPyConfigFile
 #        xmlConfig = readXmlConfig(xmlPyConfigFile)
         outFile="PS_Module_settings_autogenerated.py"
-        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=50)
         xmlPyConfigFile = outFile
-        from shellCommands import copyXml
-        copyXml(localPh2ACF)
-        xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
+        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=50)
+        if args.useExistingXmlFile:
+            xmlFile = args.useExistingXmlFile
+        else:
+            from shellCommands import copyXml
+            copyXml(ph2ACFversion=lastPh2ACFversion)
+            xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
     
     pprint(xmlConfig)
     
     ### launch fpga_config
-    if args.runFpgaConfig: fpgaconfig(xmlFile, firmware, localPh2ACF)
+    if args.runFpgaConfig: fpgaconfig(xmlFile, firmware, ph2ACFversion)
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
-    out = runModuleTest(xmlFile, args.useExistingModuleTest, localPh2ACF, minimal=readOnlyID) # 
+    out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, minimal=readOnlyID) # 
     if out == "Run fpgaconfig":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
-        fpgaconfig(xmlFile, firmware, localPh2ACF)
-        out = runModuleTest(xmlFile, args.useExistingModuleTest, localPh2ACF, minimal=readOnlyID) # 
+        fpgaconfig(xmlFile, firmware, ph2ACFversion)
+        out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, minimal=readOnlyID) # 
     testID, date = out
     
     ### read the output file (if args.useExistingModuleTest is defined, read the that ROOT file)

@@ -1,5 +1,5 @@
 import subprocess
-from moduleTest import verbose, podmanCommand, prefixCommand
+from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
 ### Launch a command from shell
 
@@ -49,16 +49,17 @@ def burnIn_setTemperature(temperature):
 
 ### Copy settings/PS_Module_v2p1.xml locally (note: settings is in Docker, unless --localPh2ACF is used)
 
-def copyXml(localPh2ACF=False):
+def copyXml(ph2ACFversion=lastPh2ACFversion):
     if verbose>0: print("Calling copyXml()")
-    if localPh2ACF:
+    if ph2ACFversion=="local":
         print("Copying settings/PS_Module_v2p1.xml locally.")
         command = "cp settings/PS_Module_v2p1.xml ."
         output = runCommand(command)
     else:
         print("Copying settings/PS_Module_v2p1.xml (from Docker) locally.")
         command = "%s && cp settings/PS_Module_v2p1.xml ."%(prefixCommand)
-        output = runCommand(podmanCommand%command)
+        print(podmanCommand)
+        output = runCommand(podmanCommand%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
         print()
@@ -68,14 +69,14 @@ def copyXml(localPh2ACF=False):
 
 ### Launch FPGA config (to be used after FC7 reset)
 
-def fpgaconfig(xmlFile, firmware, localPh2ACF=False):
+def fpgaconfig(xmlFile, firmware, ph2ACFversion=lastPh2ACFversion):
     if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
-    if localPh2ACF:
+    if ph2ACFversion=="local":
         command = "fpgaconfig -c %s -i %s"%(xmlFile, firmware)
         output = runCommand(command)
     else:
         command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand, xmlFile, firmware)
-        output = runCommand(podmanCommand%command)
+        output = runCommand(podmanCommand%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
         print()
@@ -94,7 +95,7 @@ def getDateTimeAndTestID():
 ### Launch ot_module_test, given an xml file.
 # if useExistingModuleTest, skip the test and read the existing log file
 
-def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, localPh2ACF=False, logFolder="logs", minimal=False):
+def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=lastPh2ACFversion, logFolder="logs", minimal=False):
     global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
     date, testID = getDateTimeAndTestID()
@@ -105,12 +106,12 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, localPh2
             step = "calibrationandpedenoise"
         else:
             step = "configureonly"
-        if localPh2ACF:
+        if ph2ACFversion=="local":
             command = "runCalibration -b -f %s -c %s  | tee %s"%(xmlFile, step, logFile)
             output = runCommand(command)
         else:
             command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, step, logFile)
-            output = runCommand(podmanCommand%command)
+            output = runCommand(podmanCommand%(ph2ACFversion,command))
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
     else:
         output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))

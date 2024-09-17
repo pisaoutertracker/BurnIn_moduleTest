@@ -286,7 +286,8 @@ def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
 if __name__ == '__main__':
 #    verbose = -1
     from shellCommands import copyXml
-    copyXml(localPh2ACF=False) ## assuming the .xml should be taken from Docker (ie. no --localPh2ACF)
+    from moduleTest import lastPh2ACFversion
+    copyXml(ph2ACFversion=lastPh2ACFversion) ## assuming the .xml should be taken from the lastPh2ACFversion Docker (eg. ph2_acf_v6-00)
     xmlPyConfigFile = "PS_Module_settings_test.py"
     xmlOutput="ModuleTest_settings_test.xml"
     xmlTemplate="PS_Module_v2p1.xml"
