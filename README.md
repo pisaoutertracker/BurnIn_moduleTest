@@ -29,24 +29,30 @@ where:
 
 Reminder: `python3 moduleTest.py --help`
 
-### Quick check of connection and supply (--readOnlyID)
+### Quick check of connection and supply (-c readOnlyID)
 To verify only the module connection and supply: 
 ```
-python3 moduleTest.py --board fc7ot2 --slot 0 --module PS_26_05-IBA_00102 --session session1 --readOnlyID
+python3 moduleTest.py --board fc7ot2 --slot 0 --module PS_26_05-IBA_00102 --session session1 -c readOnlyID
 ```
- - `--readOnlyID` will limit the test to read the module ID. The code will check if the module ID is already existing in the local db, and, in that case, will find the corresponding module name, and check if it matches with the module name passed with the `--module` option.
+To run a complete test:
+ - `-c PSquickTest` will take about 14 min.
+ - `-c PSfullTest` will take about 110 min.
+ - `-c calibrationandpedenoise` is the test used in v5-*.
+ - The `-c` parameter will be passed directly to `runCalibration`. To show all options available use `-c help`.
+
 
 ### Multiple test
 You can run a test for multiple modules by passing a comma-separated list of slots and modules to `--slot` and `--module`. Example:
 ```
 python3 moduleTest.py --board fc7ot2 --slot 0,1 --module PS_26_05-IBA_00102,PS_26_05-IPG_00102 --session session1
 ```
+or you can specify the calibration process that you 
 
 ## Standard module test description
 This script will:
 - create a XML file, starting from [PS_Module_v2p1.xml](https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/blob/Dev/settings/PS_Module_v2p1.xml?ref_type=heads), to be used in `runCalibration` according to the options passed to `python3 moduleTest.py`;
 - run `fpgaconfig`;
-- run `runCalibration -b -c calibrationandpedenoise -f ModuleTest_settings.xml` independently per each module;
+- run `runCalibration -b -c PSquickTest -f ModuleTest_settings.xml` independently per each module;
 - read the output ROOT file of each module test and:
   - check which pixel/strip worked or crashed;
   - get the lpGBT hardware ID;
@@ -65,8 +71,8 @@ This script will:
 ## Additional options
 - `--addNewModule`: this option will allow to add new module found to the database (without asking y/n)
 - `--runFpgaConfig`: `fpgaconfig` is run automatically only when is necessary (ie. the test does not start). This option will force to run `fpgaconfig` (eg. necessary to install a new firmware);
-- `--g10`: to install 10G firmware (`ps8m10gcic2l12octal8tlu.bin`) instead of 5G (`ps_twomod_oct23.bin`);
-- `--localPh2ACF`: run the local Ph2_ACF without using Docker;
+- `--g10`: to install 10G firmware (`ps8mi10gcic2l12octal8dio5tluv300`) instead of 5G (`ps8mi5gcic2l12octal8dio5tluv300`);
+- `--version`: Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed. Default: latest version available;
 - `--strip`: specify which strip will be used (default `--strip 0,1,2,3,4,5,6,7`);
 - `--pixel`: specify which pixel will be used (default `--pixel 8,9,10,11,12,13,14,15`);
 - `--hybrid`: specify which pixel will be used (default `--hybrid 0,1`);
@@ -74,7 +80,7 @@ This script will:
 - `--edgeSelect`: if defined, it will force the `edgeSelect` parameter under `<Hybrid><Global><CIC2>` in the .xml file.
 - `--firmware`: specify a firmware to be installed with `fpgaconfig`
 - `--ignoreConnection`: do not throw exception if there is a mismatch between the database connection and the module declared (temporary activated by default)
-- many other options used for code testing (eg. `--useExistingModuleTest`, `--useExistingXmlFile`, `--skipUploadResults`, `--skipMongo`, `--skipModuleCheck`, `--xmlPyConfigFile`)
+- many other options used for code testing (eg. `--useExistingModuleTest`, `-f` or `--useExistingXmlFile`, `--skipUploadResults`, `--skipMongo`, `--skipModuleCheck`, `--xmlPyConfigFile`)
 
 ## Create a new docker version
 The code uses the [docker version of Ph2_ACF](https://gitlab.cern.ch/cms_tk_ph2/docker_exploration/container_registry) (eg. `gitlab-registry.cern.ch/cms_tk_ph2/docker_exploration/cmstkph2_user_al9:ph2_acf_v5-03`), specifically the [cmstkph2_user_al9 image](https://gitlab.cern.ch/cms_tk_ph2/docker_exploration/container_registry/19856?after=MTA).
