@@ -122,8 +122,11 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
 #            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"])) ## keep it to 0
             lpGBT.set("version", lpGBT_version(opticalGroup["lpGBT"]))
             lpGBT.set("configFile", opticalGroup["lpGBT"])
-            OpticalGroup.insert(len(OpticalGroup), lpGBT)
-            for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items(), reverse=True):
+            tags = [i.tag for i in OpticalGroup]
+            for i in OpticalGroup:
+                print("OG: ", i, i.tag, i.tag=="lpGBT_Files", tags.index("lpGBT_Files"))
+            OpticalGroup.insert(tags.index("lpGBT_Files")+1, lpGBT)
+            for hybrid_id, hybrid in sorted(opticalGroup["hybrids"].items(), reverse=False):
                 Hybrid = deepcopy(Hybrid_)
                 Hybrid.set("Id", str(hybrid_id))
                 if "edgeSelect" in hybrid:
