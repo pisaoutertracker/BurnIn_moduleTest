@@ -6,6 +6,7 @@ xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
 xmlOutput="ModuleTest_settings.xml"
+defaultCommand="calibrationandpedenoise"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
 firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
@@ -43,23 +44,23 @@ if __name__ == '__main__':
     required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
     
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
-    parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing). ')
+    parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing).  ')
+    parser.add_argument('-c','--command', type=str, default=defaultCommand, nargs='?', const='', help='Specify which command will be passed to runCalibration -c (calibrationandpedenoise, configureonly, PSquickTest, PSfullTest, readOnlyID). Default: %s'%defaultCommand)
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
     parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
-    parser.add_argument('--readOnlyID', type=bool, default=False, nargs='?', const=True, help='Skip test and read module ID.')
-    parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed.')
+    parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed. Default: %s'%lastPh2ACFversion)
     parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
     parser.add_argument('--skipModuleCheck', type=bool, default=True, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
-    parser.add_argument('--firmware', type=str, nargs='?', const='', default="", help='Firmware used in fpgaconfig. Default=ps_twomod_oct23.bin')
+    parser.add_argument('--firmware', type=str, nargs='?', const='', default=firmware_5G, help='Firmware used in fpgaconfig. Default=%s'%firmware_5G)
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
 
     
-    print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 --readOnlyID  --session session1")
+    print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
     args = parser.parse_args()
     ph2ACFversion = args.version
     if ph2ACFversion == "local":
@@ -115,9 +116,10 @@ if __name__ == '__main__':
                 print(error)
             else:
                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error and not args.readOnlyID and args.ignoreConnection:
+        if error and args.command!="readOnlyID" and args.ignoreConnection:
             raise Exception(error)
-    readOnlyID = args.readOnlyID
+    readOnlyID = (args.command=="readOnlyID")
+    commandOption = args.command
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
         hybrids = [hybrids[0]]
         pixels = []
@@ -182,11 +184,11 @@ if __name__ == '__main__':
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
-    out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, minimal=readOnlyID) # 
+    out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
     if out == "Run fpgaconfig":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         fpgaconfig(xmlFile, firmware, ph2ACFversion)
-        out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, minimal=readOnlyID) # 
+        out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
     testID, date = out
     
     ### read the output file (if args.useExistingModuleTest is defined, read the that ROOT file)

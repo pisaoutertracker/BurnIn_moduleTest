@@ -5,12 +5,11 @@ from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash'):
     if verbose>2: print(command)
-    return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
+    try:
+        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
+    except subprocess.CalledProcessError as e:
+        raise Exception("{}".format(e.output.decode('utf-8')))
 
-#def loadBashRC(location = "/home/thermal/.bashrc"):
-#    if verbose>0: print("Calling loadBashRC()")
-#    output = runCommand(". %s"%location)
-    
 ### Burn-in commands
 
 def updateSettingsLink(settingFolder):
@@ -95,22 +94,22 @@ def getDateTimeAndTestID():
 ### Launch ot_module_test, given an xml file.
 # if useExistingModuleTest, skip the test and read the existing log file
 
-def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=lastPh2ACFversion, logFolder="logs", minimal=False):
+def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=lastPh2ACFversion, commandOption="readOnlyID", logFolder="logs"):
     global error 
-    if verbose>0: print("Calling runModuleTest()", xmlFile, logFolder)
+    if verbose>0: print("Calling runModuleTest()", xmlFile, useExistingModuleTest, ph2ACFversion, logFolder, commandOption)
     date, testID = getDateTimeAndTestID()
     logFile = "%s/%s.log"%(logFolder,testID)
     if verbose>0: print(testID,logFile)
     if not useExistingModuleTest: # -w $PWD 
-        if not minimal:
-            step = "calibrationandpedenoise"
-        else:
-            step = "configureonly"
+        if commandOption=="readOnlyID":
+            commandOption = "configureonly"
         if ph2ACFversion=="local":
-            command = "runCalibration -b -f %s -c %s  | tee %s"%(xmlFile, step, logFile)
+            command = "runCalibration -b -f %s -c %s  | tee %s"%(xmlFile, commandOption, logFile)
+            if commandOption=="help": command = "runCalibration --help"
             output = runCommand(command)
         else:
-            command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, step, logFile)
+            command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, commandOption, logFile)
+            if commandOption=="help": command = "%s && runCalibration --help"%(prefixCommand)
             output = runCommand(podmanCommand%(ph2ACFversion,command))
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
     else:
@@ -124,6 +123,11 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         print()
         print(error)
         raise Exception("ControlHub returned error code 3.  \n Please check that: 1) your FC7 is on, 2) FC7 is connected to the Ethernet (check LEDs in the router), 3) you are using the correct port (eg. 50001).  \n Command: %s"%output.args)
+
+    if "what():  Error: calibration tag " in error and "does not exist" in error:
+        print()
+        print(error)
+        raise Exception("The option -c option that you passed is not allowed.\n See 'what():  Error: calibration tag ...' line above for more info.\nUse -c help for more infos about the -c option allowed.\n Command: %s"%output.args)
     if "Host not found (authoritative)" in error:
         print()
         print(error)
@@ -161,6 +165,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
 
 if __name__ == '__main__':
 #    verbose = -1
+    runCommand('podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v6-00 -c "cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd /home/thermal/BurnIn_moduleTest && runCalibration --help"')
+    
     xmlFile = "ModuleTest_settings.xml"
     firmware="ps_twomod_oct23.bin"
     useExistingModuleTest=False
@@ -179,4 +185,5 @@ if __name__ == '__main__':
     testID, date = runModuleTest(xmlFile, useExistingModuleTest)
     print("\ntestID-2:")
     print(date, testID)
+    
 
