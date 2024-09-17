@@ -7,8 +7,8 @@ port=5000
 xmlOutput="ModuleTest_settings.xml"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
-firmware_5G="ps8m5gcic2l12octal8dio5tluJul5" ##5 GBps
-firmware_10G="ps8m10gcic2l12octal8tlu.bin" ## "ps8m10gcic2l12octa.bin" ##10 GBps
+firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps
+firmware_10G="ps8mi10gcic2l12octal8dio5tluv300" ## "ps8m10gcic2l12octa.bin" ##10 GBps
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
