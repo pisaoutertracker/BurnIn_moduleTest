@@ -6,7 +6,7 @@ xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
 xmlOutput="ModuleTest_settings.xml"
-defaultCommand="calibrationandpedenoise"
+defaultCommand="PSquickTest"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
 firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
