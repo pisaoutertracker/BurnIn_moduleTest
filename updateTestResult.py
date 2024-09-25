@@ -452,6 +452,19 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += "<br>" + "\n"
     body += grayText("Zip file: ") + '<a href="%s">'%directLinkToZip + directLinkToZip + "</a><br>" + "\n"
     body += grayText("Folder: ") + '<a href="%s">'%folderLink + folderLink + "</a><br>" + "\n"
+    utc, myTime_grafana = getTime(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
+    from datetime import timedelta
+    start_time_grafana = (myTime_grafana - timedelta(hours=2))
+    stop_time_grafana = (myTime_grafana + timedelta(hours=2))
+    GrafanaLink = "http://pccmslab1.pi.infn.it:3000/d/ff666241-736f-4d30-b490-dc8655d469a9/burn-in?orgId=1&%%20from={__from}\&to=%d&from=%d"%((int(start_time_grafana.timestamp())*1000), (int(stop_time_grafana.timestamp())*1000))
+    start_time_grafana_d, start_time_grafana_t = str(start_time_grafana).split(" ")
+    stop_time_grafana_d, stop_time_grafana_t = str(stop_time_grafana).split(" ")
+    if start_time_grafana_d == stop_time_grafana_d:
+        GrafanaText = "%s -> %s (%s)"%(start_time_grafana_t, stop_time_grafana_t, stop_time_grafana_d)
+    else:
+        GrafanaText = "%s %s -> %s %s"%(start_time_grafana_d, start_time_grafana_t, stop_time_grafana_d, stop_time_grafana_t)
+    
+    body += grayText("Link to Grafana: ") + '<a href="%s">'%GrafanaLink + GrafanaText + "</a><br>" + "\n"
     
     ### Single Module Run
     boardToId = {v: k for k, v in run["runBoards"].items()}
@@ -511,6 +524,16 @@ def  uploadToWebDav(folder, files):
             newfiles[file] = file
     return newfiles
 
+def getTime(time, timeFormat="%Y-%m-%dT%H:%M:%S"):
+    from datetime import datetime, timedelta
+    myTime = datetime.strptime(time, timeFormat)
+    import pytz
+    rome_timezone = pytz.timezone('Europe/Rome')
+    rome_time = myTime.astimezone(rome_timezone)
+    ## Move to UTC time
+    myTime = myTime - rome_time.utcoffset()
+    return myTime, rome_time
+
 def makePlotInfluxdb(time, folder):
     print("makePlotInfluxdb")
 
@@ -526,17 +549,18 @@ def makePlotInfluxdb(time, folder):
     org = "pisaoutertracker"
     bucket = "sensor_data"
     
-    timeFormat = "%Y-%m-%dT%H:%M:%S"
+#    timeFormat = "%Y-%m-%dT%H:%M:%S"
     
-    currentTime = datetime.strptime(time, timeFormat)
-    import pytz
-    rome_timezone = pytz.timezone('Europe/Rome')
-    rome_time = currentTime.astimezone(rome_timezone)
-    ## Move to UTC time
-    currentTime = currentTime - rome_time.utcoffset()
+#    currentTime = datetime.strptime(time, timeFormat)
+#    import pytz
+#    rome_timezone = pytz.timezone('Europe/Rome')
+#    rome_time = currentTime.astimezone(rome_timezone)
+#    ## Move to UTC time
+#    currentTime = currentTime - rome_time.utcoffset()
+    myTime, rome_time = getTime(time, timeFormat = "%Y-%m-%dT%H:%M:%S")
 
-    start_time = (currentTime - timedelta(hours=2)).isoformat("T") + "Z"
-    stop_time = (currentTime + timedelta(hours=2)).isoformat("T") + "Z"
+    start_time = (myTime - timedelta(hours=2)).isoformat("T") + "Z"
+    stop_time = (myTime + timedelta(hours=2)).isoformat("T") + "Z"
 #    stop_time = time + "Z"
 #    start_time = "2023-12-20T03:03:34Z"
 #    stop_time = "2023-12-20T15:03:34Z"
@@ -575,7 +599,7 @@ def makePlotInfluxdb(time, folder):
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
-    plt.axvline(x=currentTime, color='r', linestyle='--', label=currentTime.strftime('%H:%M:%S'))
+    plt.axvline(x=myTime, color='r', linestyle='--', label=myTime.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
     timezone_h = "%+.1f"%(-rome_time.utcoffset().seconds/3600)
     plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
@@ -744,7 +768,7 @@ def updateTestResult(module_test, skipWebdav = False):
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_10-IPG_00103__run9 . ')
+    parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
