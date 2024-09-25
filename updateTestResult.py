@@ -464,7 +464,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     else:
         GrafanaText = "%s %s -> %s %s"%(start_time_grafana_d, start_time_grafana_t, stop_time_grafana_d, stop_time_grafana_t)
     
-    body += grayText("Link to Grafana: ") + '<a href="%s">'%GrafanaLink + GrafanaText + "</a><br>" + "\n"
+    body += grayText("Link to Grafana (available only from INFN Pisa): ") + '<a href="%s">'%GrafanaLink + GrafanaText + "</a><br>" + "\n"
     
     ### Single Module Run
     boardToId = {v: k for k, v in run["runBoards"].items()}
