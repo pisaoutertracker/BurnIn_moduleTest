@@ -1,0 +1,130 @@
+27.09.2024 14:45:45: |139689126776000|I| Initialized[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mTool created[0m
+27.09.2024 14:45:46: |139689126776000|I| [32mBootstrapping TCP Server...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mStripControl2 is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mENFLAGS is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mNow I'm parsing global PS settings for SSA2 [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mLoading configuration for CIC from /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m Global settings CIC2[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG BEND_SEL == 1]-- set to. Mask 11011 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG N_OUTPUT_TRIGGER_LINES_SEL == 1]-- set to. Mask 10111 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mBoard sparisfication set to 1[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG CBC_SPARSIFICATION_SEL == 1]-- set to. Mask 01111 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cFWInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cTriggerInterface::D19cTriggerInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cTriggerInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cFastCommandInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cBackendAlignmentFWInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cDebugFWInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cCommandProcessorInterface::D19cCommandProcessorInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mCommand Arbitrator State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mReply Arbitrator State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mWorker state = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mIC State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mI2C State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mFE State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19clpGBTSlowControlWorkerInterface::D19clpGBTSlowControlWorkerInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19clpGBTSlowControlWorkerInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [32mTrying to connect to the Power Supply Server...[0m
+27.09.2024 14:45:46: |139689126776000|I| [32mConnected to the Power Supply Server![0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	--> Operation completed[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mInitializing HwInterfaces for OT BeBoards..[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	...Initializing HwInterfaces for OpticalGroups..1 optical group(s) found ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for lpGBT[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[31mConstructor D19clpGBTInterface[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mUsing Serial Interface configuration mode[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for VTRx[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFound 1 hybrids in this group...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m		...Initializing HwInterfaces for FrontEnd Hybrids..1 hybrid(s) found ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m				.. Initializing HwInterface(s) for PS module(s)[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32m					.. Readout chip interface aware of the lpGBT connected to this board ... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for CIC[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32m					.. CIC interface aware of the lpGBT connected to this board ... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mOptical readout . initializing link control interface[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mOptical readout . initializing Optical interface for FE configuration[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mInitialized D19cL1ReadoutInterface ...0x393ce20[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[35m@@@ Configuring HW parsed from XML file @@@[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	--> Found an Outer Tracker Readout-board[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mExternal clock Disabled[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC1 Card: [0mOPTO_OCTA
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC2 Card: [0mDIO5
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mSending a global reset to the FC7 ..... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mPowering on DIO5 at L8...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mPowering on DIO5[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mConfiguring FC7...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	CDCE Synchronization[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m		De-Asserting Sync[0m
+27.09.2024 14:45:46: |139689126776000|I| 		Asserting Sync[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFront-end type code from firmware register : 5[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mDD3 Readout .... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mD19cFWInterface::ConfigureBoard with lpGBT[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mConfiguring Tx/Rx polarity[0m
+27.09.2024 14:45:46: |139689126776000|I| Bit number: 0 --- Links offset: 0 --- OG Id: 0[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC-L12 -- Rx Polarity = 00000000000000000000000000000001  -- Tx Polarity = 00000000000000000000000000000000[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC-L8  -- Rx Polarity = 00000000000000000000000000000000  -- Tx Polarity = 00000000000000000000000000000000[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mConfiguring lpGBT versions[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mLpGBT Version = 00000000000000000000000000000001[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[35mResetting lpGBT-FPGA core on BeBoard#0[0m
+27.09.2024 14:45:48: |139689126776000|I| [1m[35mD19cLinkInterface::GeneralLinkReset Resetting lpGBT-FPGA core on BeBoard#0 [Attempt#0][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mlpGBT Link Status...[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mlpGBT Link0 status 00000000010000000000000000000111[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT TX Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... MGT Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT RX Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[31mSending HARD RESET to ReadoutChips[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[31mSending HARD RESET to CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSparsification set to 1[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting firmware register fc7_daq_cnfg.ddr3_debug.stub_enable to 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting firmware register fc7_daq_cnfg.physical_interface_block.cic.2s_sparsified_enable to 1[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mAccording to the Firmware status registers, it was compiled for: 16 hybrid(s), 1 CIC2 chip(s) per hybrid[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mEnabling FE hybrid : 0 - link Id 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting chips enable register on hybrid0 to 00000000000000000000000000000001[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m1 CIC(s) enabled on this BeBoard[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting hybrid enable register to 00000000000000000000000000000001[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mInitializing OT hardware..[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mNow going to configuring lpGBTs#[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mNow going to configuring lpGBTs#0 on Board 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> LpGBT...Configuring chip with Id[0] , Version[1][0m
+27.09.2024 14:45:50: |139689126776000|I| [32mLpGBT chip info: Tx Data Rate = [1m[33m5 Gbit/s[0m[32m; TxEncoding = [1m[33mFEC5[0m[32m; LpGBT Mode = [1m[33mTransceiver[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mlpGBT Configured [READY][0m
+27.09.2024 14:45:50: |139689126776000|I| [32mReseting I2C Masters[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mLoad calibration data and automatically tune vref (repeat if temperature changes)![0m
+27.09.2024 14:45:50: |139689126776000|I| [32mFuseID from LpGBT optical group [1m[33m0[0m[32m on Board [1m[33m0[0m[32m: 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:50: |139689126776000|I| [32mLoading calibration data for LpGBT on Board [1m[33m0[0m[32m OpticalGroup [1m[33m0[0m[32m with Fuse ID 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> VTRx...Configuring chip with Id[0][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSuccesful write to 14 registers on CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mConfiguring an OuterTrackerPS module [0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSystemController::ModuleStartUpPS for BeBoard#0 OpticalGroup#0[0m
+27.09.2024 14:45:50: |139689126776000|I| [32mReseting I2C Masters[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mResetting SSA[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mConfiguring CIC0 on link 0 on hybrid 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> CIC2...Configuring chip with Id[8][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSuccesful write to 93 registers on CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32m####################################################################################[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mSystemController::CicStartUp for OpticalGroup#0 CIC#0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mOverriding FE_ENABLE for CIC on Hybrid 0 OpticalGroup 0 BeBoard 0 to enable  MPAs [0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[33mLaunching CIC start-up sequence..[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m.... Starting CIC start-up ........ on hybrid 0 for CIC2.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking if CIC requires a Soft reset.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mResetting DLL in CIC0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking DLL lock in CIC0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mDLL in CIC [1m[32m LOCKED.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking CIC0 - has fast command decoder locked?[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[33mRead back value of 11000 from RO status register[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSUCCESSFULLY [1m[34m locked fast command decoder in CIC.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32m####################################################################################[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking if a ReSync is needed for Board0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m	... CIC0 requires a ReSync[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mSending a ReSync at the end of the OT-module configuration step[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mConfiguring ReadoutOutChips on Hybrid0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[0] oh Hybrid0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mWrote 0 control registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[32mWrote 48 global R/W registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[32mWrote 607 local R/W registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[35mConfigured OT module[0m
+27.09.2024 14:45:51: |139689126776000|I| [32mStarting [1m[33mmonitoring[0m[32m thread[0m
+27.09.2024 14:45:51: |139689126776000|I| Configured[0m
+27.09.2024 14:45:51: |139689126776000|I| [32mFuseID from SSA2#0 Pos 222 Wafer 24 Lot 8 Status 0 Process 0 ADCRef 0[0m

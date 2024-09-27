@@ -1,0 +1,328 @@
+27.09.2024 14:45:45: |139689126776000|I| Initialized[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mTool created[0m
+27.09.2024 14:45:46: |139689126776000|I| [32mBootstrapping TCP Server...[0m
+virtual void TCPPublishServer::acceptConnections()Wating for clients to connect
+virtual void TCPPublishServer::acceptConnections()Wating for clients to connect
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mStripControl2 is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mENFLAGS is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mNow I'm parsing global PS settings for SSA2 [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mLoading configuration for CIC from /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m Global settings CIC2[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG BEND_SEL == 1]-- set to. Mask 11011 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG N_OUTPUT_TRIGGER_LINES_SEL == 1]-- set to. Mask 10111 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mBoard sparisfication set to 1[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m  Setting [ FE_CONFIG CBC_SPARSIFICATION_SEL == 1]-- set to. Mask 01111 -- old value 11101 -- new value 11101[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cFWInterface Constructor[0m
+board	ipbusudp-2.0://fc7ot2:50001	file://settings/address_tables/uDTC_OT_address_table.xml
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cTriggerInterface::D19cTriggerInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cTriggerInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cFastCommandInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cBackendAlignmentFWInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19cDebugFWInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19cCommandProcessorInterface::D19cCommandProcessorInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mCommand Arbitrator State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mReply Arbitrator State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mWorker state = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mIC State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mI2C State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [34mFE State = [1m[33mIDLE[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mD19clpGBTSlowControlWorkerInterface::D19clpGBTSlowControlWorkerInterface Constructor[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mCreated D19clpGBTSlowControlWorkerInterface ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [32mTrying to connect to the Power Supply Server...[0m
+bool TCPClientBase::connect(int, unsigned int)Connecting Client socket to server name-127.0.0.1-serverPort: 7003
+bool TCPClientBase::connect(int, unsigned int)Connecting Client socket to server ip  -127.0.0.1-serverPort: 7003
+bool TCPClientBase::connect(int, unsigned int)[89]	Succesfully connected to server 127.0.0.1 port: 7003
+27.09.2024 14:45:46: |139689126776000|I| [32mConnected to the Power Supply Server![0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	--> Operation completed[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mInitializing HwInterfaces for OT BeBoards..[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	...Initializing HwInterfaces for OpticalGroups..1 optical group(s) found ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for lpGBT[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[31mConstructor D19clpGBTInterface[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mUsing Serial Interface configuration mode[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for VTRx[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFound 1 hybrids in this group...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m		...Initializing HwInterfaces for FrontEnd Hybrids..1 hybrid(s) found ...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m				.. Initializing HwInterface(s) for PS module(s)[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32m					.. Readout chip interface aware of the lpGBT connected to this board ... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m			.. Initializing HwInterface for CIC[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32m					.. CIC interface aware of the lpGBT connected to this board ... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mOptical readout . initializing link control interface[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mOptical readout . initializing Optical interface for FE configuration[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mInitialized D19cL1ReadoutInterface ...0x393ce20[0m
+[0m
+********************************************************************************
+                                   [1m[31mHW SUMMARY[0m
+********************************************************************************
+[1m[34m|----BeBoard --> Id: [1m[33m0[1m[34m, BoardType: [1m[33mD19C[1m[34m, EventType: [1m[33mVR[1m[34m, Configure: [1m[33m1[1m[34m, Comment: [1m[33m[0m
+[1m[36m|       |----Board Id:      [1m[33mboard
+[1m[36m|       |----URI:           [1m[33mipbusudp-2.0://fc7ot2:50001
+[1m[36m|       |----Address Table: [1m[33mfile://settings/address_tables/uDTC_OT_address_table.xml
+[0m[1m[34m|	|----OpticalGroup --> Id: [1m[33m0[1m[34m, Enable: [1m[33m1[1m[34m, FMC Id: [1m[33m12[0m
+[1m[34m|	|----lpGBT --> File: [1m[33m/home/cmsTkUser/Ph2_ACF/settings/lpGBTFiles/lpGBT_v1_PS.txt[0m
+[1m[34m|	|	|---- ADC Config. File: [1m[33m[0m
+[1m[36m|	|	|---- LpGBT Settings:[0m
+[1m[34m|       |----Hybrid --> [1m[34mId: [1m[33m0[1m[34m, Enable: [1m[33m1[1m[34m[0m
+[1m[34mI2C Master Id is 2[0m
+[1m[34minvertClock 0[0m
+[1m[34m|       |       | HybridOpticalId is 0[0m[1m[36m|  |   |----SSA2  Id :0, File: SSA2.txt[0m
+[1m[36m|	|	|----Global SSA2 Settings: [0m
+[1m[36m|	|	|----Applying global SSA Settings to SSA# 0[0m
+[32m|	|	|	|---- Threshold: Strips 0x3c[0m
+[32m|	|	|	|---- And Threshold High: Strips 0x78[0m
+[1m[36m|	|	|----ENFLAGS to SSA# 0[0m[32m|	|	|	|---- Hit Mode is  0x0[0m
+[1m[36m|	|	|----Applying global SSA injection settings to SSA# 0[0m[32m|	|	|	|---- Injected Charge is  0x46[0m
+[1m[36m|	|	|----Applying global SSA latency settings to SSA# 0[0m[32m|	|	|	|---- Latency is  0x128[32m MSB is 0x1[32m LSB is 0x28[0m
+[1m[36m|	|	|----Applying global SSA HIP settings to SSA# 0[0m[32m|	|	|	|---- HIP cut is  0x1 read for StripControl2 is 0x1[0m
+[1m[36m|	|	|----Applying global SSA Sampling Delay settings to SSA# 0[0m[32m|	|	|	|---- Coarse delay will be set to 0 ns [32m Fine delay will be set to 0 ns[0m
+[1m[36m|  |   |----CIC2  Id8 , File: /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+[32m|	|	|	|----FrontEndType: [31mCIC2[0m
+[32m|	|	|	|---- Setting enableBend to  1
+[0m[32m|	|	|	|---- Setting enableLastLine to  1
+[0m[32m|	|	|	|---- Setting enableSparsification to  1
+[0m[1m[36m|  Parsing global hybrid settings 
+********************************************************************************
+                                [1m[31mEND OF HW SUMMARY[0m
+********************************************************************************
+
+[1m[31mMonitoring[0m -- [1m[36mMPA2[0m:[1m[33mRegister AVDD[0m
+[1m[31mMonitoring[0m -- [1m[36mMPA2[0m:[1m[33mRegister DVDD[0m
+[1m[31mMonitoring[0m -- [1m[36mMPA2[0m:[1m[33mRegister temp[0m
+[1m[31mMonitoring[0m -- [1m[36mSSA2[0m:[1m[33mRegister AVDD[0m
+[1m[31mMonitoring[0m -- [1m[36mSSA2[0m:[1m[33mRegister DVDD[0m
+[1m[31mMonitoring[0m -- [1m[36mSSA2[0m:[1m[33mRegister temp[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister VDD[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister VDDA[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister LpGBTtemp[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister SensorTemp[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister VTRxLeakageCurr[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister VTRxTemp[0m
+[1m[31mMonitoring[0m -- [1m[36mLpGBT[0m:[1m[33mRegister 2V55[0m
+
+[1m[31mSetting[0m -- [1m[36mInjectionType[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mTriggerMultiplicity[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mStartLatency[0m:[1m[33m290[0m
+[1m[31mSetting[0m -- [1m[36mLatencyRange[0m:[1m[33m20[0m
+[1m[31mSetting[0m -- [1m[36mStubAlignmentScanStart[0m:[1m[33m95[0m
+[1m[31mSetting[0m -- [1m[36mPSmoduleSSAthreshold[0m:[1m[33m150[0m
+[1m[31mSetting[0m -- [1m[36mPSmoduleMPAthreshold[0m:[1m[33m150[0m
+[1m[31mSetting[0m -- [1m[36mPSmoduleTriggerLatency[0m:[1m[33m180[0m
+[1m[31mSetting[0m -- [1m[36mPSmoduleStubWindow[0m:[1m[33m32[0m
+[1m[31mSetting[0m -- [1m[36mSaveRawData[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mHoleMode[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mVerificationLoop[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mMaskChannelsFromOtherGroups[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mFitSCurves[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPlotSCurves[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mTriggerRate[0m:[1m[33m10[0m
+[1m[31mSetting[0m -- [1m[36mTargetVcth[0m:[1m[33m120[0m
+[1m[31mSetting[0m -- [1m[36mTargetOffset[0m:[1m[33m80[0m
+[1m[31mSetting[0m -- [1m[36mInitialVcth[0m:[1m[33m120[0m
+[1m[31mSetting[0m -- [1m[36mSignalScanStep[0m:[1m[33m2[0m
+[1m[31mSetting[0m -- [1m[36mFitSignal[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mAntennaPotentiometer[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mThresholdForOpens[0m:[1m[33m10[0m
+[1m[31mSetting[0m -- [1m[36mAntennaTriggerRate[0m:[1m[33m50[0m
+[1m[31mSetting[0m -- [1m[36mShortsPulseAmplitude[0m:[1m[33m20[0m
+[1m[31mSetting[0m -- [1m[36mPSHybridDebugDuration[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mAsyncSweepTh[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mAsyncThreshold[0m:[1m[33m10[0m
+[1m[31mSetting[0m -- [1m[36mAsyncCalDac[0m:[1m[33m30[0m
+[1m[31mSetting[0m -- [1m[36mStartTHDAC[0m:[1m[33m64[0m
+[1m[31mSetting[0m -- [1m[36mStopTHDAC[0m:[1m[33m144[0m
+[1m[31mSetting[0m -- [1m[36mNMsec[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mNMpulse[0m:[1m[33m3000[0m
+[1m[31mSetting[0m -- [1m[36mNlvl[0m:[1m[33m50[0m
+[1m[31mSetting[0m -- [1m[36mVfac[0m:[1m[33m0.9[0m
+[1m[31mSetting[0m -- [1m[36mMrms[0m:[1m[33m0.6[0m
+[1m[31mSetting[0m -- [1m[36mTestPulsePotentiometer[0m:[1m[33m80[0m
+[1m[31mSetting[0m -- [1m[36mSyncDebug[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mNevents[0m:[1m[33m50[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_FullScanStart[0m:[1m[33m220[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_Occupancy[0m:[1m[33m0.5[0m
+[1m[31mSetting[0m -- [1m[36mPedeNoise_MaskUntrimmed[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPedeNoise_UntrimmedLimit[0m:[1m[33m4.95[0m
+[1m[31mSetting[0m -- [1m[36mFullScan[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_MaskUntrimmed[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_PulseAmplitude[0m:[1m[33m70[0m
+[1m[31mSetting[0m -- [1m[36mPedeNoise_PulseAmplitude[0m:[1m[33m70[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_PulseAmplitudePix[0m:[1m[33m70[0m
+[1m[31mSetting[0m -- [1m[36mPedeNoise_PulseAmplitudePix[0m:[1m[33m70[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_PulseAmplitudeFullScan[0m:[1m[33m20[0m
+[1m[31mSetting[0m -- [1m[36mPedestalEqualization_PulseAmplitudePixFullScan[0m:[1m[33m30[0m
+[1m[31mSetting[0m -- [1m[36mStartPhase[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPhaseRange[0m:[1m[33m7[0m
+[1m[31mSetting[0m -- [1m[36mPhaseStartLatency[0m:[1m[33m290[0m
+[1m[31mSetting[0m -- [1m[36mPhaseLatencyRange[0m:[1m[33m10[0m
+[1m[31mSetting[0m -- [1m[36mAttempts[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mActiveMPAs[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mFifoDepth[0m:[1m[33m8[0m
+[1m[31mSetting[0m -- [1m[36mCheckForStubs[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mScanL1Latency[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mScanStubLatency[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mDistributeInjections[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mTestMode[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mTriggerSeparation[0m:[1m[33m80[0m
+[1m[31mSetting[0m -- [1m[36mDelayAfterInjection[0m:[1m[33m100[0m
+[1m[31mSetting[0m -- [1m[36mBend[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mMinPclusters[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mMaxPclusters[0m:[1m[33m3[0m
+[1m[31mSetting[0m -- [1m[36mMinSclusters[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mMaxSclusters[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mMaxStubs[0m:[1m[33m4[0m
+[1m[31mSetting[0m -- [1m[36mSLVSDrive[0m:[1m[33m3[0m
+[1m[31mSetting[0m -- [1m[36mMaxOffset[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mStartTHDAC[0m:[1m[33m64[0m
+[1m[31mSetting[0m -- [1m[36mStopTHDAC[0m:[1m[33m144[0m
+[1m[31mSetting[0m -- [1m[36mNMsec[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mNMpulse[0m:[1m[33m3000[0m
+[1m[31mSetting[0m -- [1m[36mNlvl[0m:[1m[33m50[0m
+[1m[31mSetting[0m -- [1m[36mVfac[0m:[1m[33m0.9[0m
+[1m[31mSetting[0m -- [1m[36mMrms[0m:[1m[33m0.6[0m
+[1m[31mSetting[0m -- [1m[36mTestPulsePotentiometer[0m:[1m[33m80[0m
+[1m[31mSetting[0m -- [1m[36mSyncDebug[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mPSOccupancyPulseAmplitude[0m:[1m[33m200[0m
+[1m[31mSetting[0m -- [1m[36mDoManualVrefTuning[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mOTalignBoardDataWord_BroadcastAlignSetting[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mOTRegisterTester_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTRegisterTester_Pattern[0m:[1m[33m170[0m
+[1m[31mSetting[0m -- [1m[36mOTverifyBoardDataWord_NumberOfIterations[0m:[1m[33m100[0m
+[1m[31mSetting[0m -- [1m[36mOTCICtoLpGBTecv_CICStrength[0m:[1m[33m1,3,5[0m
+[1m[31mSetting[0m -- [1m[36mOTCICtoLpGBTecv_ClockPolarity[0m:[1m[33m0-1[0m
+[1m[31mSetting[0m -- [1m[36mOTCICtoLpGBTecv_ClockStrength[0m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m -- [1m[36mOTCICtoLpGBTecv_LpGBTPhase[0m:[1m[33m0-14[0m
+[1m[31mSetting[0m -- [1m[36mOTCICtoLpGBTecv_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTalignLpGBTinputs_NumberOfAlignmentIterations[0m:[1m[33m100[0m
+[1m[31mSetting[0m -- [1m[36mOTalignLpGBTinputs_MinAlignmentSuccessRate[0m:[1m[33m0.99[0m
+[1m[31mSetting[0m -- [1m[36mOTCICphaseAlignment_NumberOfAlignmentIterations[0m:[1m[33m100[0m
+[1m[31mSetting[0m -- [1m[36mOTCICphaseAlignment_MinLockingSuccessRate[0m:[1m[33m0.9[0m
+[1m[31mSetting[0m -- [1m[36mOTverifyCICdataWord_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTverifyMPASSAdataWord_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_NumberOfEvents[0m:[1m[33m100[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_MaximumDelay[0m:[1m[33m150[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_DelayStep[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_SSAtestPulseValue[0m:[1m[33m0.5[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_MPAtestPulseValue[0m:[1m[33m0.5[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_SSAnumberOfSigmaNoiseAwayFromPedestal[0m:[1m[33m5[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionDelayOptimization_MPAnumberOfSigmaNoiseAwayFromPedestal[0m:[1m[33m5[0m
+[1m[31mSetting[0m -- [1m[36mOTMeasureOccupancy_NumberOfEvents[0m:[1m[33m10000[0m
+[1m[31mSetting[0m -- [1m[36mOTMeasureOccupancy_SSAtestPulseValue[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mOTMeasureOccupancy_MPAtestPulseValue[0m:[1m[33m1[0m
+[1m[31mSetting[0m -- [1m[36mOTMeasureOccupancy_ForceChannelGroup[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mOTMeasureOccupancy_ThresholdOffset[0m:[1m[33m0[0m
+[1m[31mSetting[0m -- [1m[36mOTPScommonNoise_NumberOfEvents[0m:[1m[33m10000[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionOccupancyScan_ListOfInjectedPulses[0m:[1m[33m0,0.25,0.5,1.,2.[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionOccupancyScan_NumberOfEventsWithoutInjection[0m:[1m[33m1e+06[0m
+[1m[31mSetting[0m -- [1m[36mOTinjectionOccupancyScan_NumberOfEventsWithInjection[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTalignLpGBTinputsForBypass_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTMPAtoCICecv_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTMPAtoCICecv_ShiftRegisterPattern[0m:[1m[33m170[0m
+[1m[31mSetting[0m -- [1m[36mOTMPAtoCICecv_ListOfMPAslvsCurrents[0m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m -- [1m[36mOTSSAtoMPAecv_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTSSAtoMPAecv_ListOfSSAslvsCurrents[0m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m -- [1m[36mOTSSAtoSSAecv_NumberOfIterations[0m:[1m[33m1000[0m
+[1m[31mSetting[0m -- [1m[36mOTSSAtoSSAecv_ListOfSSAslvsCurrents[0m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m -- [1m[36mOTPSringOscillatorTest_NumberOfClockCycles[0m:[1m[33m100[0m
+
+27.09.2024 14:45:46: |139689126776000|I| [1m[35m@@@ Configuring HW parsed from XML file @@@[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	--> Found an Outer Tracker Readout-board[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mExternal clock Disabled[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC1 Card: [0mOPTO_OCTA
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC2 Card: [0mDIO5
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mSending a global reset to the FC7 ..... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mPowering on DIO5 at L8...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[32mPowering on DIO5[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mConfiguring FC7...[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m	CDCE Synchronization[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34m		De-Asserting Sync[0m
+27.09.2024 14:45:46: |139689126776000|I| 		Asserting Sync[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFront-end type code from firmware register : 5[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mDD3 Readout .... [0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mD19cFWInterface::ConfigureBoard with lpGBT[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mConfiguring Tx/Rx polarity[0m
+27.09.2024 14:45:46: |139689126776000|I| Bit number: 0 --- Links offset: 0 --- OG Id: 0[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC-L12 -- Rx Polarity = 00000000000000000000000000000001  -- Tx Polarity = 00000000000000000000000000000000[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mFMC-L8  -- Rx Polarity = 00000000000000000000000000000000  -- Tx Polarity = 00000000000000000000000000000000[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[33mConfiguring lpGBT versions[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[34mLpGBT Version = 00000000000000000000000000000001[0m
+27.09.2024 14:45:46: |139689126776000|I| [1m[35mResetting lpGBT-FPGA core on BeBoard#0[0m
+27.09.2024 14:45:48: |139689126776000|I| [1m[35mD19cLinkInterface::GeneralLinkReset Resetting lpGBT-FPGA core on BeBoard#0 [Attempt#0][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mlpGBT Link Status...[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mlpGBT Link0 status 00000000010000000000000000000111[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT TX Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... MGT Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT RX Ready[1m[32m	 : LOCKED[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[31mSending HARD RESET to ReadoutChips[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[31mSending HARD RESET to CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSparsification set to 1[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting firmware register fc7_daq_cnfg.ddr3_debug.stub_enable to 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting firmware register fc7_daq_cnfg.physical_interface_block.cic.2s_sparsified_enable to 1[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mAccording to the Firmware status registers, it was compiled for: 16 hybrid(s), 1 CIC2 chip(s) per hybrid[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mEnabling FE hybrid : 0 - link Id 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting chips enable register on hybrid0 to 00000000000000000000000000000001[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m1 CIC(s) enabled on this BeBoard[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSetting hybrid enable register to 00000000000000000000000000000001[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mInitializing OT hardware..[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mNow going to configuring lpGBTs#[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mNow going to configuring lpGBTs#0 on Board 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> LpGBT...Configuring chip with Id[0] , Version[1][0m
+27.09.2024 14:45:50: |139689126776000|I| [32mLpGBT chip info: Tx Data Rate = [1m[33m5 Gbit/s[0m[32m; TxEncoding = [1m[33mFEC5[0m[32m; LpGBT Mode = [1m[33mTransceiver[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mlpGBT Configured [READY][0m
+27.09.2024 14:45:50: |139689126776000|I| [32mReseting I2C Masters[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mLoad calibration data and automatically tune vref (repeat if temperature changes)![0m
+27.09.2024 14:45:50: |139689126776000|I| [32mFuseID from LpGBT optical group [1m[33m0[0m[32m on Board [1m[33m0[0m[32m: 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:50: |139689126776000|I| [32mLoading calibration data for LpGBT on Board [1m[33m0[0m[32m OpticalGroup [1m[33m0[0m[32m with Fuse ID 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:50: |139689126776000|W| [1m[31mCalibration data not available for LpGBT on Board ID [1m[33m0[1m[31m OpticalGroup ID [1m[33m0[1m[31m with Fuse ID 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:50: |139689126776000|W| [1m[34m	--> Proceeding without LpGBT ADC calibrations[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> VTRx...Configuring chip with Id[0][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSuccesful write to 14 registers on CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mConfiguring an OuterTrackerPS module [0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mSystemController::ModuleStartUpPS for BeBoard#0 OpticalGroup#0[0m
+27.09.2024 14:45:50: |139689126776000|I| [32mReseting I2C Masters[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mResetting SSA[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mConfiguring CIC0 on link 0 on hybrid 0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> CIC2...Configuring chip with Id[8][0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSuccesful write to 93 registers on CIC[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32m####################################################################################[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mSystemController::CicStartUp for OpticalGroup#0 CIC#0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mOverriding FE_ENABLE for CIC on Hybrid 0 OpticalGroup 0 BeBoard 0 to enable  MPAs [0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[33mLaunching CIC start-up sequence..[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m.... Starting CIC start-up ........ on hybrid 0 for CIC2.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking if CIC requires a Soft reset.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mResetting DLL in CIC0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking DLL lock in CIC0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mDLL in CIC [1m[32m LOCKED.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking CIC0 - has fast command decoder locked?[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[33mRead back value of 11000 from RO status register[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mSUCCESSFULLY [1m[34m locked fast command decoder in CIC.[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32m####################################################################################[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mChecking if a ReSync is needed for Board0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34m	... CIC0 requires a ReSync[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[35mSending a ReSync at the end of the OT-module configuration step[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mConfiguring ReadoutOutChips on Hybrid0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[0] oh Hybrid0[0m
+27.09.2024 14:45:50: |139689126776000|I| [1m[32mWrote 0 control registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[32mWrote 48 global R/W registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[32mWrote 607 local R/W registers in SSA#0[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[35mConfigured OT module[0m
+27.09.2024 14:45:51: |139689126776000|I| [32mStarting [1m[33mmonitoring[0m[32m thread[0m
+27.09.2024 14:45:51: |139689126776000|I| Configured[0m
+virtual void Tool::Start(const StartInfo&) [167] fDirectoryName = Results/Run_118
+27.09.2024 14:45:51: |139689126776000|I| [32mFuseID from SSA2#0 Pos 222 Wafer 24 Lot 8 Status 0 Process 0 ADCRef 0[0m
+27.09.2024 14:45:51: |139689126776000|W| basic_string: construction from null is not valid
+27.09.2024 14:45:51: |139689126776000|W| void MetadataHandler::fillInitialConditions() Username not set, using dummy name
+27.09.2024 14:45:51: |139689126776000|I| [32mFuseID from LpGBT optical group [1m[33m0[0m[32m on Board [1m[33m0[0m[32m: 0x[1m[33mec293bf1[0m
+27.09.2024 14:45:51: |139689126776000|I| [1m[33mFuseID from CIC2 0 LOT 0 Wafer 0 RETICLE 0 DIE 0[0m
+27.09.2024 14:45:51: |139689126776000|I| Run 118 started[0m
+void CombinedCalibration<Tools>::start_single(T&) [with T = TuneLpGBTVref; Tools = {TuneLpGBTVref, ConfigureOnly}] Starting calibration
+27.09.2024 14:45:51: |139688702633536|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+27.09.2024 14:45:51: |139688702633536|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern VREFTUNE for frontend type LpGBT[0m
+27.09.2024 14:45:53: |139688702633536|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+void CombinedCalibration<Tools>::start_single(T&) [with T = TuneLpGBTVref; Tools = {TuneLpGBTVref, ConfigureOnly}] Calibration done
+void CombinedCalibration<Tools>::start_single(T&) [with T = ConfigureOnly; Tools = {TuneLpGBTVref, ConfigureOnly}] Starting calibration
+void CombinedCalibration<Tools>::start_single(T&) [with T = ConfigureOnly; Tools = {TuneLpGBTVref, ConfigureOnly}] Calibration done
+int main(int, char**)Supervisor Sending Stop!!!
+27.09.2024 14:45:54: |139689126776000|I| [1m[34mReading all the read-only registers to update output files[0m
+27.09.2024 14:45:54: |139689126776000|I| [1m[33mReading all readable registers for BeBoard 0[0m
