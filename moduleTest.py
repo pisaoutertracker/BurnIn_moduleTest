@@ -10,7 +10,7 @@ defaultCommand="PSquickTest"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
 firmware_5G="ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
-firmware_10G="ps8mi10gcic2l12octal8dio5tluv300" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
+firmware_10G="ps8m10gcic2l12octal8dio5tluv300" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
@@ -50,12 +50,13 @@ if __name__ == '__main__':
     parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed. Default: %s'%lastPh2ACFversion)
     parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
-    parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s) instad of 5g (%s).'%(firmware_10G, firmware_5G))
+    parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s).'%firmware_10G)
+    parser.add_argument('--g5', type=bool, nargs='?', const=True, help='Install 5g firmware (%s).'%firmware_5G)
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
-    parser.add_argument('--skipModuleCheck', type=bool, default=True, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
-    parser.add_argument('--firmware', type=str, nargs='?', const='', default=firmware_5G, help='Firmware used in fpgaconfig. Default=%s'%firmware_5G)
+    parser.add_argument('--skipModuleCheck', type=bool, default=False, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
+    parser.add_argument('--firmware', type=str, nargs='?', const='', help='Firmware used in fpgaconfig. Default=%s'%firmware_5G)
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
 
@@ -133,6 +134,7 @@ if __name__ == '__main__':
         firmware = firmware_10G
     else:
         firmware = firmware_5G
+
     
     ## This will be replaced by a function that check which optical group are conntected to a specific slot
     opticalGroups = [int(s) for s in slots]
@@ -144,7 +146,7 @@ if __name__ == '__main__':
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
-    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB, addNewModule
+    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB, addNewModule, updateNewModule
     
     ### read xml config file and create XML
     import shutil
@@ -180,7 +182,7 @@ if __name__ == '__main__':
     pprint(xmlConfig)
     
     ### launch fpga_config
-    if args.runFpgaConfig: fpgaconfig(xmlFile, firmware, ph2ACFversion)
+    if args.runFpgaConfig or args.g10 or args.g5: fpgaconfig(xmlFile, firmware, ph2ACFversion)
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
@@ -265,13 +267,17 @@ if __name__ == '__main__':
                     message = "HwId %d is already associated to module %s.\nPlease fix the module name used."%(id_, hwToModuleName[id_])
                     print(message)
                     if not args.skipModuleCheck: raise Exception(message)
+                print(id_, args.skipModuleCheck)
                 if int(id_)!=-1 and not args.skipModuleCheck:
                     if args.addNewModule:
                         answer = "y" ## add the module without asking
                     else:
                         answer = input("Do you want to add module with hwID %d as %s in the database? (y/n): "%(id_, moduleExpected))
                     if answer == "y" or answer == "yes" or answer == "Y":
-                        addNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
+                        updateNewModule(moduleExpected, id_) ## the DB function will check if the hardware ID is already used by another module
+                        ##update map
+                        hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
+                        allModules = hwToModuleName.values()
                     else:
                         raise Exception("I cannot work with unknown modules.")
 
