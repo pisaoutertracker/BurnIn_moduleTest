@@ -31,6 +31,11 @@ def uploadTestToDB(testID, testResult = {}):
 
 def uploadRunToDB(newRun = {}):
     if verbose>0: print("Calling uploadRunToDB()")
+    if len(newRun["runDate"].split("-")[0])==2:
+        print("WARNING: runDate is in the wrong format. It should be YYYY-MM-DD HH:MM:SS. Fixing it.")
+        print ("Before:", newRun["runDate"])
+        newRun["runDate"] = "20" + newRun["runDate"]
+        print ("After:", newRun["runDate"])
     if verbose>2: pprint(newRun)
    
     # URL of the API endpoint for updating a module
@@ -351,6 +356,45 @@ def addNewModule(moduleName, id_):
     if verbose>1:
         print(response.json()['message'])
     return response.json()
+
+###  This code allow you to add missing field in an already existing module
+def updateNewModule(moduleName, id_):
+    if verbose>0: print("updateNewModule(%s, %s)"%(moduleName, id_))
+    # URL of the API endpoint for updating a module
+    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    response = requests.get(api_url)
+    moduleJson = evalMod(response.content.decode().replace("null","[]"))
+    if moduleJson:
+        print("Module %s already exists"%moduleName)
+        if not hasattr(moduleJson,"moduleName") or not moduleJson["moduleName"]: moduleJson["moduleName"] = moduleName
+        if not hasattr(moduleJson,"hwId") or moduleJson["hwId"]: moduleJson["hwId"] = id_
+        if not hasattr(moduleJson,"position") or moduleJson["position"]: moduleJson["position"] = "cleanroom"
+        if not hasattr(moduleJson,"logbook") or moduleJson["logbook"]: moduleJson["logbook"] = {"entry": "Initial setup"}
+        if not hasattr(moduleJson,"local_logbook") or moduleJson["local_logbook"]: moduleJson["local_logbook"] = {"entry": "Local setup"}
+        if not hasattr(moduleJson,"ref_to_global_logbook") or moduleJson["ref_to_global_logbook"]: moduleJson["ref_to_global_logbook"] = []
+        if not hasattr(moduleJson,"status") or moduleJson["status"]: moduleJson["status"] = "operational"
+        if not hasattr(moduleJson,"overall_grade") or moduleJson["overall_grade"]: moduleJson["overall_grade"] = "A"
+        if not hasattr(moduleJson,"tests") or moduleJson["tests"]: moduleJson["tests"] = []
+        print("Updating module %s with:"%moduleName)
+        del moduleJson["_id"]
+        pprint(moduleJson)
+        response = requests.put(api_url, json=moduleJson)
+        print("Done ", response)
+        ## print response text
+        print(response.text)
+        print(response.json())
+        print(response.json())
+        return response.json()
+    else:
+        for module in modules:
+            print(module)
+        print("Module %s does not exist. Adding it. Launch addNewModule(%s,%s)"%(moduleName, moduleName, id_))
+        return addNewModule(moduleName, id_)
+        
+#    if len(modules)==0:
+#        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
+    
+
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
