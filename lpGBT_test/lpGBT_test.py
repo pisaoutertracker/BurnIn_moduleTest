@@ -43,40 +43,67 @@ def runModuleTest(testID, xmlFile="PS_Module.xml", useExistingModuleTest=False, 
         rootFile = error.split("Closing result file: ")[1].split(".root")[0] + ".root"
         newTestID = rootFile.split("/")[1]
         os.rename(logFile, logFile.replace(testID, newTestID))
-        return 0
+        return newTestID
     else:
         newTestID = testID
         print("Some error occurred. Check the log file: %s" % logFile)
-        return 1
+        return "Failed"
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from time import sleep
+from time import time
 
 parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+parser.add_argument("-f", "--xml", dest="xmlFile", required=True, 
+                    help="xml file (eg. ModuleTest_settings.xml)")
 parser.add_argument("-c", "--channel", dest="channel", required=True,
                     help="channel number for LV Caen control. e.g. BLV02")
-parser.add_argument("-f", "--xml", dest="xmlFile", default="ModuleTest_settings.xml",
-                    help="xml file (eg. 'ModuleTest_settings.xml')")
+
+print("Example:    python3 -u lpGBT_test.py -f ModuleTest_settings_OG01.xml -c BLV01,BLV02 > log_11.txt ")
 
 args = parser.parse_args()
 
+channels = args.channel.split(",") if "," in args.channel else [args.channel]
+
 from CAEN_controller import caen
 
-caen_controller = caen()
-
-for testID in range(1000):
+#caen_controller = caen()
+restartCaen = True
+for testID in range(1000000):
+    timestamp = str(datetime.fromtimestamp(datetime.now().timestamp())).replace("-","_").replace(" ","_").replace(".","_").replace(":","_")
+    if restartCaen:
+        caen_controller = caen()
+        restartCaen = False
     try:
-        caen_controller.on(args.channel, verbose)
-        sleep(1)
-        out = runModuleTest(testID, args.xmlFile)
-        if out == 0:
-            print("Test %d passed" % testID)
-            caen_controller.off(args.channel, verbose)
-            sleep(10)
-        else:
-            print("Test %d failed" % testID)
+        for ch in channels: caen_controller.on(ch, verbose)
     except Exception as e:
-            print("Error occurred. Skipping test %d: %s" % (testID, str(e)))
-caen_controller.off(args.channel, verbose)
+        print("Test %d (%s). Problems with LV Caen switch on. Check the connection."%(testID,timestamp))
+        print("Error: %s" % str(e))
+        restartCaen = True
+        del caen_controller
+        sleep(1)
+        continue
+    sleep(1)
+    ## timer start
+    start = time()
+    out = runModuleTest(timestamp, args.xmlFile)
+    deltaTime = time() - start
+    if out == "Failed":
+        print("Test %d FAILED (%.1f s) !!!!!!!!!!!!!!!!!!!!!! " % (testID, deltaTime) )
+    else:
+        print("Test %d (%s) passed (%.1f s)" % (testID, out, deltaTime) )
+        try:
+            for ch in channels: caen_controller.off(ch, verbose)
+            sleep(10)
+        except Exception as e:
+            print("Test %d (%s). Problems with LV Caen switch off. Check the connection."%(testID,timestamp))
+            print("Error: %s" % str(e))
+            restartCaen = True
+            del caen_controller
+
+
+for ch in channels: caen_controller.off(ch, verbose)
+
+
 
 

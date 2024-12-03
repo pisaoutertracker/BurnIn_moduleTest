@@ -5,14 +5,6 @@ import socket
 
 BUFFER_SIZE = 100000
 
-parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("-c", "--channel", dest="channel", required=True,
-                    help="channel number for LV Caen control. e.g. BLV02")
-parser.add_argument("--on", dest="action", action="store_const", const="on",
-                    help="turn on the specified channel")
-parser.add_argument("--off", dest="action", action="store_const", const="off",
-                    help="turn off the specified channel")
-args = parser.parse_args()
 
 class tcp_util:
     """Utility class for tcp communication management."""
@@ -66,6 +58,15 @@ class caen:
             if verbose: print(data)
 
 if __name__ == "__main__":
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-c", "--channel", dest="channel", required=True,
+                        help="channel number for LV Caen control. e.g. BLV02")
+    parser.add_argument("--on", dest="action", action="store_const", const="on",
+                        help="turn on the specified channel")
+    parser.add_argument("--off", dest="action", action="store_const", const="off",
+                        help="turn off the specified channel")
+    args = parser.parse_args()
+
     if not args.action:
         print("Action (--on or --off) is required.")
         sys.exit(1)
