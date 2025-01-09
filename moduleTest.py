@@ -18,6 +18,7 @@ podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Re
 import os
 prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder = "/home/cmsTkUser/Ph2_ACF/settings"
+connectionMapFileName = "connectionMap_%s.json"
 
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
 #lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x00', '0x67']
@@ -295,7 +296,7 @@ if __name__ == '__main__':
         board_opticals = list(IDs.keys())
         moduleNames = [ hwToModuleName[IDs[bo]] for bo in board_opticals ]
         moduleMongoIDs = [ hwToMongoID[IDs[bo]] for bo in board_opticals ]
-        
+
         ## upload all files
         for file in [xmlPyConfigFile, xmlOutput, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
             newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
@@ -307,7 +308,16 @@ if __name__ == '__main__':
             if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlOutput): continue
             if file != rootFile.GetName():
                 shutil.copy(file, resultFolder)
-        
+
+        ## create and upload connectionMap files
+        from databaseTools import getConnectionMap, saveMapToFile
+        for module in modules:
+            connectionMap = getConnectionMap(module)
+            saveMapToFile(connectionMap, resultFolder+"/"+connectionMapFileName%module)
+            newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
+            if verbose>1: print("Uploaded %s"%newFile)
+
+
         ## make a zip file and upload it
         zipFile = "output"
         if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", zipFile, resultFolder)

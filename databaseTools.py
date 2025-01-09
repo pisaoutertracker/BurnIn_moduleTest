@@ -109,6 +109,31 @@ def getFiberLink(slot):
             #raise Exception("Error in Calling getModuleConnectedToFC7()",fc7, og)
     return fc7, optical
 
+### read the fiber connections of slot X
+
+def getConnectionMap(moduleName):
+    if verbose>0: print("Calling getConnectionMap()", moduleName)
+    api_url = "http://%s:%d/snapshot"%(ip, port)
+    
+    snapshot_data = {
+        "cable": moduleName,
+        "side": "crateSide"
+    }
+    response = requests.post(api_url, json=snapshot_data)
+    
+    if response.status_code == 200:
+        if verbose>1: print("Module read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    out = evalMod(response.content.decode())
+    return out
+
+from pprint import pformat
+def saveMapToFile(json, filename):
+    with open(filename, 'w') as f:
+        f.write(pformat(json))
+    print("Saved to", filename) 
+
 
 ### read the expected module connected of slot board X optical group Y
 
@@ -398,6 +423,9 @@ def updateNewModule(moduleName, id_):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    connectionMap = getConnectionMap("PS_26_05-IPG_001021")
+    print(connectionMap)
+    saveMapToFile(connectionMap, "connectionMap.json")
     r = getRunFromDB("run303")
     print(r)
     moduleName = "M123"
