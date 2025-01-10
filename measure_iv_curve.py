@@ -97,7 +97,7 @@ class TCPUtil():
         return (messageLength).to_bytes(4, byteorder='big') + N.to_bytes(4, byteorder='big') + message.encode('utf-8')
 
 class IVCurveMeasurement:
-    def __init__(self, channel, voltage_steps, delay=5.0, voltage_threshold=0.5, voltage_threshold_time=0.5, voltage_threshold_retries=20, settling_time=0.5):
+    def __init__(self, channel, voltage_steps, delay=5.0, voltage_threshold=0.5, voltage_threshold_time=0.5, voltage_threshold_retries=20, settling_time=0.5, final_voltage=300):
         self.channel = channel
         self.voltage_steps = voltage_steps
         self.delay = delay
@@ -107,6 +107,7 @@ class IVCurveMeasurement:
         self.settling_time = settling_time
         self.measurements = []
         self.max_data_retries = 3  # Add max retries for incomplete data
+        self.final_voltage = final_voltage
         
     def get_caen_data(self):
         """Get data from CAEN with retry logic for incomplete data"""
@@ -208,7 +209,15 @@ class IVCurveMeasurement:
             # Turn off channel with new connection
             final_conn = TCPUtil(ip='192.168.0.45', port=7000)
             final_conn.sendMessage(f'TurnOff,PowerSupplyId:caen,ChannelId:{self.channel}')
+            ack = final_conn.socket.recv(100000)[8:].decode("utf-8")
             final_conn.socket.close()
+            
+            print(f"After TurnOff, setting final voltage to {self.final_voltage} V")
+            voltage_conn = TCPUtil(ip='192.168.0.45', port=7000)
+            voltage_conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{self.channel},Voltage:{self.final_voltage}')
+            ack = voltage_conn.socket.recv(100000)[8:].decode("utf-8")
+            voltage_conn.socket.close()
+            print(f"Received acknowledgment: {ack}")
 
     def save_to_csv(self, output_path, run_info):
         """Save measurements to CSV file in the required format"""
@@ -256,7 +265,8 @@ def measure_and_upload(
     output_dir='./IVdata',
     module_name='TEST',
     upload=False,
-    store_locally=False
+    store_locally=False,
+    final_voltage=300
 ):
     """
     Measure IV curve and optionally upload to database
@@ -274,7 +284,8 @@ def measure_and_upload(
         voltage_threshold=voltage_threshold,
         voltage_threshold_time=voltage_threshold_time,
         voltage_threshold_retries=voltage_threshold_retries,
-        settling_time=settling_time
+        settling_time=settling_time,
+        final_voltage=final_voltage
     )
     
     # Perform measurement
@@ -342,6 +353,8 @@ if __name__ == "__main__":
                       help='Module name (default: TEST)')
     parser.add_argument('--upload', action='store_true', help='Upload to central database')
     parser.add_argument('--store-locally', action='store_true', help='Store the CSV file locally')
+    parser.add_argument('--final-voltage', type=float, default=300,
+                      help='Final voltage to set before turning off (default: 300V)')
     
     args = parser.parse_args()
     
@@ -357,7 +370,8 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         module_name=args.module_name,
         upload=args.upload,
-        store_locally=args.store_locally
+        store_locally=args.store_locally,
+        final_voltage=args.final_voltage
     )
     
     print(f"Script finished with exit code: {exit_code}")
