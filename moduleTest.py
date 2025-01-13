@@ -120,6 +120,9 @@ if __name__ == '__main__':
                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
         if error and not args.ignoreConnection:
             raise Exception(error)
+        else:
+            print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
+            print("WARNING: %s"%error)
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
