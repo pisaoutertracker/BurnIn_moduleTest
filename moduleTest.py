@@ -118,7 +118,7 @@ if __name__ == '__main__':
                 print(error)
             else:
                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error and args.command!="readOnlyID" and args.ignoreConnection:
+        if error and not args.ignoreConnection:
             raise Exception(error)
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
