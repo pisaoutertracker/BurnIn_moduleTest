@@ -155,6 +155,7 @@ def getModuleConnectedToFC7(fc7, og):
     
     moduleName = None
     for link in out:
+    
         if "connections" in out[link]:
             if out[link]["det_port"]==og and len(out[link]["connections"])>0:
                 last = out[link]["connections"][-1]
@@ -166,8 +167,26 @@ def getModuleConnectedToFC7(fc7, og):
             if "error" in out[link]: print(out[link]["error"])
             #it might be a new module to be added into the database
             #raise Exception("Error in Calling getModuleConnectedToFC7()",fc7, og)
+    if moduleName == None:
+        print("Error: Could not find module connected to FC7 %s and optical group %s"%(fc7, og))
     return moduleName
 
+### check from DB if the module is 5G or 10G, looking at module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_BANDWIDTH"]
+def getModuleBandwidthFromDB(moduleName):
+    if verbose>0: print("Calling getModuleBandwidthFromDB()", moduleName)
+    module = getModuleFromDB(moduleName)
+    if "children" in module and "PS Read-out Hybrid" in module["children"] and "details" in module["children"]["PS Read-out Hybrid"] and "ALPGBT_BANDWIDTH" in module["children"]["PS Read-out Hybrid"]["details"]:
+        return module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_BANDWIDTH"]
+    elif not "children" in module:
+        print ("Error: Could not find children in module %s"%moduleName)
+    elif not "PS Read-out Hybrid" in module["children"]:
+        print ("Error: Could not find PS Read-out Hybrid in module %s"%moduleName)
+    elif not "details" in module["children"]["PS Read-out Hybrid"]: 
+        print ("Error: Could not find details in module %s"%moduleName)
+    import pprint
+    print(module)
+    return "Not Found"
+    
 
 ### read the list of sessions
 
@@ -328,8 +347,14 @@ def makeModuleNameMapFromDB():
     for module in modules:
         if "hwId" in module:
             hwId = int(module["hwId"])
+#        if "children" in module and "lpGBT" in module["children"] and "CHILD_SERIAL_NUMBER" in module["children"]["lpGBT"]:
+#            hwId = int(module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"])
             hwToModuleName[hwId] = module["moduleName"]
             hwToMongoID[hwId] = module["_id"]
+        else:
+            #import pprint
+            #pprint.pprint(module)
+            print('WARNING: Missing module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"] (ie. hardwareID) in module %s'%module["moduleName"])
     
     ### hard-code some modules, waiting to have these numbers in the database
     for i, lpGBTid in enumerate(lpGBTids):
@@ -429,7 +454,7 @@ if __name__ == '__main__':
     saveMapToFile(connectionMap, "connectionMap.json")
     r = getRunFromDB("run303")
     print(r)
-    moduleName = "M123"
+    moduleName = "PS_26_IPG-10005"
     testID = "T2023_11_08_17_57_54_302065"
     #testID = "T52"
     hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
@@ -437,8 +462,8 @@ if __name__ == '__main__':
     print("getFiberLink", 'PS_26_05-IPG_00102')
     pprint(getFiberLink('PS_26_05-IPG_00102'))
 
-    print("getModuleConnectedToFC7:", "FC7OT2", "0")
-    pprint(getModuleConnectedToFC7("FC7OT2", "0"))
+    print("getModuleConnectedToFC7:", "FC7OT2", "OG10")
+    pprint(getModuleConnectedToFC7("FC7OT2", "OG10"))
        
     print("\nhwToModuleName:")
     from pprint import pprint
@@ -453,6 +478,9 @@ if __name__ == '__main__':
     print("\n #####     Check Module %s on MongoDB    ##### \n"%moduleName)
     pprint(module)
     
+    print("\n #####     Check if module %s is 5G or 10G    ##### \n"%moduleName)
+    print(getModuleBandwidthFromDB(moduleName))
+
     test = getTestFromDB(testID)
     print("\n #####     Check Test %s on MongoDB    ##### \n"%testID)
     pprint(test)
