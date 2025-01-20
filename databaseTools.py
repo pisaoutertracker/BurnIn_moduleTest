@@ -158,6 +158,7 @@ def getModuleConnectedToFC7(fc7, og):
         if "connections" in out[link]:
             if out[link]["det_port"]==og and len(out[link]["connections"])>0:
                 last = out[link]["connections"][-1]
+                if len(last["det_port"])>0: continue ## if it has something on det side, it is a cable, not a module.
                 ## expect 2 "fiber" pointing to the same FC7 and optical group
                 if moduleName: assert(moduleName==last["cable"]) 
                 moduleName = last["cable"]
