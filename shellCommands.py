@@ -8,6 +8,8 @@ def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PI
     try:
         return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
     except subprocess.CalledProcessError as e:
+        print(e.output)
+        print(type(e), type(e.output))
         raise Exception("{}".format(e.output.decode('utf-8')))
 
 ### Burn-in commands
