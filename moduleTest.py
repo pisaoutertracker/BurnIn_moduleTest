@@ -93,7 +93,7 @@ if __name__ == '__main__':
     
     
     ## check if the expected modules match the modules declared in the database for the slots
-    from databaseTools import getModuleConnectedToFC7
+    from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
     for i, slot in enumerate(slots):
         error = None
         moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
@@ -113,6 +113,12 @@ if __name__ == '__main__':
                 error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
                 print(error)
         else:
+            moduleBandwidth = getModuleBandwidthFromDB(moduleFromDB)
+            print("Found module %s. According to Pisa db is %s"%(moduleFromDB, moduleBandwidth))
+            if moduleBandwidth == "5Gbps" and args.g10:
+                raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
+            elif moduleBandwidth == "10Gbps" and args.g5:
+                raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
             if moduleFromDB != moduleFromCLI:
                 error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
                 print(error)
