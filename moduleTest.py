@@ -99,6 +99,12 @@ if __name__ == '__main__':
         moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
         moduleFromCLI = modules[i]
         print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
+        moduleBandwidth = getModuleBandwidthFromDB(moduleFromCLI)
+        print("Expected module %s. According to Pisa db is %s"%(moduleFromCLI, moduleBandwidth))
+        if moduleBandwidth == "5Gbps" and args.g10:
+            raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
+        elif moduleBandwidth == "10Gbps" and args.g5:
+            raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
         if moduleFromDB == None:
             from databaseTools import getFiberLink
             fc7, og = getFiberLink(moduleFromCLI)
@@ -113,12 +119,6 @@ if __name__ == '__main__':
                 error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
                 print(error)
         else:
-            moduleBandwidth = getModuleBandwidthFromDB(moduleFromDB)
-            print("Found module %s. According to Pisa db is %s"%(moduleFromDB, moduleBandwidth))
-            if moduleBandwidth == "5Gbps" and args.g10:
-                raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
-            elif moduleBandwidth == "10Gbps" and args.g5:
-                raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
             if moduleFromDB != moduleFromCLI:
                 error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
                 print(error)
