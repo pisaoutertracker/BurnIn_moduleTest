@@ -14,6 +14,133 @@ test_run_dataA = {'runDate': '2023-12-12T10:12:23.1112', 'runDate': '2023-12-12T
 
 test = {'runDate': '2024-06-19T10:56:26', 'runSession': 'session80', 'runStatus': 'done', 'runType': 'Type1', 'runBoards': {0: 'fake'}, 'runModules': {'fake_optical0': ('PS_26_05-IBA_00102', 3962125297)}, 'runNoise': {3962125297: {'H0_SSA0': 1.6686748445034028, 'H0_SSA1': 1.642870126167933, 'H0_SSA2': 1.8782315522432327, 'H0_SSA3': 1.6349734460314116, 'H0_SSA4': 1.757498276233673, 'H0_SSA5': 1.6408348987499872, 'H0_SSA6': 1.6429049352804819, 'H0_SSA7': 1.5410810137788455, 'H0_MPA8': 0.0, 'H0_MPA9': 0.0, 'H1_SSA0': 1.5204497873783112, 'H1_SSA1': 1.726296795407931, 'H1_SSA2': 1.7595895811915399, 'H1_SSA3': 1.7196897546450296, 'H1_SSA4': 1.829413508872191, 'H1_SSA5': 1.8390584458907446, 'H1_SSA6': 2.1055170193314554, 'H1_SSA7': 2.269398490091165, 'H1_MPA8': 0.0, 'H1_MPA9': 0.0}}, 'runConfiguration': {'commonSettings': 'fake', 'Nevents': '-1', 'boards': {'0': {'ip': 'fake', 'opticalGroups': {'0': {'lpGBT': 'fake', 'hybrids': {'0': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9]}, '1': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9]}}}}}}}, 'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//T2024_07_09_17_58_26_952865/output_bttaj.zip'}
 
+test2 = {'runDate': '2025-01-21T16:33:25', 'runSession': 'session0', 'runStatus': 'done', 'runType': 'Type1', 'runBoards': {0: 'fake'}, 'runModules': {'fake_optical2': ('PS_26_10-IPG_00103', 749637543)}, 'runNoise': {749637543: {'H0_SSA0': 4.099950975179672, 'H0_SSA1': 3.762727153301239, 'H0_SSA2': 3.9623685499032337, 'H0_SSA3': 3.6007729331652323, 'H0_SSA4': 3.678371566534042, 'H0_SSA5': 3.5452729841073354, 'H0_SSA6': 3.711491898695628, 'H0_SSA7': 3.5207895656426746, 'H0_MPA8': 1.5034007266396656, 'H0_MPA9': 1.5381765266725174, 'H0_MPA10': 1.561102989575981, 'H0_MPA11': 1.6564606525935233, 'H0_MPA12': 1.5415886939774888, 'H0_MPA13': 1.5376611722672047, 'H0_MPA14': 1.4908423149958252, 'H0_MPA15': 1.4666612166756143, 'H1_SSA0': 3.6817489564418793, 'H1_SSA1': 3.8564588765303296, 'H1_SSA2': 3.8327214658260345, 'H1_SSA3': 4.042537007729212, 'H1_SSA4': 4.218453005949656, 'H1_SSA5': 4.451101825634638, 'H1_SSA6': 4.57403857310613, 'H1_SSA7': 4.96379288037618, 'H1_MPA8': 1.3482467160676606, 'H1_MPA9': 1.5684510056472694, 'H1_MPA10': 1.5006299837492407, 'H1_MPA11': 1.547164262497487, 'H1_MPA12': 1.5145373625525584, 'H1_MPA13': 1.5702755035754914, 'H1_MPA14': 1.6804338100211074, 'H1_MPA15': 1.4098257917173518}}, 'runConfiguration': {'commonSettings': 'fake', 'Nevents': '-1', 'boards': {'0': {'ip': 'fake', 'opticalGroups': {'2': {'lpGBT': 'fake', 'hybrids': {'0': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}, '1': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}}}}}}}, 'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//T2025_01_22_10_11_18_522611/output_rilmv.zip'}
+
+
+test3 = {
+    'runDate': '2025-01-21T16:33:25',
+    'runSession': 'session80',
+    'runStatus': 'done',
+    'runType': 'Type1',
+    'runBoards': {0: 'fake'},
+    'runModules': {
+        'fake_optical2': ('PS_26_10-IPG_00103', 749637543)
+    },
+    'runNoise': {
+        749637543: {
+            'H0_SSA0': 4.099950975179672,
+            'H0_SSA1': 3.762727153301239,
+            'H0_SSA2': 3.9623685499032337,
+            'H0_SSA3': 3.6007729331652323,
+            'H0_SSA4': 3.678371566534042,
+            'H0_SSA5': 3.5452729841073354,
+            'H0_SSA6': 3.711491898695628,
+            'H0_SSA7': 3.5207895656426746,
+            'H0_MPA8': 1.5034007266396656,
+            'H0_MPA9': 1.5381765266725174,
+            # Removed H0_MPA10 through H0_MPA15
+            'H1_SSA0': 3.6817489564418793,
+            'H1_SSA1': 3.8564588765303296,
+            'H1_SSA2': 3.8327214658260345,
+            'H1_SSA3': 4.042537007729212,
+            'H1_SSA4': 4.218453005949656,
+            'H1_SSA5': 4.451101825634638,
+            'H1_SSA6': 4.57403857310613,
+            'H1_SSA7': 4.96379288037618,
+            'H1_MPA8': 1.3482467160676606,
+            'H1_MPA9': 1.5684510056472694
+            # Removed H1_MPA10 through H1_MPA15
+        }
+    },
+    'runConfiguration': {
+        'commonSettings': 'fake',
+        'Nevents': '-1',
+        'boards': {
+            '0': {
+                'ip': 'fake',
+                'opticalGroups': {
+                    '2': {
+                        'lpGBT': 'fake',
+                        'hybrids': {
+                            '0': {
+                                # strips the same
+                                'strips': [0, 1, 2, 3, 4, 5, 6, 7],
+                                # keep only pixels 8,9
+                                'pixels': [8, 9]
+                            },
+                            '1': {
+                                'strips': [0, 1, 2, 3, 4, 5, 6, 7],
+                                'pixels': [8, 9]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//T2025_01_22_10_11_18_522611/output_rilmv.zip'
+}
+
+test = {
+    'runDate': '2024-06-19T10:56:26',
+    'runSession': 'session80',
+    'runStatus': 'done',
+    'runType': 'Type1',
+    'runBoards': {0: 'fake'},
+    'runModules': {
+        'fake_optical0': ('PS_26_05-IBA_00102', 3962125297)
+    },
+    'runNoise': {
+        3962125297: {
+            'H0_SSA0': 1.6686748445034028,
+            'H0_SSA1': 1.642870126167933,
+            'H0_SSA2': 1.8782315522432327,
+            'H0_SSA3': 1.6349734460314116,
+            'H0_SSA4': 1.757498276233673,
+            'H0_SSA5': 1.6408348987499872,
+            'H0_SSA6': 1.6429049352804819,
+            'H0_SSA7': 1.5410810137788455,
+            'H0_MPA8': 0.0,
+            'H0_MPA9': 0.0,
+            'H1_SSA0': 1.5204497873783112,
+            'H1_SSA1': 1.726296795407931,
+            'H1_SSA2': 1.7595895811915399,
+            'H1_SSA3': 1.7196897546450296,
+            'H1_SSA4': 1.829413508872191,
+            'H1_SSA5': 1.8390584458907446,
+            'H1_SSA6': 2.1055170193314554,
+            'H1_SSA7': 2.269398490091165,
+            'H1_MPA8': 0.0,
+            'H1_MPA9': 0.0
+        }
+    },
+    'runConfiguration': {
+        'commonSettings': 'fake',
+        'Nevents': '-1',
+        'boards': {
+            '0': {
+                'ip': 'fake',
+                'opticalGroups': {
+                    '0': {
+                        'lpGBT': 'fake',
+                        'hybrids': {
+                            '0': {
+                                'strips': [0, 1, 2, 3, 4, 5, 6, 7],
+                                'pixels': [8, 9]
+                            },
+                            '1': {
+                                'strips': [0, 1, 2, 3, 4, 5, 6, 7],
+                                'pixels': [8, 9]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//T2024_07_09_17_58_26_952865/output_bttaj.zip'
+}
+
 #test_run_data = {
 
 #{
@@ -34,13 +161,15 @@ test = {'runDate': '2024-06-19T10:56:26', 'runSession': 'session80', 'runStatus'
 api_url = "http://%s:%d/addRun"%(ip, port)
 
 # Send a PUT request
-response = requests.post(api_url, json=test)
+response = requests.post(api_url, json=test3)
 
 # Check the response
 if response.status_code == 201:
     print("Test created successfully")
 else:
     print("Failed to update the module. Status code:", response.status_code)
+    print(response.text)
+    print(response.json())
 
 
 ##!/bin/bash
