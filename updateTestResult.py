@@ -197,6 +197,33 @@ def addMultipleHistoPlot(plots, canvas, plotCollections, fName):
 #    ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
 #    return noiseGraph
 
+def get_histograms(directory, path=""):
+    """
+    Recursively collect all histograms in a ROOT directory and its subdirectories.
+
+    Parameters:
+        directory (ROOT.TDirectory): The ROOT directory to search.
+        path (str): The current path in the ROOT file.
+
+    Returns:
+        list: A list of tuples where each tuple contains the full path and the histogram object.
+    """
+    histograms = []
+
+    for key in directory.GetListOfKeys():
+        obj_name = key.GetName()
+        obj = key.ReadObj()
+        obj_class = obj.ClassName()
+        full_path = f"{path}/{obj_name}" if path else obj_name
+
+        if obj.IsA().InheritsFrom("TDirectory"):  # If the object is a folder
+            histograms.extend(get_histograms(obj, full_path))  # Recursive call for subdirectory
+        elif "TH" in obj_class:  # If the object is a histogram
+            obj.SetDirectory(0)  # Detach the histogram from the ROOT file to prevent automatic deletion
+            histograms.append((full_path, obj))
+
+    return histograms
+
 def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTime):
     plots = []
     ## add Influxdb plot
@@ -238,6 +265,30 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
 
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
+    histograms = get_histograms(rootFile)
+
+    ## Check if the variables are in the root file#
+    for collection in [allVariables, hybridPlots, opticalGroupPlots, exstensiveVariables]:
+        print("Checking %s"%collection)
+        for name in collection[:]:
+            print("Checking %s"%name)
+            found = False
+            for hist_path, hist_obj in histograms:
+                if name in hist_path:
+                    found = True
+                    break
+            print("found", found, hist_path)
+            if not found:
+                print("#####################################################################################")
+                print("WARNING: %s not found in the root file. It will be excluded from the webpage"%name)
+                print("#####################################################################################")
+                collection.remove(name)
+
+    ## if the plot is not found, it is removed from the list
+    for hist_path, hist_obj in histograms:
+        if "NoiseDistribution" in hist_path:
+            print(hist_path)
+            addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path)
     for chip in ["SSA", "MPA"]:
         if chip == "SSA": chipIds = hybrid['strips']
         elif chip == "MPA": chipIds = hybrid['pixels']
@@ -256,14 +307,15 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     plot = None
                     count = 0
                     while(plot==None):
-                        plot = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId))
+                        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId)
+                        plot = rootFile.Get(histoName)
                         if count>0: 
-                            print("WARNINGHERE:", count)
+                            print("WARNINGHERE:", count, "histoName ", histoName)
                             print(rootFile.Print())
                             from time import sleep
                             sleep(1)
                             rootFile.Recover()
-                        if count>10: 
+                        if count>5: 
                             raise Exception("Problems with file %s"%rootFile.GetName())
                         count+=1
                     print("T",str(plot))
