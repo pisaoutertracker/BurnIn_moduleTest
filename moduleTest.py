@@ -116,7 +116,7 @@ if __name__ == '__main__':
                     error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
                     print(error)
             else:
-                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
+                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
                 print(error)
         else:
             if moduleFromDB != moduleFromCLI:
