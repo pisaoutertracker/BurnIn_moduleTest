@@ -5,7 +5,8 @@ import subprocess
 
 verbose = False
 podmanCommand = 'podman run --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z --net host --entrypoint bash gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"'
-ph2ACFversion = "ph2_acf_v6-00"
+#ph2ACFversion = "ph2_acf_v6-00"
+ph2ACFversion = "ph2_acf_v6-02"
 prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' % os.getcwd()
 
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash'):
@@ -69,7 +70,8 @@ from CAEN_controller import caen
 
 #caen_controller = caen()
 restartCaen = True
-for testID in range(1000000):
+#for testID in range(1000000):
+for testID in range(1000):
     timestamp = str(datetime.fromtimestamp(datetime.now().timestamp())).replace("-","_").replace(" ","_").replace(".","_").replace(":","_")
     if restartCaen:
         caen_controller = caen()
@@ -90,6 +92,13 @@ for testID in range(1000000):
     deltaTime = time() - start
     if out == "Failed":
         print("Test %d FAILED (%.1f s) !!!!!!!!!!!!!!!!!!!!!! " % (testID, deltaTime) )
+        try:
+            for ch in channels: caen_controller.off(ch, verbose)
+        except Exception as e:
+            print("Test %d (%s). Problems with LV Caen switch off. Check the connection."%(testID,timestamp))
+            print("Error: %s" % str(e))
+            restartCaen = True
+            del caen_controller
     else:
         print("Test %d (%s) passed (%.1f s)" % (testID, out, deltaTime) )
         try:

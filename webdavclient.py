@@ -6,6 +6,7 @@ import datetime
 import os
 
 verbose = False;
+verbose = True;
 
 
 class WebDAVWrapper:
@@ -68,6 +69,11 @@ class WebDAVWrapper:
             print ("REMOET PATH:",remote_path)
         response = requests.put(url, data = open (local_path,"rb").read())
         if response.ok == False:
+            print ("LOCAL      :",local_path)
+            print ("REMOTE     :", url)
+            print ("REMOET PATH:",remote_path)
+            print(requests)
+            print(response)
             print ("Error writing file")
             return False
         # search back the file
@@ -75,12 +81,12 @@ class WebDAVWrapper:
         return res2
     
     def download_file(self, remote_path, local_path):
-        url = self.completeurl_read+remote_path
         if verbose:
             print("COMPLETE      :",self.completeurl_read)
             print("REMOTE_PATH   :",remote_path)
-            print("URL           :", url)
             print("LOCAL_PATH    :", local_path)
+            url = self.completeurl_read+remote_path
+            print("URL           :", url)
         response = self._send_request_read('GET', remote_path)
         # Write the response content to a local file
         with open(local_path, 'wb') as local_file:
@@ -112,11 +118,16 @@ class WebDAVWrapper:
 
 # Example usage
 if __name__ == "__main__":
+
+    hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
+    hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[0].split("|")
+    #hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[1].split("|")
+
     webdav_url = "https://cernbox.cern.ch/remote.php/dav/public-files"
-    hash_value_read  = "XXXXXXXXXXXXXXX"  
-    hash_value_write = "XXXXXXXXXXXXXXX"
+    #hash_value_read  = "XXXXXXXXXXXXXXX"  
+    #hash_value_write = "XXXXXXXXXXXXXXX"
     remote_dir = "pippo"
-    remote_path = "/pippo2.txt"
+    remote_path = "pippo/pippo2.txt" ## the folder must be already existing
     local_path = "webdavclient.py"
 
     webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)

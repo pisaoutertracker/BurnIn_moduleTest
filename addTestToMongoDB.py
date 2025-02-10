@@ -19,7 +19,7 @@ test2 = {'runDate': '2025-01-21T16:33:25', 'runSession': 'session0', 'runStatus'
 
 test3 = {
     'runDate': '2025-01-21T16:33:25',
-    'runSession': 'session80',
+    'runSession': 'session0',
     'runStatus': 'done',
     'runType': 'Type1',
     'runBoards': {0: 'fake'},
