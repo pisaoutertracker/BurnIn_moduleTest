@@ -308,6 +308,10 @@ if __name__ == '__main__':
 
         ## upload all files
         for file in [xmlPyConfigFile, xmlOutput, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
+            ## make a folder in CernBox
+            if verbose>10: print("Creating folder %s"%testID)
+            webdav_wrapper.mkDir("/%s"%testID)
+            if verbose>10: print("Uploading %s"%file)
             newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
             if verbose>1: print("Uploaded %s"%newFile)
         

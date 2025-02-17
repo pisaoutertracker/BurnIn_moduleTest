@@ -87,10 +87,16 @@ def getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
     if chip == "MPA":
         histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
         histo2D = rootFile.Get(histoName)
+        if not histo2D: 
+            print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
+            return -1, histoName.split("/")[-1]+chip
         histo = histo2D.ProjectionX()
     elif chip == "SSA":
         histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
         histo = rootFile.Get(histoName)
+        if not histo: 
+            print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
+            return -1, histoName.split("/")[-1]+chip
     else:
         print(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip)
         raise Exception("Error in getNoiseRatio")

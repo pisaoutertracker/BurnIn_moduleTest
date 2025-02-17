@@ -277,7 +277,9 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                 if name in hist_path:
                     found = True
                     break
-            print("found", found, hist_path)
+            print("found", found)
+            if histograms:
+                print(hist_path)
             if not found:
                 print("#####################################################################################")
                 print("WARNING: %s not found in the root file. It will be excluded from the webpage"%name)
