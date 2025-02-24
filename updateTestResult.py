@@ -480,7 +480,10 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     
     ### Module
     body += "<h1> %s %s  </h1>"%(grayText("Module:"), moduleName) + "\n"
-    body += grayText("Module: ") + moduleName + " (lpGBT Fuse Id: %s)"%module['hwId'] + "\n"
+    hwId = -1
+    if 'hwId' in module: hwId = module['hwId']
+    if 'children' in module and 'lpGBT' in module['children'] and 'CHILD_SERIAL_NUMBER' in module["children"]["lpGBT"]: hwId = str(module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"]) 
+    body += grayText("Module: ") + moduleName + " (lpGBT Fuse Id: %s)"%hwId + "\n"
     
     ### Run
     body += "<h1> %s %s  </h1>"%(grayText("Run: "), runName) + "\n"
