@@ -500,15 +500,19 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("CalibrationName: ") + str(rootFile.Get("Detector/CalibrationName_Detector")) + "<br>" +"\n"
     body += grayText("NameId_Board: ") + str(rootFile.Get("Detector/Board_0/D_NameId_Board_(0)")) + "<br>" +"\n"
     directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
-    ##TODO aggiungere il link diretto al ROOT file
-    ##TODO aggiungere il link diretto al log file
-    ##TODO aggiungere il link diretto al xml file
-    ##TODO aggiungere il link diretto al xml config
+    testId,zipFile = directLinkToZip.split("/")[-2:]
+    directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"/Results.root"
+    directLinkToXmlFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"ModuleTest_settings.xml"
+    directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/%s.log"%(testId,zipFile,testId)
     folderLink =  '/'.join(run['runFile'].split("/")[:-1])
 #    linkToROOTFile = folderLink.replace("files/link/public", "rootjs/public") + "Results/OT_ModuleTest_M103_Run176/Hybrid_jkkfb.root"
     body += "<br>" + "\n"
+#    https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/Run_24/output_rtmxq.zip/Results.root
+    body += grayText("Browse ROOT file: ") + '<a href="%s">'%directLinkToROOTFile + directLinkToROOTFile + "</a><br>" + "\n"
     body += grayText("Zip file: ") + '<a href="%s">'%directLinkToZip + directLinkToZip + "</a><br>" + "\n"
     body += grayText("Folder: ") + '<a href="%s">'%folderLink + folderLink + "</a><br>" + "\n"
+    body += grayText("Log file: ") + '<a href="%s">'%directLinkToLogFile + directLinkToLogFile + "</a><br>" + "\n"
+    body += grayText("Xml file: ") + '<a href="%s">'%directLinkToXmlFile + directLinkToXmlFile + "</a><br>" + "\n"
     utc, myTime_grafana = getTime(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
     from datetime import timedelta
     start_time_grafana = (myTime_grafana - timedelta(hours=2))
