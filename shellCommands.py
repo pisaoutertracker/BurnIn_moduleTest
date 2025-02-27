@@ -154,13 +154,11 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
     ## find ROOT file from log file:
     if "Closing result file: " in error:
         rootFile = error.split("Closing result file: ")[1].split(".root")[0]+".root" ##eg. Results/Run_28/Results.root
-        newTestID = rootFile.split("/")[1] ## get "Run_28"
-        import os
-        os.rename(logFile, logFile.replace(testID, newTestID))
+        oldTestID = rootFile.split("/")[1] ## get "Run_28"
+        import shutil
+        shutil.copytree("Results/"+oldTestID, "Results/"+testID)
         
-    elif useExistingModuleTest:
-        newTestID = testID
-    return newTestID, date
+    return testID, date
 
 
 ### This code allow you to test this code using "python3 shellCommands.py"
