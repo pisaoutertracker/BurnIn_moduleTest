@@ -822,6 +822,9 @@ def updateTestResult(module_test, skipWebdav = False):
     if int(status) != 200:
         raise Exception("appendAnalysisToModule failed of moduleTestAnalysisName %s."%folder)
 
+    os.system("rm -rf /tmp/latest_ana")
+    os.system("mv %s /tmp/latest_ana"%tmpFolder)
+
 
 if __name__ == '__main__':
     import argparse
