@@ -8,7 +8,7 @@ opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBT
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "Test7"
+version = "Feb28"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -501,18 +501,19 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("NameId_Board: ") + str(rootFile.Get("Detector/Board_0/D_NameId_Board_(0)")) + "<br>" +"\n"
     directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
     testId,zipFile = directLinkToZip.split("/")[-2:]
-    directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"Results.root"
-    directLinkToXmlFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"ModuleTest_settings.xml"
-    directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/log.html?logfile=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/%s.log"%(testId,zipFile,testId)
+    directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/Results.root"%(testId,zipFile)
+    directLinkToXmlFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/ModuleTest_settings.xml"%(testId,zipFile)
+    directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/log.html?logfile=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/%s.log"%(testId,zipFile,testId)
+    directLinkToConnectionMapFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/connectionMap_%s.json"%(testId,zipFile,moduleName)
     folderLink =  '/'.join(run['runFile'].split("/")[:-1])
     body += "<br>" + "\n"
-    body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a> <br>'%(directLinkToROOTFile, directLinkToLogFile, directLinkToXmlFile) + "\n"
+    body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a>, <a href="%s"> Connection map</a> <br>'%(directLinkToROOTFile, directLinkToLogFile, directLinkToXmlFile, directLinkToConnectionMapFile) + "\n"
     body += grayText("Link to: ") + '<a href="%s">Zip file</a>, <a href="%s">CERN box folder</a> <br>'%(directLinkToZip, folderLink) + "\n"
     utc, myTime_grafana = getTime(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
     from datetime import timedelta
     start_time_grafana = (myTime_grafana - timedelta(hours=2))
     stop_time_grafana = (myTime_grafana + timedelta(hours=2))
-    GrafanaLink = "http://pccmslab1.pi.infn.it:3000/d/ff666241-736f-4d30-b490-dc8655d469a9/burn-in?orgId=1&%%20from={__from}\&to=%d&from=%d"%((int(start_time_grafana.timestamp())*1000), (int(stop_time_grafana.timestamp())*1000))
+    GrafanaLink = "http://pccmslab1.pi.infn.it:3000/d/ff666241-736f-4d30-b490-dc8655d469a9/burn-in?orgId=1&%%20from={__from}\&to=%d&from=%d"%((int(stop_time_grafana.timestamp())*1000), (int(start_time_grafana.timestamp())*1000))
     start_time_grafana_d, start_time_grafana_t = str(start_time_grafana).split(" ")
     stop_time_grafana_d, stop_time_grafana_t = str(stop_time_grafana).split(" ")
     if start_time_grafana_d == stop_time_grafana_d:
