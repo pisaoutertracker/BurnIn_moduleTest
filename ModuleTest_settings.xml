@@ -1,13 +1,13 @@
 <HwDescription>
   
   <BeBoard Id="0" boardType="D19C" eventType="VR" linkReset="1" boardReset="1" configure="1">
-    <connection id="board" uri="ipbusudp-2.0://fc7ot2:50001" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" />
+    <connection id="board" uri="ipbusudp-2.0://FC7OT8:50001" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" />
     <configuration file_name="${PH2ACF_BASE_DIR}/settings/BeBoardFiles/uDTC_registers_PS.xml" />
     <CDCE configure="0" clockRate="320" />
         
-     <OpticalGroup Id="0" enable="1" FMCId="L12" reset="1">
+     <OpticalGroup Id="1" enable="1" FMCId="L12" reset="1">
         <NTCProperties type="Sensor" ADC="ADC4" lookUpTable="${PH2ACF_BASE_DIR}/settings/NTCFiles/ntc_1k.csv" />
-        <NTCProperties type="VTRx+" ADC="ADC7" lookUpTable="${PH2ACF_BASE_DIR}/settings/NTCFiles/vtrx_ntc_1k.csv" />
+        <NTCProperties type="VTRx+" ADC="ADC6" lookUpTable="${PH2ACF_BASE_DIR}/settings/NTCFiles/vtrx_ntc_1k.csv" />
         
         <lpGBT_Files path="${PH2ACF_BASE_DIR}/settings/lpGBTFiles/" />
         <lpGBT Id="0" version="1" optical="1" configFile="lpGBT_v1_PS.txt">
@@ -29,56 +29,7 @@
 
             <SSA2_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
             <SSA2 Id="0" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="1" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="2" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="3" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="4" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="5" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="6" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="7" enable="1" configFile="SSA2.txt" />
             <MPA2_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="8" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="9" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="10" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="11" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="12" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="13" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="14" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="15" enable="1" configFile="MPA2.txt" />
-            <CIC2_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
-            <CIC2 Id="8" enable="1" configFile="CIC2_PS.txt" />
-        </Hybrid>
-        
-        <Hybrid Id="1" enable="1" reset="1" invertClock="0">
-            <Global>                 
-                <StubLogic mode="0" window="4" /> 
-                <HitLogic stripMode="0" pixelMode="0" pixelClusterCut="5" /> 
-                <Latencies stripLatency="296" pixelLatency="295" retimePix="4" LatencyRx320L1="6" LatencyRx320Trigger="6" EdgeSelT1Raw="0" EdgeSelTrig="0" />   
-	            <Thresholds stripThreshold="60" stripThresholdHigh="120" pixelThreshold="120" /> 
-                <HipLogic stripCut="1" pixelCut="0" /> 
-                <SamplingDelay stripCoarse="0" stripFine="0" pixelCoarse="0" pixelFine="0" /> 
-                <InjectedCharge stripCharge="70" pixelCharge="70" /> 
-                <CIC2 enableBend="1" enableLastLine="1" enableSparsification="1" driveStrength="3" edgeSelect="0" />
-            </Global>
-
-            <SSA2_Files path="${PH2ACF_BASE_DIR}/settings/SSAFiles/" />
-            <SSA2 Id="0" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="1" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="2" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="3" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="4" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="5" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="6" enable="1" configFile="SSA2.txt" />
-            <SSA2 Id="7" enable="1" configFile="SSA2.txt" />
-            <MPA2_Files path="${PH2ACF_BASE_DIR}/settings/MPAFiles/" />
-            <MPA2 Id="8" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="9" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="10" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="11" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="12" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="13" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="14" enable="1" configFile="MPA2.txt" />
-            <MPA2 Id="15" enable="1" configFile="MPA2.txt" />
             <CIC2_Files path="${PH2ACF_BASE_DIR}/settings/CicFiles/" />
             <CIC2 Id="8" enable="1" configFile="CIC2_PS.txt" />
         </Hybrid>
@@ -111,7 +62,7 @@
     <Setting name="HoleMode">0</Setting>
     <Setting name="VerificationLoop">1</Setting>
     <Setting name="MaskChannelsFromOtherGroups">0</Setting>
-    <Setting name="FitSCurves">0</Setting>
+    <Setting name="FitSCurves">1</Setting>
     <Setting name="PlotSCurves">1</Setting>
     <Setting name="TriggerRate">10</Setting>
 
@@ -171,8 +122,11 @@
     <Setting name="PedeNoise_PulseAmplitude">70</Setting>
     <Setting name="PedestalEqualization_PulseAmplitudePix">70</Setting>
     <Setting name="PedeNoise_PulseAmplitudePix">70</Setting>
-    <Setting name="PedestalEqualization_PulseAmplitudeFullScan">20</Setting>
+    <Setting name="PedeNoise_FastCounterReadout">1</Setting>
+
+    <Setting name="PedestalEqualization_PulseAmplitudeFullScan">30</Setting>
     <Setting name="PedestalEqualization_PulseAmplitudePixFullScan">30</Setting>
+    <Setting name="PedestalEqualization_FastCounterReadout">1</Setting>
 
     <Setting name="StartPhase">0</Setting>
     <Setting name="PhaseRange">7</Setting>
@@ -272,6 +226,10 @@
     <Setting name="OTSSAtoSSAecv_ListOfSSAslvsCurrents">1, 4, 7</Setting>
 
     <Setting name="OTPSringOscillatorTest_NumberOfClockCycles">100</Setting>
+
+    <Setting name="OTLpGBTEyeOpeningTest_PowerList">1-3</Setting>
+
+    <Setting name="OTBitErrorRateTest_NumberOfBits">1E10</Setting>
 </Settings>
 
 <MonitoringSettings>

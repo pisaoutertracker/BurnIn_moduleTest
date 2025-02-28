@@ -9,8 +9,8 @@ xmlOutput="ModuleTest_settings.xml"
 defaultCommand="PSquickTest"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
-firmware_5G="ps8m5gcic2l12octal8dio5tluv301" #"ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
-firmware_10G="ps8m10gcic2l12octal8dio5tluv301" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
+firmware_5G="ps8m5gcic2l12octal8dio5v301" #"ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
+firmware_10G="ps8m10gcic2l12octal8dio5v301" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
