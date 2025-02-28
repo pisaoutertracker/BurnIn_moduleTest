@@ -224,11 +224,20 @@ def get_histograms(directory, path=""):
 
     return histograms
 
-def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTime):
+def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTime, hv_number, lv_number):
     plots = []
     ## add Influxdb plot
     
-    if not skipInfluxDb: plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
+    if not skipInfluxDb: 
+        plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
+        hv_current = "caen_HV{:0>3}_Current".format(hv_number) ## eg. caen_HV001_Current
+        hv_voltage = "caen_HV{:0>3}_Voltage".format(hv_number) ## eg. caen_HV001_Voltage
+        lv_current = "caen_BLV{:0>2}_Current".format(lv_number) ## eg. caen_BLV01_Current
+        lv_voltage = "caen_BLV{:0>2}_Voltage".format(lv_number) ## eg. caen_BLV01_Voltage
+
+#        "caen_BLV{:0>2}_Voltage".format(lv_number),"caen_BLV{:0>2}_Current".format(lv_number),"caen_HV{:0>3}_Voltage".format(hv_number),"caen_HV{:0>3}_Current".format(hv_number)]
+        plots.append(  makePlotInfluxdbVoltageAndCurrent(dateTime, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
+        
 
     c1 = TCanvas("c1", "")
     c1.SetGridx()
@@ -585,6 +594,149 @@ def getTime(time, timeFormat="%Y-%m-%dT%H:%M:%S"):
     myTime = myTime - rome_time.utcoffset()
     return myTime, rome_time
 
+def makePlotInfluxdbVoltageAndCurrent(time, folder, 
+    sensors=["caen_BLV04_Voltage", "caen_BLV06_Voltage", "caen_BLV06_Current", "caen_HV006_Voltage", "caen_HV006_Current"]):
+    print("makePlotInfluxdb")
+    
+    import os
+    token_location = "~/private/influx.sct" 
+    token = open(os.path.expanduser(token_location)).read().strip()
+    
+    from datetime import timedelta
+    from influxdb_client import InfluxDBClient
+    import matplotlib.pyplot as plt
+
+    org = "pisaoutertracker"
+    myTime, rome_time = getTime(time, timeFormat="%Y-%m-%dT%H:%M:%S")
+
+    start_time = (myTime - timedelta(hours=2)).isoformat("T") + "Z"
+    stop_time = (myTime + timedelta(hours=2)).isoformat("T") + "Z"
+    print(start_time)
+    print(stop_time)
+    
+    # Create the base axis for Voltage HV (left side).
+    fig, axHV_voltage = plt.subplots(figsize=(10, 5))
+
+    # Create twin axes. By default, these will be on the right.
+    axLV_voltage = axHV_voltage.twinx()   # Voltage LV (right, blue)
+    axHV_current  = axHV_voltage.twinx()   # Current HV (right, orange)
+    axLV_current  = axHV_voltage.twinx()   # Current LV (to be moved to left, red)
+
+    # Adjust spine positions.
+    axLV_voltage.spines["right"].set_position(("outward", 0))      # Voltage LV on right at 0 points.
+    axHV_current.spines["right"].set_position(("outward", 35))       # Current HV on right at 30 points.
+
+    # Move axLV_current to the left.
+    axLV_current.yaxis.set_label_position("left")
+    axLV_current.yaxis.tick_left()
+    axLV_current.spines["left"].set_position(("outward", 45))
+    axLV_current.spines["right"].set_visible(False)  # Hide the unused right spine.
+
+    # Optional: Hide background patches for the additional axes.
+    axHV_current.set_frame_on(True)
+    axLV_current.set_frame_on(True)
+    axHV_current.patch.set_visible(False)
+    axLV_current.patch.set_visible(False)
+
+    # Set the spine and tick colors to match the plot colors.
+    axHV_voltage.spines['left'].set_color('green')
+    axHV_voltage.tick_params(axis='y', colors='green')
+
+    axLV_voltage.spines['right'].set_color('blue')
+    axLV_voltage.tick_params(axis='y', colors='blue')
+
+    axHV_current.spines['right'].set_color('orange')
+    axHV_current.tick_params(axis='y', colors='orange')
+
+    axLV_current.spines['left'].set_color('red')
+    axLV_current.tick_params(axis='y', colors='red')
+
+    # Set y-axis limits.
+    HV_voltage_min, HV_voltage_max = 0, 500
+    LV_voltage_min, LV_voltage_max = 0, 25
+    HV_current_min, HV_current_max     = 0, 6
+    LV_current_min, LV_current_max     = 0, 1.5
+
+    # Loop over sensors and query data.
+    for sensorName in sensors:
+        query = f'''
+        from(bucket: "sensor_data")
+        |> range(start: {start_time}, stop: {stop_time})
+        |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
+        |> filter(fn: (r) => r["_field"] == "{sensorName}" )
+        |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+        |> yield(name: "mean")
+        '''
+        
+        times = []
+        values = []
+        
+        client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
+        tables = client.query_api().query(query, org=org)
+        client.__del__()
+        
+        for table in tables:
+            for record in table.records:
+                times.append(record.get_time())
+                values.append(record.get_value())
+        
+        sensorNameNoCaen = sensorName.replace("caen_", "")
+        # Choose the correct axis and color based on the sensor name.
+        if "Voltage" in sensorName:
+            if "HV" in sensorName:
+                axHV_voltage.plot(times, values, label=sensorNameNoCaen, color='green')
+            elif "LV" in sensorName:
+                axLV_voltage.plot(times, values, label=sensorNameNoCaen, color='blue')
+            else:
+                print(f"Unknown voltage sensor: {sensorName}")      
+        elif "Current" in sensorName:
+            if "HV" in sensorName:
+                axHV_current.plot(times, values, label=sensorNameNoCaen, color='orange')
+            elif "LV" in sensorName:
+                axLV_current.plot(times, values, label=sensorNameNoCaen, color='red')
+            else:
+                print(f"Unknown current sensor: {sensorName}")
+        else:
+            print(f"Unknown sensor type: {sensorName}")
+
+    # Set individual axis labels with matching colors and reduced labelpad.
+    axHV_voltage.set_ylabel("Voltage HV (V)", color='green', labelpad=2)
+    axLV_voltage.set_ylabel("Voltage LV (V)", color='blue', labelpad=2)
+    axHV_current.set_ylabel("Current HV (mA)", color='orange', labelpad=2)
+    axLV_current.set_ylabel("Current LV (mA)", color='red', labelpad=2)
+
+    # Set the y-axis limits.
+    axHV_voltage.set_ylim(HV_voltage_min, HV_voltage_max)
+    axLV_voltage.set_ylim(LV_voltage_min, LV_voltage_max)
+    axHV_current.set_ylim(HV_current_min, HV_current_max)
+    axLV_current.set_ylim(LV_current_min, LV_current_max)
+
+    # Combine legend entries from all axes.
+    lines = []
+    labels = []
+    # Draw a vertical reference line on the left-most axis.
+    axLV_current.axvline(x=myTime, color='gray', linestyle='--', label=myTime.strftime('%H:%M:%S'))
+    for ax in [axHV_voltage, axLV_voltage, axHV_current, axLV_current]:
+        l, lab = ax.get_legend_handles_labels()
+        lines.extend(l)
+        labels.extend(lab)
+    axHV_voltage.legend(lines, labels, loc='upper left')
+
+    # Set the x-axis label using the main axis.
+    timezone_h = "%+.1f" % (-rome_time.utcoffset().seconds/3600)
+    axHV_voltage.set_xlabel('UTC Time (= Rome Time %s h)' % timezone_h)
+
+    axHV_voltage.grid(True)
+    plt.title('Sensor Data Over Time')
+
+    fName = os.path.join(folder, "sensor_data_plot_test.png")
+    plt.savefig(fName)
+    print("InfluxDb: saved ", fName)
+
+    return fName
+
+
+
 def makePlotInfluxdb(time, folder):
     print("makePlotInfluxdb")
 
@@ -595,10 +747,7 @@ def makePlotInfluxdb(time, folder):
     
     from influxdb_client import InfluxDBClient
     
-    import numpy as np
-    
     org = "pisaoutertracker"
-    bucket = "sensor_data"
     
     myTime, rome_time = getTime(time, timeFormat = "%Y-%m-%dT%H:%M:%S")
 
@@ -651,6 +800,27 @@ def makePlotInfluxdb(time, folder):
     print("InfluxDb: saved ", fName)
        
     return fName
+
+'''
+def getConnectionMap(run, xmlConfig, folder):
+    testId,zipFile  = run['runFile'].split("/")[-2:]
+    print(run)
+    moduleName = run['moduleTestName'][0].split("__")[0]
+    directLinkToConnectionMapFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/connectionMap_%s.json"%(testId,zipFile,moduleName)
+    ## download the file
+    import requests
+    response = requests.get(directLinkToConnectionMapFile)
+    response.raise_for_status()  # Raise an error if the request failed
+    # Parse the JSON content into a Python dictionary
+    print(directLinkToConnectionMapFile)
+    print(response)
+    connectionMap = response.json()
+
+    print(connectionMap)
+    1/0
+    return connectionMap
+'''
+
 
 def updateTestResult(module_test, skipWebdav = False):
     global plots
@@ -718,6 +888,39 @@ def updateTestResult(module_test, skipWebdav = False):
         raise Exception("No Results.root or Hybrid.root found in %s"%extracted_dir)
 #    xmlConfig = readXmlConfig(xmlPyConfigFile=xmlPyConfigFile, folder=extracted_dir)
     xmlConfig = run["runConfiguration"] ## take configuration from db instead of python file
+
+    ## Get Connection map , see https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/Run_206/output_dggbl.zip/connectionMap_PS_26_IBA-10006.json
+    moduleName = run['moduleTestName'][0].split("__")[0]
+    connectionMapFileName = extracted_dir+"/connectionMap_%s.json"%moduleName
+    if os.path.exists(connectionMapFileName):
+        with open(connectionMapFileName) as json_file:
+            txt = str(json_file.read())
+            print(txt)
+            connectionMap = eval(txt)
+    hv_number = -1
+    lv_number = -1
+    for con in connectionMap.values():
+        if not con["crate_port"] == "power": continue
+        lastCable = con['connections'][1]
+        print(lastCable)
+        if "HV" in lastCable['crate_port'][0]:
+            hv_number = int(lastCable['crate_port'][0].split("HV")[1])
+        elif "LV" in lastCable['crate_port'][0]:
+            lv_number = int(lastCable['crate_port'][0].split("LV")[1])
+    if hv_number == -1 or lv_number == -1:
+        print("HV/LV found: ", hv_number, lv_number)
+        raise Exception("No HV or LV found in connectionMap")
+    if verbose>0:
+        print("HV/LV found: ", hv_number, lv_number)
+
+
+#            connectionMap = json.load(json_file)
+    else:
+        connectionMap = {}
+    print(connectionMap, connectionMapFileName)
+#    1/0
+    print(run)
+    ## download the file
     print(xmlConfig)
     global noisePerChip
     noisePerChip = getNoisePerChip(rootFile , xmlConfig )
@@ -727,7 +930,7 @@ def updateTestResult(module_test, skipWebdav = False):
 #    for board_optical in moduleHwIDs:
 #    board_id, opticalGroup_id = board_optical
     result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
-    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'])
+    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_number, lv_number)
     fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     nfolder = base+folder
@@ -790,6 +993,8 @@ def updateTestResult(module_test, skipWebdav = False):
 
 if __name__ == '__main__':
     import argparse
+    makePlotInfluxdb("2025-02-24T12:32:38", "/tmp/influxdb/")
+    makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38", "/tmp/influxdb/", sensors=["caen_BLV07_Voltage", "caen_BLV07_Current", "caen_HV007_Voltage", "caen_HV007_Current"])
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
