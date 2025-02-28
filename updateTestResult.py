@@ -501,18 +501,13 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("NameId_Board: ") + str(rootFile.Get("Detector/Board_0/D_NameId_Board_(0)")) + "<br>" +"\n"
     directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
     testId,zipFile = directLinkToZip.split("/")[-2:]
-    directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"/Results.root"
+    directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"Results.root"
     directLinkToXmlFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/"%(testId,zipFile)+"ModuleTest_settings.xml"
-    directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/%s.log"%(testId,zipFile,testId)
+    directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/log.html?logfile=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/"+"/%s/%s/%s.log"%(testId,zipFile,testId)
     folderLink =  '/'.join(run['runFile'].split("/")[:-1])
-#    linkToROOTFile = folderLink.replace("files/link/public", "rootjs/public") + "Results/OT_ModuleTest_M103_Run176/Hybrid_jkkfb.root"
     body += "<br>" + "\n"
-#    https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/Run_24/output_rtmxq.zip/Results.root
-    body += grayText("Browse ROOT file: ") + '<a href="%s">'%directLinkToROOTFile + directLinkToROOTFile + "</a><br>" + "\n"
-    body += grayText("Zip file: ") + '<a href="%s">'%directLinkToZip + directLinkToZip + "</a><br>" + "\n"
-    body += grayText("Folder: ") + '<a href="%s">'%folderLink + folderLink + "</a><br>" + "\n"
-    body += grayText("Log file: ") + '<a href="%s">'%directLinkToLogFile + directLinkToLogFile + "</a><br>" + "\n"
-    body += grayText("Xml file: ") + '<a href="%s">'%directLinkToXmlFile + directLinkToXmlFile + "</a><br>" + "\n"
+    body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a> <br>'%(directLinkToROOTFile, directLinkToLogFile, directLinkToXmlFile) + "\n"
+    body += grayText("Link to: ") + '<a href="%s">Zip file</a>, <a href="%s">CERN box folder</a> <br>'%(directLinkToZip, folderLink) + "\n"
     utc, myTime_grafana = getTime(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
     from datetime import timedelta
     start_time_grafana = (myTime_grafana - timedelta(hours=2))
@@ -539,12 +534,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 #    body += grayText("NameId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_NameId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("VTRxFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_VTRxFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
-#    body += ". Date:" + date + ". Time:" + time + "<br>" +"\n"
-#    directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
-#    folderLink =  '/'.join(run['runFile'].split("/")[:-1])
-##    linkToROOTFile = folderLink.replace("files/link/public", "rootjs/public") + "Results/OT_ModuleTest_M103_Run176/Hybrid_jkkfb.root"
-#    body += 'Zip file: <a href="%s">'%directLinkToZip + directLinkToZip + "</a><br>" + "\n"
-#    body += 'Folder: <a href="%s">'%folderLink + folderLink + "</a><br>" + "\n"
+    body += ". Date:" + date + ". Time:" + time + "<br>" +"\n"
     
     body += "<h1> %s  </h1>"%("SSA and MPA noise table") + "\n"
     body += makeNoiseTable(noisePerChip, board_id, optical_id)
@@ -555,7 +545,6 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     html = html.replace("[ADD BODY]", body)
 
     print(noiseRatioPerChip)
-#    1/0
     
     finalbody = "<h1> XML configuration </h1>" + "\n"
     import pprint
@@ -610,24 +599,10 @@ def makePlotInfluxdb(time, folder):
     org = "pisaoutertracker"
     bucket = "sensor_data"
     
-#    timeFormat = "%Y-%m-%dT%H:%M:%S"
-    
-#    currentTime = datetime.strptime(time, timeFormat)
-#    import pytz
-#    rome_timezone = pytz.timezone('Europe/Rome')
-#    rome_time = currentTime.astimezone(rome_timezone)
-#    ## Move to UTC time
-#    currentTime = currentTime - rome_time.utcoffset()
     myTime, rome_time = getTime(time, timeFormat = "%Y-%m-%dT%H:%M:%S")
 
     start_time = (myTime - timedelta(hours=2)).isoformat("T") + "Z"
     stop_time = (myTime + timedelta(hours=2)).isoformat("T") + "Z"
-#    stop_time = time + "Z"
-#    start_time = "2023-12-20T03:03:34Z"
-#    stop_time = "2023-12-20T15:03:34Z"
-    
-#    start_time = (datetime.utcnow() - timedelta(hours=12)).isoformat("T") + "Z"
-#    stop_time = datetime.utcnow().isoformat("T") + "Z"
 
     print(start_time)
     print(stop_time)
@@ -673,20 +648,11 @@ def makePlotInfluxdb(time, folder):
     ## Orario UTC
     plt.savefig(fName)
     print("InfluxDb: saved ", fName)
-    
-    # del plt
-    
-    # if not 'LC_ALL' in os.environ or os.environ['LC_ALL'] != 'C': 
-    #     raise Exception('Please type on shell: export LC_ALL="C"')
-
-#    import locale
-#    locale.setlocale(locale.LC_ALL, 'C')
-    
+       
     return fName
 
 def updateTestResult(module_test, skipWebdav = False):
     global plots
-#    testID = "PS_26_10-IPG_00103__run6"
     tmpFolder = "/tmp/"
 
     #allVariables = []
@@ -694,7 +660,6 @@ def updateTestResult(module_test, skipWebdav = False):
     gStyle.SetOptStat(0)
     tmpFolder = tmpFolder+module_test+"__%s/"%version
     base = "/test3/"
-#    base = "/ReReco1/"
 
     import shutil
     try:
@@ -782,15 +747,8 @@ def updateTestResult(module_test, skipWebdav = False):
     shutil.make_archive(tmpUpFolder+name, 'zip', tmpFolder)
     if verbose>20: print("Done")
     if webdav_website: 
-#        import locale
-#        locale.setlocale(locale.LC_ALL, 'C')
         newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
         if verbose>0: print("Uploaded %s"%newFile)
-#        if webdav_website: newfile = webdav_website.write_file(webpage, nfolder+"/index.html")
-#        print(webdav_website.list_files(nfolder))
-    
-#        for f in webdav_website.list_files("/test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/"):
-#            print (f)
     for p in plots:
         print(p)
     print(extracted_dir)
@@ -806,7 +764,6 @@ def updateTestResult(module_test, skipWebdav = False):
     else:
         download = "dummy"
         navigator = "dummy"
-#            print("https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads//test2/Module_PS_26_10-IPG_00103_Run_PS_26_10-IPG_00103__run6_Result_V3/results_jvmze.zip/")
     
     from databaseTools import createAnalysis
     json = {
