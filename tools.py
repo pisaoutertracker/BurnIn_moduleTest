@@ -185,6 +185,11 @@ def getResultPerModule(noisePerChip, xmlConfig, board_id, opticalGroup_id):
 
 ### Open the ROOT file with the results of the corresponding testID
 
+def getInfoFromXml(xmlPyConfigFile):
+    from makeXml import readXmlConfig
+    xmlConfig = readXmlConfig(xmlPyConfigFile)
+    return xmlConfig
+
 def getROOTfile(testID):
     import ROOT, os
     matches = [folder for folder in os.listdir("Results") if testID in folder ]
@@ -195,7 +200,68 @@ def getROOTfile(testID):
 
 ### This code allow you to test this code using "python3 tools.py"
 
+import xml.etree.ElementTree as ET
+
+
+def parse_module_settings(xml_file):
+    """
+    Parse the given ModuleTest_settings.xml file and extract:
+      - slot: The OpticalGroup Id (as integer)
+      - boad: The board host extracted from the connection URI (e.g., "fc7ot3")
+      - pixel: A list of pixel channels, collected from any MPA2 element's Id.
+      - strip: A list of strip channels, collected from any SSA2 element's Id.
+      - hybrids: A list of Hybrid Ids present under the OpticalGroup.
+    """
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    # Extract board URI from <connection id="board"> and get the host part.
+    connection_elem = root.find(".//BeBoard/connection[@id='board']")
+    board_uri = connection_elem.get("uri")  # e.g., "ipbusudp-2.0://fc7ot3:50001"
+    board = board_uri.split("://")[1].split(":")[0]
+
+    # Extract the OpticalGroup element and use its Id as the slot.
+    optical_group = root.find(".//BeBoard/OpticalGroup")
+    slot = int(optical_group.get("Id"))
+
+    # Find all Hybrid elements under the OpticalGroup.
+    hybrid_elements = optical_group.findall("Hybrid")
+    hybrids = [int(hybrid.get("Id")) for hybrid in hybrid_elements]
+
+    # Initialize sets for pixel and strip channels.
+    pixel_set = set()
+    strip_set = set()
+    
+    # For each Hybrid, look for any SSA2 and MPA2 elements.
+    for hybrid in hybrid_elements:
+        for ssa2 in hybrid.findall("SSA2"):
+            try:
+                ssa2_id = int(ssa2.get("Id"))
+                strip_set.add(ssa2_id)
+            except (TypeError, ValueError):
+                pass
+
+        for mpa2 in hybrid.findall("MPA2"):
+            try:
+                mpa2_id = int(mpa2.get("Id"))
+                pixel_set.add(mpa2_id)
+            except (TypeError, ValueError):
+                pass
+
+    # Convert sets to sorted lists.
+    pixel = sorted(list(pixel_set))
+    strip = sorted(list(strip_set))
+
+    return slot, board, pixel, strip, hybrids
+
 if __name__ == '__main__':
+    filename = "ModuleTest_settings.xml"
+    slot, boad, pixel, strip, hybrids = parse_module_settings(filename)
+    print("Slot:", slot)
+    print("Board:", boad)
+    print("Pixel channels:", pixel)
+    print("Strip channels:", strip)
+    print("Hybrids:", hybrids)
 #    testID = "T2023_11_08_17_57_54_302065"
 #    testID = "T2023_11_08_17_57_54_302065"
 #    testID = "T2023_11_10_12_04_28_794907"
@@ -220,4 +286,7 @@ if __name__ == '__main__':
     IDs = getIDsFromROOT(rootFile, xmlConfig)
     print("\nIDs:")
     pprint(IDs)
+
+
+    
 

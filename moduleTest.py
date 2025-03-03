@@ -123,6 +123,12 @@ if __name__ == '__main__':
     if len(strips)>0 and max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
     if len(pixels)>0 and (max(pixels)>15 or min(strips)<0): raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
     
+    from tools import parse_module_settings
+    if args.useExistingXmlFile:
+        print("As your are using an existing module test, I will overwrite the slot, boards, pixel, strip, hybrids with the one from the existing module test.")
+        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels))
+        slot, board, pixel, strip, hybrids = parse_module_settings(xmlConfig)
+        print("The new values are: %s, %s, %s, %s, %s."%(slot, board, pixel, strip, hybrids))
     
     ## check if the expected modules match the modules declared in the database for the slots
     from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
@@ -189,7 +195,8 @@ if __name__ == '__main__':
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
-    from databaseTools import uploadTestToDB, uploadRunToDB, getTestFromDB, addTestToModuleDB, getModuleFromDB, makeModuleNameMapFromDB, getRunFromDB, addNewModule, updateNewModule
+    from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule
+#    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
     ### read xml config file and create XML
     import shutil
@@ -204,6 +211,7 @@ if __name__ == '__main__':
             from makeXml import makeConfigFromROOTfile
             print("%s not found. Creating it from ROOT file."%xmlFilePath)
             xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Results.root")
+        
         file = open(xmlFilePath, 'w')
         file.write("config =" + str(xmlConfig))
         file.close
