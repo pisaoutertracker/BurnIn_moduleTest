@@ -1,5 +1,5 @@
 ### Default values 
-verbose = 3
+verbose = 300000
 lastPh2ACFversion = "ph2_acf_v6-02"
 #sessionName = 'session1'
 xmlPyConfigFile = "PS_Module_settings.py"
@@ -72,7 +72,7 @@ if __name__ == '__main__':
             ph2acf = os.environ['PH2ACF_BASE_DIR']
         else:
             raise Exception("No Ph2ACF available (eg. no runCalibration). Please do 'source setup.sh' from an Ph2ACF folder!")
-        settingFolder_local = "%s/settings"%ph2acf
+        settingFolder = "%s/settings"%ph2acf
         print("Local Ph2ACF folder: %s"%ph2acf)
         print()
     else:
@@ -217,7 +217,7 @@ if __name__ == '__main__':
             xmlFile = args.useExistingXmlFile
         else:
             from shellCommands import copyXml
-            copyXml(ph2ACFversion=lastPh2ACFversion)
+            copyXml(ph2ACFversion)
             xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
     
     pprint(xmlConfig)
