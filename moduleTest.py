@@ -350,7 +350,7 @@ if __name__ == '__main__':
             'runDate': date, 
             'runSession': session,
             'runStatus': 'done',
-            'runType': 'Type1',
+            'runType': commandOption,
             'runBoards': boardMap, 
 #            E.g.
 #            {
