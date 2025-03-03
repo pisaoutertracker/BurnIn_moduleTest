@@ -54,6 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s).'%firmware_10G)
     parser.add_argument('--g5', type=bool, nargs='?', const=True, help='Install 5g firmware (%s).'%firmware_5G)
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
+    parser.add_argument('--vetoFpgaConfig', type=bool, nargs='?', const=True, help='Veto on runFpgaConfig (useful for runCalibrationPisa).')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
     parser.add_argument('--skipMongo', type=bool, nargs='?', const=True, help='Skip upload to mondoDB (for testing).')
     parser.add_argument('--skipModuleCheck', type=bool, default=False, nargs='?', const=True, help='Do not throw exception if the module declared does not correspond to the module in the slot.')
@@ -155,11 +156,12 @@ if __name__ == '__main__':
                 print(error)
             else:
                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error and not args.ignoreConnection:
-            raise Exception(error)
-        else:
-            print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
-            print("WARNING: %s"%error)
+        if error: 
+            if args.ignoreConnection:
+                print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
+                print("WARNING: %s"%error)
+            else:
+                raise Exception(error+" You can skip this error using --ignoreConnection flag.")
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
@@ -230,6 +232,10 @@ if __name__ == '__main__':
     out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
     if out == "Run fpgaconfig":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
+        if args.vetoFpgaConfig:
+            raise Exception("You forgot to run fpgaconfig. Please run it before running the module test.")
+        else:
+            print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         fpgaconfig(xmlFile, firmware, ph2ACFversion)
         out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
     testID, date = out
