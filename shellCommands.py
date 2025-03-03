@@ -8,7 +8,7 @@ def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PI
         command = command + "| tee /dev/tty"
     if verbose>2: print(command)
     try:
-        return subprocess.run(command, check=check, shell=shell)
+        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
     except subprocess.CalledProcessError as e:
         print(e.output)
         print(type(e), type(e.output))
