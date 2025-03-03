@@ -17,7 +17,7 @@ runFpgaConfig = False ## it will run automatically if necessary
 podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 import os
 prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
-settingFolder = "/home/cmsTkUser/Ph2_ACF/settings"
+settingFolder_docker = "/home/cmsTkUser/Ph2_ACF/settings"
 connectionMapFileName = "connectionMap_%s.json"
 
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
@@ -72,11 +72,42 @@ if __name__ == '__main__':
             ph2acf = os.environ['PH2ACF_BASE_DIR']
         else:
             raise Exception("No Ph2ACF available (eg. no runCalibration). Please do 'source setup.sh' from an Ph2ACF folder!")
-        settingFolder = "%s/settings"%ph2acf
-        from shellCommands import updateSettingsLink
-        updateSettingsLink(settingFolder)
+        settingFolder_local = "%s/settings"%ph2acf
         print("Local Ph2ACF folder: %s"%ph2acf)
         print()
+    else:
+        settingFolder = settingFolder_docker
+    from shellCommands import updateSettingsLink
+    updateSettingsLink(settingFolder)
+    print("Copying settings folder from: %s"%settingFolder)
+    print("Ph2ACF version: %s"%ph2ACFversion)
+    print("Verbose: %d"%verbose)
+    print("Command: %s"%args.command)
+    print("Session: %s"%args.session)
+    print("Module: %s"%args.module)
+    print("Slot: %s"%args.slot)
+    print("Board: %s"%args.board)
+    print("EdgeSelect: %s"%args.edgeSelect)
+    print("Firmware: %s"%args.firmware)
+    print("xmlPyConfigFile: %s"%args.xmlPyConfigFile)
+    print("ignoreConnection: %s"%args.ignoreConnection)
+    print("skipMongo: %s"%args.skipMongo)
+    print("skipModuleCheck: %s"%args.skipModuleCheck)
+    print("runFpgaConfig: %s"%args.runFpgaConfig)
+    print("useExistingModuleTest: %s"%args.useExistingModuleTest)
+    print("useExistingXmlFile: %s"%args.useExistingXmlFile)
+    print("addNewModule: %s"%args.addNewModule)
+    print("g10: %s"%args.g10)
+    print("g5: %s"%args.g5)
+    print("skipUploadResults: %s"%args.skipUploadResults)
+    print("lpGBT: %s"%args.lpGBT)
+    print("strip: %s"%args.strip)
+    print("pixel: %s"%args.pixel)
+    print("hybrid: %s"%args.hybrid)
+    print("xmlTemplate: %s"%xmlTemplate)
+    print("xmlOutput: %s"%xmlOutput)
+    print("xmlPyConfigFile: %s"%xmlPyConfigFile)
+    print("connectionMapFileName: %s"%connectionMapFileName)
     board = args.board
     lpGBTfile = args.lpGBT
     slots = args.slot.split(",")
