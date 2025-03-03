@@ -233,7 +233,7 @@ if __name__ == '__main__':
     if out == "Run fpgaconfig":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         if args.vetoFpgaConfig:
-            raise Exception("You forgot to run fpgaconfig. Please run it before running the module test.")
+            raise Exception("You forgot to run fpgaconfig. Please run it before running the module test. Eg. remove --vetoFpgaConfig flag or use --runFpgaConfig flag or run fpgaconfig manually.")
         else:
             print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         fpgaconfig(xmlFile, firmware, ph2ACFversion)
