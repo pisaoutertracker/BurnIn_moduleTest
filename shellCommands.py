@@ -3,10 +3,12 @@ from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
 ### Launch a command from shell
 
-def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash'):
+def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash', showInPrompt=True):
+    if showInPrompt: 
+        command = command + "| tee /dev/tty"
     if verbose>2: print(command)
     try:
-        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
+        return subprocess.run(command, check=check, shell=shell)
     except subprocess.CalledProcessError as e:
         print(e.output)
         print(type(e), type(e.output))
