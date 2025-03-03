@@ -3,7 +3,7 @@ from pprint import pprint
 import requests
 
 def evalMod(string):
-    string = string.replace("true","True").replace("false","False")
+    string = string.replace("true","True").replace("false","False").replace("null","None")
     return eval(string)
 
 #verbose = 0
@@ -156,7 +156,7 @@ def getModuleConnectedToFC7(fc7, og):
     moduleName = None
     for link in out:
     
-        if "connections" in out[link]:
+        if "connections" in out[link] and len(out[link]["connections"])>0:
             if out[link]["det_port"]==og and len(out[link]["connections"])>0:
                 last = out[link]["connections"][-1]
                 if len(last["det_port"])>0: continue ## if it has something on det side, it is a cable, not a module.
@@ -345,15 +345,15 @@ def makeModuleNameMapFromDB():
     hwToModuleName = {} ## hwId --> moduleName
     hwToMongoID = {} ## hwId --> mongoId
     for module in modules:
+        hwId = -1
         if "hwId" in module:
             hwId = int(module["hwId"])
 #        if "children" in module and "lpGBT" in module["children"] and "CHILD_SERIAL_NUMBER" in module["children"]["lpGBT"]:
-#            hwId = int(module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"])
-            hwToModuleName[hwId] = module["moduleName"]
-            hwToMongoID[hwId] = module["_id"]
-        else:
-            #import pprint
-            #pprint.pprint(module)
+        if "children" in module and "lpGBT" in module["children"]:
+                hwId = int(module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"])
+        hwToModuleName[hwId] = module["moduleName"]
+        hwToMongoID[hwId] = module["_id"]
+        if hwId<0:
             print('WARNING: Missing module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"] (ie. hardwareID) in module %s'%module["moduleName"])
     
     ### hard-code some modules, waiting to have these numbers in the database
@@ -392,7 +392,6 @@ def addNewModule(moduleName, id_):
     }
 
     response = requests.post(api_url, json=json)
-    print("AAAAA")
     print(response)
     print(response.json())
     
@@ -449,6 +448,9 @@ def updateNewModule(moduleName, id_):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    allModules = getListOfModulesFromDB()
+    for mod in allModules:
+        print(mod["moduleName"])
     connectionMap = getConnectionMap("PS_26_05-IPG_001021")
     print(connectionMap)
     saveMapToFile(connectionMap, "connectionMap.json")
