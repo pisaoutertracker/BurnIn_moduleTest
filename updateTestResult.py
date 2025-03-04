@@ -1,3 +1,5 @@
+from datetime import datetime,timedelta
+
 skipInfluxDb= False
 #skipInfluxDb= True
 allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
@@ -224,19 +226,21 @@ def get_histograms(directory, path=""):
 
     return histograms
 
-def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTime, hv_number, lv_number):
+def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_number, lv_number):
     plots = []
+    startTime_utc = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
+    stopTime_utc = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
     ## add Influxdb plot
     
     if not skipInfluxDb: 
-        plots.append(  makePlotInfluxdb(dateTime, tmpFolder) )
+        plots.append(  makePlotInfluxdb(startTime_utc, stopTime_utc, tmpFolder) )
         hv_current = "caen_HV{:0>3}_Current".format(hv_number) ## eg. caen_HV001_Current
         hv_voltage = "caen_HV{:0>3}_Voltage".format(hv_number) ## eg. caen_HV001_Voltage
         lv_current = "caen_BLV{:0>2}_Current".format(lv_number) ## eg. caen_BLV01_Current
         lv_voltage = "caen_BLV{:0>2}_Voltage".format(lv_number) ## eg. caen_BLV01_Voltage
 
 #        "caen_BLV{:0>2}_Voltage".format(lv_number),"caen_BLV{:0>2}_Current".format(lv_number),"caen_HV{:0>3}_Voltage".format(hv_number),"caen_HV{:0>3}_Current".format(hv_number)]
-        plots.append(  makePlotInfluxdbVoltageAndCurrent(dateTime, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
+        #plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
         
 
     c1 = TCanvas("c1", "")
@@ -498,9 +502,13 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += "<h1> %s %s  </h1>"%(grayText("Run: "), runName) + "\n"
     date, time =  run['runDate'].split("T")
     body += grayText("Run: ") + runName 
-    body += ". " + grayText("Date: ") +date + ". " + grayText("Time: ") + time + "<br>" +"\n"
-    body += grayText("CalibrationStartTimestamp: ") + str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")) + "<br>" +"\n"
-    body += grayText("CalibrationStopTimestamp: ") + str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")) + "<br>" +"\n"
+    body += ". " + grayText("Date: ") +date + ". " + grayText("Time [local time]: ") + time + "<br>" +"\n"
+    startTime = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector"))
+    body += grayText("CalibrationStartTimestamp [UTC time]: ") + startTime + "<br>" +"\n"
+    body += grayText("&nbsp;&nbsp;Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime.replace(" ","T"))
+    stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
+    body += grayText("CalibrationStopTimestamp_Detector [UTC time]: ") + stopTime + "<br>" +"\n"
+    body += grayText("&nbsp;&nbsp;Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime.replace(" ","T"))
     body += grayText("GitCommitHash: ") + str(rootFile.Get("Detector/GitCommitHash_Detector")) + "<br>" +"\n"
     body += grayText("HostName: ") + str(rootFile.Get("Detector/HostName_Detector")) + "<br>" +"\n"
     body += grayText("Username: ") + str(rootFile.Get("Detector/Username_Detector")) + "<br>" +"\n"
@@ -518,8 +526,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += "<br>" + "\n"
     body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a>, <a href="%s"> Connection map</a> <br>'%(directLinkToROOTFile, directLinkToLogFile, directLinkToXmlFile, directLinkToConnectionMapFile) + "\n"
     body += grayText("Link to: ") + '<a href="%s">Zip file</a>, <a href="%s">CERN box folder</a> <br>'%(directLinkToZip, folderLink) + "\n"
-    utc, myTime_grafana = getTime(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
-    from datetime import timedelta
+    utc, myTime_grafana = getTimeFromRomeToUTC(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
     start_time_grafana = (myTime_grafana - timedelta(hours=2))
     stop_time_grafana = (myTime_grafana + timedelta(hours=2))
     GrafanaLink = "http://pccmslab1.pi.infn.it:3000/d/ff666241-736f-4d30-b490-dc8655d469a9/burn-in?orgId=1&%%20from={__from}\&to=%d&from=%d"%((int(stop_time_grafana.timestamp())*1000), (int(start_time_grafana.timestamp())*1000))
@@ -544,7 +551,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 #    body += grayText("NameId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_NameId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("VTRxFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_VTRxFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
-    body += ". Date:" + date + ". Time:" + time + "<br>" +"\n"
+    body += grayText("Date:") + date + grayText("Time [local time]:") + time + "<br>" +"\n"
     
     body += "<h1> %s  </h1>"%("SSA and MPA noise table") + "\n"
     body += makeNoiseTable(noisePerChip, board_id, optical_id)
@@ -584,17 +591,34 @@ def  uploadToWebDav(folder, files):
             newfiles[file] = file
     return newfiles
 
-def getTime(time, timeFormat="%Y-%m-%dT%H:%M:%S"):
-    from datetime import datetime, timedelta
-    myTime = datetime.strptime(time, timeFormat)
+def getTimeFromUTCToRome(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
+    from datetime import datetime
     import pytz
-    rome_timezone = pytz.timezone('Europe/Rome')
-    rome_time = myTime.astimezone(rome_timezone)
-    ## Move to UTC time
-    myTime = myTime - rome_time.utcoffset()
-    return myTime, rome_time
+    utc_tz = pytz.utc
+    rome_tz = pytz.timezone('Europe/Rome')
+    # Parse the naive datetime string
+    naive_dt = datetime.strptime(time_str, timeFormat)
+    # Localize to UTC
+    utc_dt = utc_tz.localize(naive_dt)
+    # Convert to Rome time
+    rome_dt = utc_dt.astimezone(rome_tz)
+    return rome_dt, utc_dt
 
-def makePlotInfluxdbVoltageAndCurrent(time, folder, 
+def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
+    from datetime import datetime
+    import pytz
+    utc_tz = pytz.utc
+    rome_tz = pytz.timezone('Europe/Rome')
+    # Parse the naive datetime string
+    naive_dt = datetime.strptime(time_str, timeFormat)
+    # Localize to Rome time
+    rome_dt = rome_tz.localize(naive_dt)
+    # Convert to UTC
+    utc_dt = rome_dt.astimezone(utc_tz)
+    return utc_dt, rome_dt
+
+
+def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder, 
     sensors=["caen_BLV04_Voltage", "caen_BLV06_Voltage", "caen_BLV06_Current", "caen_HV006_Voltage", "caen_HV006_Current"]):
     print("makePlotInfluxdb")
     
@@ -603,17 +627,16 @@ def makePlotInfluxdbVoltageAndCurrent(time, folder,
     token = open(os.path.expanduser(token_location)).read().strip()
     
     from datetime import timedelta
-    from influxdb_client import InfluxDBClient
     import matplotlib.pyplot as plt
 
-    org = "pisaoutertracker"
-    myTime, rome_time = getTime(time, timeFormat="%Y-%m-%dT%H:%M:%S")
+    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
 
-    start_time = (myTime - timedelta(hours=2)).isoformat("T") + "Z"
-    stop_time = (myTime + timedelta(hours=2)).isoformat("T") + "Z"
+    start_time = (startTime_utc - timedelta(hours=2)).isoformat("T") + "Z"
+    stop_time = (startTime_utc + timedelta(hours=2)).isoformat("T") + "Z"
+
     print(start_time)
     print(stop_time)
-    
+
     # Create the base axis for Voltage HV (left side).
     fig, axHV_voltage = plt.subplots(figsize=(10, 5))
 
@@ -657,6 +680,9 @@ def makePlotInfluxdbVoltageAndCurrent(time, folder,
     HV_current_min, HV_current_max     = 0, 6
     LV_current_min, LV_current_max     = 0, 1.5
 
+    start_time = start_time.replace("+00:00Z", "Z")
+    stop_time = stop_time.replace("+00:00Z", "Z")
+    print(stop_time)
     # Loop over sensors and query data.
     for sensorName in sensors:
         query = f'''
@@ -715,7 +741,7 @@ def makePlotInfluxdbVoltageAndCurrent(time, folder,
     lines = []
     labels = []
     # Draw a vertical reference line on the left-most axis.
-    axLV_current.axvline(x=myTime, color='gray', linestyle='--', label=myTime.strftime('%H:%M:%S'))
+    axLV_current.axvline(x=startTime_utc, color='gray', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
     for ax in [axHV_voltage, axLV_voltage, axHV_current, axLV_current]:
         l, lab = ax.get_legend_handles_labels()
         lines.extend(l)
@@ -723,7 +749,7 @@ def makePlotInfluxdbVoltageAndCurrent(time, folder,
     axHV_voltage.legend(lines, labels, loc='upper left')
 
     # Set the x-axis label using the main axis.
-    timezone_h = "%+.1f" % (-rome_time.utcoffset().seconds/3600)
+    timezone_h = "%+.1f" % (-startTime_rome.utcoffset().seconds/3600)
     axHV_voltage.set_xlabel('UTC Time (= Rome Time %s h)' % timezone_h)
 
     axHV_voltage.grid(True)
@@ -737,7 +763,36 @@ def makePlotInfluxdbVoltageAndCurrent(time, folder,
 
 
 
-def makePlotInfluxdb(time, folder):
+def getInfluxQueryAPI(token_location = "~/private/influx.sct"):
+    import os
+    token = open(os.path.expanduser(token_location)).read().strip()
+    from influxdb_client import InfluxDBClient
+    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
+    return client.query_api()
+
+def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
+    # Define a small window around the timestamp (±30 seconds)
+    window = timedelta(seconds=30)
+    timestamp = datetime.fromisoformat(timestamp)
+    start_window = (timestamp - window).isoformat("T") + "Z"
+    end_window = (timestamp + window).isoformat("T") + "Z"
+    query = f'''
+    from(bucket: "sensor_data")
+        |> range(start: {start_window}, stop: {end_window})
+        |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
+        |> filter(fn: (r) => r["_field"] == "{sensorName}")
+        |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
+        |> yield(name: "mean")
+    '''
+    tables = getInfluxQueryAPI().query(query, org=org)
+    # Gather the temperature values found within the time window.
+    temps = [record.get_value() for table in tables for record in table.records]
+    print(temps)
+    if temps:
+        # Average values if more than one record is returned.
+        return sum(temps) / len(temps)
+
+def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"):
     print("makePlotInfluxdb")
 
     token_location = "~/private/influx.sct" 
@@ -745,16 +800,14 @@ def makePlotInfluxdb(time, folder):
     
     from datetime import datetime, timedelta
     
-    from influxdb_client import InfluxDBClient
+#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_utc = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_utc = getTimeFromUTCToRome(stopTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-    org = "pisaoutertracker"
-    
-    myTime, rome_time = getTime(time, timeFormat = "%Y-%m-%dT%H:%M:%S")
 
-    start_time = (myTime - timedelta(hours=2)).isoformat("T") + "Z"
-    stop_time = (myTime + timedelta(hours=2)).isoformat("T") + "Z"
+    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (startTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
 
-    print(start_time)
     print(stop_time)
     
     sensorName = "Temp0"
@@ -770,9 +823,7 @@ def makePlotInfluxdb(time, folder):
     time = []
     value = []
     
-    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
-    tables = client.query_api().query(query, org=org)
-    client.__del__()
+    tables = getInfluxQueryAPI().query(query, org=org)
     
     for table in tables:
        for record in table.records:
@@ -785,9 +836,10 @@ def makePlotInfluxdb(time, folder):
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
-    plt.axvline(x=myTime, color='r', linestyle='--', label=myTime.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
-    timezone_h = "%+.1f"%(-rome_time.utcoffset().seconds/3600)
+    timezone_h = "%+.1f"%(-startTime_rome.utcoffset().seconds/3600)
     plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
     plt.ylabel('Temperature')
     plt.title('Sensor Data Over Time')
@@ -897,26 +949,29 @@ def updateTestResult(module_test, skipWebdav = False):
             txt = str(json_file.read())
             print(txt)
             connectionMap = eval(txt)
+    connectionMap = {}
+    ### Add plot with voltage and currents
     hv_number = -1
     lv_number = -1
-    for con in connectionMap.values():
-        if not con["crate_port"] == "power": continue
-        lastCable = con['connections'][1]
-        print(lastCable)
-        if "HV" in lastCable['crate_port'][0]:
-            hv_number = int(lastCable['crate_port'][0].split("HV")[1])
-        elif "LV" in lastCable['crate_port'][0]:
-            lv_number = int(lastCable['crate_port'][0].split("LV")[1])
-    if hv_number == -1 or lv_number == -1:
-        print("HV/LV found: ", hv_number, lv_number)
-        raise Exception("No HV or LV found in connectionMap")
-    if verbose>0:
-        print("HV/LV found: ", hv_number, lv_number)
+    if False:
+        for con in connectionMap.values():
+            if not con["crate_port"] == "power": continue
+            lastCable = con['connections'][1]
+            print(lastCable)
+            if "HV" in lastCable['crate_port'][0]:
+                hv_number = int(lastCable['crate_port'][0].split("HV")[1])
+            elif "LV" in lastCable['crate_port'][0]:
+                lv_number = int(lastCable['crate_port'][0].split("LV")[1])
+        if hv_number == -1 or lv_number == -1:
+            print("HV/LV found: ", hv_number, lv_number)
+            raise Exception("No HV or LV found in connectionMap")
+        if verbose>0:
+            print("HV/LV found: ", hv_number, lv_number)
 
 
-#            connectionMap = json.load(json_file)
-    else:
-        connectionMap = {}
+    #            connectionMap = json.load(json_file)
+        else:
+            connectionMap = {}
     print(connectionMap, connectionMapFileName)
 #    1/0
     print(run)
@@ -993,8 +1048,9 @@ def updateTestResult(module_test, skipWebdav = False):
 
 if __name__ == '__main__':
     import argparse
-    makePlotInfluxdb("2025-02-24T12:32:38", "/tmp/influxdb/")
-    makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38", "/tmp/influxdb/", sensors=["caen_BLV07_Voltage", "caen_BLV07_Current", "caen_HV007_Voltage", "caen_HV007_Current"])
+    makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
+    print(getTemperatureAt("2025-02-24T12:32:38", sensorName="Temp0"))
+    #makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38","2025-02-24T13:32:38", "/tmp/influxdb/", sensors=["caen_BLV07_Voltage", "caen_BLV07_Current", "caen_HV007_Voltage", "caen_HV007_Current"])
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
