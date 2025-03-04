@@ -1,6 +1,6 @@
 ### Default values 
-verbose = 300000
-lastPh2ACFversion = "ph2_acf_v6-02"
+verbose = 3
+lastPh2ACFversion = "ph2_acf_v6-04"
 #sessionName = 'session1'
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -246,6 +246,8 @@ if __name__ == '__main__':
             print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         fpgaconfig(xmlFile, firmware, ph2ACFversion)
         out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
+        if out == "Run fpgaconfig":
+            raise Exception("fpgaconfig failed. Please check the error above.")
     testID, date = out
     
     ### read the output file (if args.useExistingModuleTest is defined, read the that ROOT file)
@@ -301,7 +303,7 @@ if __name__ == '__main__':
                 except:
                     message = "+++ Board %s Optical %d Module %d (NO MODULE FOUND). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, int(id_), moduleExpected)
                 print(message)
-                if not args.skipModuleCheck: raise Exception(message)
+                if not args.skipModuleCheck: raise Exception(message + ". You can skip this error using --skipModuleCheck flag.")
                 continue
             moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module" ## module found in the database matching the hardware ID
             try:
@@ -391,6 +393,17 @@ if __name__ == '__main__':
         date = date.replace(" ","T").split(".")[0] # drop ms
         if args.useExistingModuleTest:
             date = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
+            ## convert date from UTC to Rome time 
+            from datetime import datetime
+            from pytz import timezone
+            import pytz
+            rome = timezone('Europe/Rome')
+            utc = timezone('UTC')
+            if date[0:2] != "20": date = "20"+date
+            date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
+            date = utc.localize(date)
+            date = date.astimezone(rome)
+            date = date.strftime("%Y-%m-%dT%H:%M:%S")            
         newRun = {
             'runDate': date, 
             'runSession': session,
