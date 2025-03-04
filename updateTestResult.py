@@ -10,7 +10,7 @@ opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBT
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "Feb28"
+version = "Mar4"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -787,7 +787,6 @@ def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
     tables = getInfluxQueryAPI().query(query, org=org)
     # Gather the temperature values found within the time window.
     temps = [record.get_value() for table in tables for record in table.records]
-    print(temps)
     if temps:
         # Average values if more than one record is returned.
         return sum(temps) / len(temps)
@@ -1028,6 +1027,8 @@ def updateTestResult(module_test, skipWebdav = False):
     json = {
         "moduleTestAnalysisName": folder, #"PS_26_05-IBA_00004__run79__Test", 
         "moduleTestName": module_test, #"PS_26_05-IBA_00004__run79", 
+        "moduleTempStart": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")),
+        "moduleTempStop": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")),
         "analysisVersion": version, #"Test", 
         "analysisResults": {module_test:result},
         "analysisSummary": noisePerChip,
