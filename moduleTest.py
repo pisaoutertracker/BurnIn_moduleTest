@@ -37,8 +37,8 @@ if __name__ == '__main__':
     required = parser.add_argument_group('required arguments')
     required.add_argument('--session', type=str, help='Name of the session (eg. session1). ', required=True)
     required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102).', required=True)
-    required.add_argument('--slot', type=str, help='Module name (eg. 0,1,2).', required=True)
-    required.add_argument('--board', type=str, help='Board name (eg. fc7ot2).', required=True)
+    required.add_argument('--slot', type=str, default='-1', help='Module name (eg. 0,1,2).', required=False)
+    required.add_argument('--board', type=str, default='-1', help='Board name (eg. fc7ot2).', required=False)
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
     required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
     required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
@@ -65,6 +65,14 @@ if __name__ == '__main__':
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
     args = parser.parse_args()
+    if not args.useExistingModuleTest:
+        if args.slot == "-1":
+            raise Exception("Please provide a slot number. Eg. --slot 0")
+        if args.module == "-1":
+            raise Exception("Please provide a module name. Eg. --module PS_26_05-IBA_00102")
+        if args.board == "-1":
+            raise Exception("Please provide a board name. Eg. --board fc7ot2")
+        
     ph2ACFversion = args.version
     if ph2ACFversion == "local":
         print()
@@ -130,44 +138,6 @@ if __name__ == '__main__':
         slot, board, pixel, strip, hybrids = parse_module_settings(xmlConfig)
         print("The new values are: %s, %s, %s, %s, %s."%(slot, board, pixel, strip, hybrids))
     
-    ## check if the expected modules match the modules declared in the database for the slots
-    from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
-    for i, slot in enumerate(slots):
-        error = None
-        moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
-        moduleFromCLI = modules[i]
-        print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
-        moduleBandwidth = getModuleBandwidthFromDB(moduleFromCLI)
-        print("Expected module %s. According to Pisa db is %s"%(moduleFromCLI, moduleBandwidth))
-        if moduleBandwidth == "5Gbps" and args.g10:
-            raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
-        elif moduleBandwidth == "10Gbps" and args.g5:
-            raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
-        if moduleFromDB == None:
-            from databaseTools import getFiberLink
-            fc7, og = getFiberLink(moduleFromCLI)
-            if fc7 == None:
-                print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
-                if args.addNewModule:
-                    print("It is ok, as you are going to add new modules to the database.")
-                else: 
-                    error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
-                    print(error)
-            else:
-                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
-                print(error)
-        else:
-            if moduleFromDB != moduleFromCLI:
-                error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
-                print(error)
-            else:
-                print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error: 
-            if args.ignoreConnection:
-                print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
-                print("WARNING: %s"%error)
-            else:
-                raise Exception(error+" You can skip this error using --ignoreConnection flag.")
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
     if readOnlyID: ##enable minimal configuration to get the hardware ID of the module
@@ -208,18 +178,21 @@ if __name__ == '__main__':
         if os.path.exists("%s/%s"%(xmlFilePath, xmlPyConfigFile)):
             xmlConfig = readXmlConfig(xmlPyConfigFile, folder=xmlFilePath)
         else:
-            from makeXml import makeConfigFromROOTfile
+            from makeXml import makeConfigFromROOTfile, getInfosFromXml
             print("%s not found. Creating it from ROOT file."%xmlFilePath)
             xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Results.root")
-        
+            print("As your are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
+            print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels))
+            board, slots, hybrids, strips, pixels  = getInfosFromXml(xmlConfig)
+            opticalGroups = [int(s) for s in slots]
+            print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
+            print(xmlConfig)      
         file = open(xmlFilePath, 'w')
         file.write("config =" + str(xmlConfig))
         file.close
-#        xmlPyConfigFile = "Results/%s/PS_Module_settings.py"%folder
         xmlFile = "Results/%s/ModuleTest_settings.xml"%folder
     else:
         xmlPyConfigFile = args.xmlPyConfigFile
-#        xmlConfig = readXmlConfig(xmlPyConfigFile)
         outFile="PS_Module_settings_autogenerated.py"
         xmlPyConfigFile = outFile
         xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=50)
@@ -230,8 +203,20 @@ if __name__ == '__main__':
             copyXml(ph2ACFversion)
             xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
     
-    pprint(xmlConfig)
-    
+    if verbose>1:
+        print("xmlConfig:")
+        pprint(xmlConfig)
+
+    print(board)
+    print(slots)
+    #### check if the expected modules match the modules declared in the database for the slots ####
+    from databaseTools import checkIfExpectedModulesMatchModulesInDB
+    checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args)
+
+
+    ###########################################################
+    #################### START OF THE TEST ####################
+    ###########################################################
     ### launch fpga_config
     if args.runFpgaConfig or args.g10 or args.g5: fpgaconfig(xmlFile, firmware, ph2ACFversion)
     

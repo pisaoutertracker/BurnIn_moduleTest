@@ -26,7 +26,13 @@ def makeConfigFromROOTfile(fileName):
         if "Board_" in objB_:
             board_id = objB_.split("Board_")[1]
             if not board_id in xmlConfig["boards"]: 
-                xmlConfig["boards"][board_id] = {"ip" : "fake", "opticalGroups" : {}}
+                ## gDirectory->Get("Detector/Board_0/D_NameId_Board_(0)")->Print()
+                ip = ROOTfile.Get("Detector/%s/D_NameId_Board_(%s)"%(objB_,board_id))
+                print(ip)
+                ip = str(ip.GetString())
+                if "//" in ip: ip = ip.split("//")[1]
+                print(ip)
+                xmlConfig["boards"][board_id] = {"ip" : ip, "opticalGroups" : {}}
             for objO in ROOTfile.Get("Detector/%s"%objB_).GetListOfKeys(): 
                 objO_ = objO.GetName()
                 if "OpticalGroup_" in objO_:
@@ -256,7 +262,16 @@ def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
                     pixel_id = int(pixel_id)
                     noiseMap[hwId]["H%s_MPA%s"%(hybrid_id, pixel_id)] = noisePerChip['D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)MPA'%(board_id, opticalGroup_id, hybrid_plus_opt, pixel_id)]
     return boardMap, moduleMap, noiseMap
-    
+
+
+def getInfosFromXml(xmlConfig):
+    board = xmlConfig["boards"]["0"]["ip"].split(":")[0]
+    slots = list(xmlConfig["boards"]["0"]["opticalGroups"].keys())
+    hybrids = list(xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"].keys())
+    pixels = xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"][str(hybrids[0])]["pixels"]
+    strips = xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"][str(hybrids[0])]["strips"]
+    opticalGroups = [int(s) for s in slots]
+    return board, slots, hybrids, strips, pixels
 
 #  'D_B(0)_O(0)_H(0)_NoiseDistribution_Chip(14)MPA': 2.7255240752051275,
 #    for id in IDs: ## id[0] = board number, id[1] = optical group number
