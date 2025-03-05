@@ -24,7 +24,7 @@ from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 from webdavclient import WebDAVWrapper
 from moduleTest import webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
 
-verbose = 10000
+verbose = 1
 
 import ROOT
 
@@ -805,6 +805,9 @@ def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
     if temps:
         # Average values if more than one record is returned.
         return sum(temps) / len(temps)
+    else:
+        print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
+        return -999
 
 def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"):
     print("makePlotInfluxdb")
