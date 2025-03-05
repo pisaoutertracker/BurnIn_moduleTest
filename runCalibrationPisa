@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+import sys
+import argparse
+import subprocess
+
+def main():
+    # Check for unsupported options
+    unsupported = {
+        "-l": "Option '-l' is not supported.",
+        "--last": "Option '--last' is not supported.",
+        "-r": "Option '-r' is not supported.",
+        "--run": "Option '--run' is not supported.",
+        "-b": "Option '-b' is not supported. runCalibration will run always with -b option enabled.",
+        "--batch": "Option '--batch' is not supported. runCalibration will run always with -b option enabled."
+    }
+    for arg in sys.argv[1:]:
+        if arg in unsupported:
+            print(f"Error: {unsupported[arg]}")
+            sys.exit(1)
+
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(
+        description="Usage: %(prog)s -f <xmlFile> -c <value> [options]"
+    )
+    parser.add_argument("-f", "--file", dest="xmlFile", required=True,
+                        help="Specify the XML file")
+    parser.add_argument("-c", "--calibration", dest="calibration", required=True,
+                        help="Specify the calibration value")
+    parser.add_argument("-m", "--message", dest="message", default = "-1",
+                        help="Specify the operator and description of the session in the format 'This is operator|My session description'")
+    parser.add_argument("-s", "--session", dest="session", default = "-1",
+                        help="Specify an optional message")
+    
+    args = parser.parse_args()
+
+#    if args.message == "-1" and args.session == "-1":
+#        raise Exception("")
+    # Build the command for the moduleTest.py call
+    command = [
+        "python3", "moduleTest.py",
+        "--ignoreConnection",
+        "-f", args.xmlFile,
+        "-c", args.calibration,
+        "--module", "dummy",
+        "--session", "session1",
+        "--slot", "-1",
+        "--board", "-1",
+        "--ignoreConnection",  # This appears twice as in the original script
+        "--skipModuleCheck",
+        "--vetoFpgaConfig",
+        "--version", "local"
+    ]
+
+    if args.message:
+        command.append("-m")
+        command.append(args.message)
+
+    if args.session:
+        command.append("--session")
+        command.append(args.session)
+
+    print("Calling:")
+    print(" ".join(command))
+    print()
+
+    # Execute the command
+    subprocess.run(command)
+
+if __name__ == "__main__":
+    main()
