@@ -206,11 +206,11 @@ import xml.etree.ElementTree as ET
 def parse_module_settings(xml_file):
     """
     Parse the given ModuleTest_settings.xml file and extract:
-      - slot: The OpticalGroup Id (as integer)
-      - boad: The board host extracted from the connection URI (e.g., "fc7ot3")
-      - pixel: A list of pixel channels, collected from any MPA2 element's Id.
-      - strip: A list of strip channels, collected from any SSA2 element's Id.
-      - hybrids: A list of Hybrid Ids present under the OpticalGroup.
+      - board: The board host extracted from the connection URI (e.g., "fc7ot3")
+      - slots: A list of OpticalGroup Ids (each as integer)
+      - hybrids: A list of Hybrid Ids present in all OpticalGroup elements
+      - strips: A sorted list of unique SSA2 Ids collected from all Hybrid elements
+      - pixels: A sorted list of unique MPA2 Ids collected from all Hybrid elements
     """
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -220,43 +220,50 @@ def parse_module_settings(xml_file):
     board_uri = connection_elem.get("uri")  # e.g., "ipbusudp-2.0://fc7ot3:50001"
     board = board_uri.split("://")[1].split(":")[0]
 
-    # Extract the OpticalGroup element and use its Id as the slot.
-    optical_group = root.find(".//BeBoard/OpticalGroup")
-    slot = int(optical_group.get("Id"))
-
-    # Find all Hybrid elements under the OpticalGroup.
-    hybrid_elements = optical_group.findall("Hybrid")
-    hybrids = [int(hybrid.get("Id")) for hybrid in hybrid_elements]
-
-    # Initialize sets for pixel and strip channels.
+    # Find all OpticalGroup elements under BeBoard.
+    optical_groups = root.findall(".//BeBoard/OpticalGroup")
+    slots = []
+    hybrids = []
     pixel_set = set()
     strip_set = set()
-    
-    # For each Hybrid, look for any SSA2 and MPA2 elements.
-    for hybrid in hybrid_elements:
-        for ssa2 in hybrid.findall("SSA2"):
-            try:
-                ssa2_id = int(ssa2.get("Id"))
-                strip_set.add(ssa2_id)
-            except (TypeError, ValueError):
-                pass
 
-        for mpa2 in hybrid.findall("MPA2"):
-            try:
-                mpa2_id = int(mpa2.get("Id"))
-                pixel_set.add(mpa2_id)
-            except (TypeError, ValueError):
-                pass
+    for optical_group in optical_groups:
+        # Add OpticalGroup Id to slots list.
+        try:
+            slot_id = int(optical_group.get("Id"))
+            slots.append(slot_id)
+        except (TypeError, ValueError):
+            pass
+
+        # Find all Hybrid elements under this OpticalGroup.
+        hybrid_elements = optical_group.findall("Hybrid")
+        hybrids.extend([int(hybrid.get("Id")) for hybrid in hybrid_elements if hybrid.get("Id") is not None])
+        
+        # For each Hybrid, look for any SSA2 and MPA2 elements.
+        for hybrid in hybrid_elements:
+            for ssa2 in hybrid.findall("SSA2"):
+                try:
+                    ssa2_id = int(ssa2.get("Id"))
+                    strip_set.add(ssa2_id)
+                except (TypeError, ValueError):
+                    pass
+
+            for mpa2 in hybrid.findall("MPA2"):
+                try:
+                    mpa2_id = int(mpa2.get("Id"))
+                    pixel_set.add(mpa2_id)
+                except (TypeError, ValueError):
+                    pass
 
     # Convert sets to sorted lists.
-    pixel = sorted(list(pixel_set))
-    strip = sorted(list(strip_set))
+    strips = sorted(list(strip_set))
+    pixels = sorted(list(pixel_set))
 
-    return slot, board, pixel, strip, hybrids
+    return board, slots, hybrids, strips, pixels
 
 if __name__ == '__main__':
     filename = "ModuleTest_settings.xml"
-    slot, boad, pixel, strip, hybrids = parse_module_settings(filename)
+    board, slots, hybrids, strips, pixels = parse_module_settings(filename)
     print("Slot:", slot)
     print("Board:", boad)
     print("Pixel channels:", pixel)
