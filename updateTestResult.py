@@ -497,19 +497,34 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     if 'hwId' in module: hwId = module['hwId']
     if 'children' in module and 'lpGBT' in module['children'] and 'CHILD_SERIAL_NUMBER' in module["children"]["lpGBT"]: hwId = str(module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"]) 
     body += grayText("Module: ") + moduleName + " (lpGBT Fuse Id: %s)"%hwId + "\n"
-    
+
+    ### Session
+    from databaseTools import getSessionFromDB
+    session = getSessionFromDB(run["runSession"])
+    body += "<h1> %s %s  </h1>"%(grayText("Session: "), session['sessionName']) + "\n"
+#    body += grayText("Session: ") + session['sessionName']
+    body += grayText("Operator: ") + session['operator']
+    body += ". " + grayText("Start [local time]: ") + session['timestamp'].replace("T", " ") + "<br>" +"\n"
+    body += grayText("Description: ") + session['description'] + "<br>" +"\n"
+
     ### Run
     body += "<h1> %s %s  </h1>"%(grayText("Run: "), runName) + "\n"
     date, time =  run['runDate'].split("T")
-    body += grayText("Run: ") + runName 
-    body += ". " + grayText("Date: ") +date + ". " + grayText("Time [local time]: ") + time + "<br>" +"\n"
+ #   body += grayText("Run: ") + runName 
+    body += grayText("Date: ") +date + ". " + grayText("Time [local time]: ") + time + "<br>" +"\n" 
+    body += grayText("Type: ") + run["runType"] 
+    body += ". " + grayText("Status: ") + run["runStatus"] + "<br>" +"\n"
+#    body += grayText("Run boards: ") + str(run["runBoards"]) + "<br>" +"\n"
     startTime = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector"))
-    body += grayText("CalibrationStartTimestamp [UTC time]: ") + startTime + "<br>" +"\n"
-    body += grayText("&nbsp;&nbsp;Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime.replace(" ","T"))
+    body += "<br>" +"\n"
+    body += grayText("CalibrationStartTimestamp [UTC time]: ") + startTime
+    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime.replace(" ","T"))
     stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
-    body += grayText("CalibrationStopTimestamp_Detector [UTC time]: ") + stopTime + "<br>" +"\n"
-    body += grayText("&nbsp;&nbsp;Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime.replace(" ","T"))
-    body += grayText("GitCommitHash: ") + str(rootFile.Get("Detector/GitCommitHash_Detector")) + "<br>" +"\n"
+    body += grayText("CalibrationStopTimestamp_Detector [UTC time]: ") + stopTime
+    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime.replace(" ","T"))
+    gitHash = str(rootFile.Get("Detector/GitCommitHash_Detector"))
+    linkGit = "https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/tree/%s"%gitHash
+    body += grayText("GitCommitHash: <a href= %s> %s </a>"%(linkGit, gitHash)) + "<br>" +"\n"
     body += grayText("HostName: ") + str(rootFile.Get("Detector/HostName_Detector")) + "<br>" +"\n"
     body += grayText("Username: ") + str(rootFile.Get("Detector/Username_Detector")) + "<br>" +"\n"
 #    body += grayText("InitialDetectorConfiguration: ") + str(rootFile.Get("Detector/InitialDetectorConfiguration_Detector")) + "<br>" +"\n"
