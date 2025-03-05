@@ -1,7 +1,6 @@
 ### Default values 
 verbose = 3
 lastPh2ACFversion = "ph2_acf_v6-04"
-#sessionName = 'session1'
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
@@ -35,7 +34,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Script used to launch the test of the Phase-2 PS module, using Ph2_ACF. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: \npython3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0,1 --session session1 . ')
     required = parser.add_argument_group('required arguments')
-    required.add_argument('--session', type=str, help='Name of the session (eg. session1). ', required=True)
+    required.add_argument('--session', type=str, default='-1', help='Name of the existing session (eg. session1). ', required=False)
+    required.add_argument('-m', '--message', type=str, default='-1', help='Messagge used to create a new session. It requires "|" to separate between the author and the message ', required=False)
     required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102).', required=True)
     required.add_argument('--slot', type=str, default='-1', help='Module name (eg. 0,1,2).', required=False)
     required.add_argument('--board', type=str, default='-1', help='Board name (eg. fc7ot2).', required=False)
@@ -65,14 +65,18 @@ if __name__ == '__main__':
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
     args = parser.parse_args()
-    if not args.useExistingModuleTest:
+    if not args.useExistingModuleTest and not args.useExistingXmlFile:
         if args.slot == "-1":
             raise Exception("Please provide a slot number. Eg. --slot 0")
-        if args.module == "-1":
-            raise Exception("Please provide a module name. Eg. --module PS_26_05-IBA_00102")
         if args.board == "-1":
             raise Exception("Please provide a board name. Eg. --board fc7ot2")
-        
+    if not args.useExistingModuleTest:
+        if args.module == "-1":
+            raise Exception("Please provide a module name. Eg. --module PS_26_05-IBA_00102")
+    if args.session == "-1" and args.message == "-1" and args.command!="readOnlyID":
+        raise Exception("Please provide either a session name (eg. --session session1) or a message (eg. -m 'Mickey Mouse|Test of the burnin controller with the new firmware').")
+    if args.message != "-1" and not "|" in args.message:
+        raise Exception("The message passed with -m must contain a '|', eg. -m 'Silvio|Test', while you used -m '%s'."%args.message)
     ph2ACFversion = args.version
     if ph2ACFversion == "local":
         print()
@@ -123,7 +127,6 @@ if __name__ == '__main__':
     modules = args.module.split(",")
     if len(slots)!=len(modules):
         raise Exception("--slots and --modules must have the same number of objects. Check %s and %s."%(slots,modules))
-    session = args.session
     edgeSelect = args.edgeSelect
     hybrids = [int(h) for h in args.hybrid.split(",") if h != ""]
     pixels = [int(h) for h in args.pixel.split(",") if h != ""]
@@ -131,12 +134,13 @@ if __name__ == '__main__':
     if len(strips)>0 and max(strips)>7 or min(strips)<0: raise Exception("strip numbers are allowed in [0,7] range. Strips: %s"%(str(strips)))
     if len(pixels)>0 and (max(pixels)>15 or min(strips)<0): raise Exception("strip numbers are allowed in [8,15] range. Pixels: %s"%(str(pixels)))
     
-    from tools import parse_module_settings
     if args.useExistingXmlFile:
-        print("As your are using an existing module test, I will overwrite the slot, boards, pixel, strip, hybrids with the one from the existing module test.")
-        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels))
-        slot, board, pixel, strip, hybrids = parse_module_settings(xmlConfig)
-        print("The new values are: %s, %s, %s, %s, %s."%(slot, board, pixel, strip, hybrids))
+        from tools import parse_module_settings
+        print("As you are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
+        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels))
+        board, slots, hybrids, strips, pixels  = parse_module_settings(args.useExistingXmlFile)
+        opticalGroups = [int(s) for s in slots]
+        print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
     
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
@@ -178,12 +182,12 @@ if __name__ == '__main__':
         if os.path.exists("%s/%s"%(xmlFilePath, xmlPyConfigFile)):
             xmlConfig = readXmlConfig(xmlPyConfigFile, folder=xmlFilePath)
         else:
-            from makeXml import makeConfigFromROOTfile, getInfosFromXml
+            from makeXml import makeConfigFromROOTfile, getInfosFromXmlPyConfig
             print("%s not found. Creating it from ROOT file."%xmlFilePath)
             xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Results.root")
-            print("As your are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
+            print("As you are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
             print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels))
-            board, slots, hybrids, strips, pixels  = getInfosFromXml(xmlConfig)
+            board, slots, hybrids, strips, pixels  = getInfosFromXmlPyConfig(xmlConfig)
             opticalGroups = [int(s) for s in slots]
             print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
             print(xmlConfig)      
@@ -195,14 +199,15 @@ if __name__ == '__main__':
         xmlPyConfigFile = args.xmlPyConfigFile
         outFile="PS_Module_settings_autogenerated.py"
         xmlPyConfigFile = outFile
+        if not args.useExistingXmlFile:
+            from shellCommands import copyXml
+            copyXml(ph2ACFversion)
         xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=50)
         if args.useExistingXmlFile:
             xmlFile = args.useExistingXmlFile
         else:
-            from shellCommands import copyXml
-            copyXml(ph2ACFversion)
             xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
-    
+
     if verbose>1:
         print("xmlConfig:")
         pprint(xmlConfig)
@@ -389,6 +394,12 @@ if __name__ == '__main__':
             date = utc.localize(date)
             date = date.astimezone(rome)
             date = date.strftime("%Y-%m-%dT%H:%M:%S")            
+        
+        if args.session != "-1":
+            session = args.session
+        else:
+            from databaseTools import createSession
+            session = createSession(args.message, modules)
         newRun = {
             'runDate': date, 
             'runSession': session,

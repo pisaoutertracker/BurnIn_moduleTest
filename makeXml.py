@@ -264,13 +264,13 @@ def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
     return boardMap, moduleMap, noiseMap
 
 
-def getInfosFromXml(xmlConfig):
+def getInfosFromXmlPyConfig(xmlConfig):
+    print(xmlConfig)
     board = xmlConfig["boards"]["0"]["ip"].split(":")[0]
     slots = list(xmlConfig["boards"]["0"]["opticalGroups"].keys())
     hybrids = list(xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"].keys())
     pixels = xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"][str(hybrids[0])]["pixels"]
     strips = xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"][str(hybrids[0])]["strips"]
-    opticalGroups = [int(s) for s in slots]
     return board, slots, hybrids, strips, pixels
 
 #  'D_B(0)_O(0)_H(0)_NoiseDistribution_Chip(14)MPA': 2.7255240752051275,
