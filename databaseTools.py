@@ -283,21 +283,21 @@ def createAnalysis(json):
     print(response.content.decode())
     print(response.status_code)
     if response.status_code == 201:
-        if verbose>1: print("Module added successfully")
+        if verbose>1: print("Single module test analysis added successfully")
     else:
         print("Failed to add the module. Status code:", response.status_code)
     return response.status_code
 
 def appendAnalysisToModule(analysisName):
     if verbose>0: print("Calling appendAnalysisToModule()")
-    api_url = "http://%s:%d/addAnalysis"%(ip, port)
+    api_url = "http://%s:%d/sessions"%(ip, port)
     json = {'moduleTestAnalysisName': analysisName}
     response = requests.get(api_url, params=json)
     print(response)
     print(response.content.decode())
     print(response.status_code)
     if response.status_code == 200:
-        if verbose>1: print("Module added successfully")
+        if verbose>1: print("Analysis appended to existing module successfully")
     else:
         print("Failed to add the module. Status code:", response.status_code)
     return response.status_code
@@ -342,6 +342,49 @@ def checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args):
             else:
                 raise Exception(error+" You can skip this error using --ignoreConnection flag.")
     return
+
+def createSession(message, moduleList):
+    from datetime import datetime
+    if verbose>0: print("Calling createSession()")
+    splitted = message.split("|")
+    if len(splitted)<2:
+        raise Exception("Error: Message should have at least two fields (author|message)separated by |. You used -m %s"%message)
+    operator = splitted[0]
+    message = "|".join(splitted[1:])
+    print (operator, message)
+    sessionJson={
+        "operator": operator,
+        "description": message,
+        "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+        "modulesList": moduleList,
+    }
+    #create new session in DB
+    api_url = "http://%s:%d/sessions"%(ip, port)
+    response = requests.post(api_url, json=sessionJson)
+    print(response)
+    print(response.content.decode())
+    print(response.status_code)
+    if response.status_code == 201:
+        if verbose>1: print("Session added successfully")
+    else:
+        print("Failed to add the session. Status code:", response.status_code)
+    try:
+        sessionName = eval(response.content.decode())["sessionName"]
+    except:
+        raise Exception("Something wrong in adding the session. Please check the response: %s"%response.content.decode())
+    return sessionName
+
+
+    success, result = self.make_api_request("sessions", "POST", session)    
+    self.current_session = result["sessionName"]
+
+#    self.current_module_id = self.moduleLE.text()
+#    self.current_session_operator = self.operatorLE.text()
+#    self.current_session_comments = self.commentsLE.text()
+    print(self.current_session)
+    return self.current_session
+
+    return "session1"
 
 #new_test = {
 #    "testID": "T001",
