@@ -6,7 +6,7 @@ def evalMod(string):
     string = string.replace("true","True").replace("false","False").replace("null","None")
     return eval(string)
 
-#verbose = 0
+verbose = 10
 ### upload the test result to the "tests" DB
 
 ## (obsolete) ##
@@ -289,13 +289,15 @@ def createAnalysis(json):
     return response.status_code
 
 def appendAnalysisToModule(analysisName):
-    if verbose>0: print("Calling appendAnalysisToModule()")
-    api_url = "http://%s:%d/sessions"%(ip, port)
+    if verbose>0: print("Calling appendAnalysisToModule()", analysisName)
+    api_url = "http://%s:%d/addAnalysis"%(ip, port)
     json = {'moduleTestAnalysisName': analysisName}
     response = requests.get(api_url, params=json)
-    print(response)
-    print(response.content.decode())
-    print(response.status_code)
+    if verbose>4: 
+        print("Calling request.get(%s, %s)"%(api_url, json))
+        print(response)
+        print(response.content.decode())
+        print(response.status_code)
     if response.status_code == 200:
         if verbose>1: print("Analysis appended to existing module successfully")
     else:
