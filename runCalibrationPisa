@@ -1,45 +1,111 @@
 #!/usr/bin/env python3
 import sys
+import os
 import argparse
 import subprocess
 
 def main():
-    # Check for unsupported options
+
+    # Path to PH2ACF_BASE_DIR (must be set in environment)
+    ph2acf_base_dir = os.environ.get("PH2ACF_BASE_DIR")
+    if not ph2acf_base_dir:
+        print("Error: PH2ACF_BASE_DIR environment variable is not set.")
+        sys.exit(1)
+
+    # We'll revise the unsupported map: the script used to claim
+    # that -l, -r, etc. are unsupported. Now, we DO support them,
+    # so let's just remove them from the immediate check and handle them properly.
+    # If you still want to keep them as previously done for other flags, you can.
     unsupported = {
-        "-l": "Option '-l' is not supported.",
-        "--last": "Option '--last' is not supported.",
-        "-r": "Option '-r' is not supported.",
-        "--run": "Option '--run' is not supported.",
-        "-b": "Option '-b' is not supported. runCalibration will run always with -b option enabled.",
+        "-b"    : "Option '-b' is not supported. runCalibration will run always with -b option enabled.",
         "--batch": "Option '--batch' is not supported. runCalibration will run always with -b option enabled."
     }
+
+    # Check for truly unsupported options
     for arg in sys.argv[1:]:
         if arg in unsupported:
             print(f"Error: {unsupported[arg]}")
             sys.exit(1)
 
-    # Set up argument parsing
+    # We'll create an argument parser that includes file, run, last, calibration, message, session, etc.
     parser = argparse.ArgumentParser(
         description="Usage: %(prog)s -f <xmlFile> -c <value> [options]"
     )
-    parser.add_argument("-f", "--file", dest="xmlFile", required=True,
-                        help="Specify the XML file")
+
+    # We'll put file, run, and last in a mutually exclusive group,
+    # but in your original snippet -f is required. We'll no longer enforce
+    # -f as always required because -l or -r might be used instead.
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-f", "--file", dest="xmlFile",
+                       help="Specify the XML file")
+
+    group.add_argument("-l", "--last", action="store_true",
+                       help="Use the Configuration.xml from the last run directory")
+
+    group.add_argument("-r", "--run", type=int, metavar="RUN_NUMBER",
+                       help="Use the Configuration.xml from the specified run directory")
+
     parser.add_argument("-c", "--calibration", dest="calibration", required=True,
                         help="Specify the calibration value")
-    parser.add_argument("-m", "--message", dest="message", default = "-1",
+    parser.add_argument("-m", "--message", dest="message", default="-1",
                         help="Specify the operator and description of the session in the format 'This is operator|My session description'")
-    parser.add_argument("-s", "--session", dest="session", default = "-1",
-                        help="Specify an optional message")
+    parser.add_argument("-s", "--session", dest="session", default="-1",
+                        help="Specify an optional session name")
     
     args = parser.parse_args()
 
-#    if args.message == "-1" and args.session == "-1":
-#        raise Exception("")
+    # Determine the actual xmlFile to use, possibly ignoring args.xmlFile if -l or -r is used
+    xml_file_to_use = None
+
+    if args.last or args.run is not None:
+        # We are using the run-based approach
+        if args.last:
+            # Read last run from RunNumbers.dat
+            run_numbers_path = os.path.join(ph2acf_base_dir, "RunNumbers.dat")
+            if not os.path.isfile(run_numbers_path):
+                print(f"Error: '{run_numbers_path}' does not exist. Cannot use --last.")
+                sys.exit(1)
+            with open(run_numbers_path, "r") as run_file:
+                lines = [ln.strip() for ln in run_file.readlines() if ln.strip()]
+                if not lines:
+                    print("Error: RunNumbers.dat is empty. Cannot use --last.")
+                    sys.exit(1)
+                last_run_str = lines[-1]
+                try:
+                    last_run = int(last_run_str)
+                except ValueError:
+                    print(f"Error: The last line in RunNumbers.dat ('{last_run_str}') is not an integer.")
+                    sys.exit(1)
+            run_number = last_run
+        else:
+            # We have a specific run
+            run_number = args.run
+
+        # Identify the directory
+        run_dir = os.path.join(ph2acf_base_dir, "Results", "Run_"+str(run_number))
+        if not os.path.isdir(run_dir):
+            print(f"Error: Run directory '{run_dir}' does not exist.")
+            sys.exit(1)
+
+        config_path = os.path.join(run_dir, "Configuration.xml")
+        if not os.path.isfile(config_path):
+            print(f"Error: Configuration.xml not found in run directory '{run_dir}'.")
+            sys.exit(1)
+
+        xml_file_to_use = config_path
+
+    else:
+        # user used -f/--file
+        if not os.path.isfile(args.xmlFile):
+            print(f"Error: Specified file '{args.xmlFile}' does not exist.")
+            sys.exit(1)
+        xml_file_to_use = args.xmlFile
+
     # Build the command for the moduleTest.py call
     command = [
         "python3", "moduleTest.py",
         "--ignoreConnection",
-        "-f", args.xmlFile,
+        "-f", xml_file_to_use,
         "-c", args.calibration,
         "--module", "dummy",
         "--session", "session1",
@@ -51,13 +117,36 @@ def main():
         "--version", "local"
     ]
 
-    if args.message:
+    if args.message and args.message != "-1":
         command.append("-m")
         command.append(args.message)
 
-    if args.session:
-        command.append("--session")
-        command.append(args.session)
+    if args.session and args.session != "-1":
+        # Overwrite the default session1 if the user provided something
+        # note: the original code sets --session session1 unconditionally
+        # If you want to not conflict, you might remove the --session "session1" earlier
+        # For now, let's remove the placeholder from the command, then add the user's value
+        # so the user-provided session wins.
+        # We'll do it by scanning + removing in place or by building fresh.
+        # let's build fresh.
+        command = [
+            "python3", "moduleTest.py",
+            "--ignoreConnection",
+            "-f", xml_file_to_use,
+            "-c", args.calibration,
+            "--module", "dummy",
+            "--slot", "-1",
+            "--board", "-1",
+            "--ignoreConnection",
+            "--skipModuleCheck",
+            "--vetoFpgaConfig",
+            "--version", "local"
+        ]
+        # Re-insert message if present
+        if args.message and args.message != "-1":
+            command += ["-m", args.message]
+        # Insert user's session
+        command += ["--session", args.session]
 
     print("Calling:")
     print(" ".join(command))
