@@ -3,6 +3,7 @@ from moduleTest import verbose
 # Get "0/1" from "lpGBT_v0/1.txt"
 
 def lpGBT_version(fileName):
+    if fileName == "fake": return "-1"
     id = fileName.split("lpGBT_v")[1].split(".txt")[0]
     if "_PS" in id: id = id.split("_PS")[0]
     if not id.isdigit():
@@ -68,7 +69,9 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     if verbose>2: pprint(xmlConfig)
     from bs4 import BeautifulSoup
     import xml.etree.ElementTree as ET
-    tree = ET.parse(xmlTemplate)
+    import os
+    localFolder = os.path.dirname(os.path.abspath(__file__))
+    tree = ET.parse(localFolder+"/"+xmlTemplate)
     ## Read template
     HwDescription = tree.getroot()
     BeBoard = HwDescription.find("BeBoard")
