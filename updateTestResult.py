@@ -226,7 +226,7 @@ def get_histograms(directory, path=""):
 
     return histograms
 
-def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_number, lv_number):
+def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_channel, lv_channel):
     plots = []
     startTime_utc = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
     stopTime_utc = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
@@ -234,13 +234,13 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     
     if not skipInfluxDb: 
         plots.append(  makePlotInfluxdb(startTime_utc, stopTime_utc, tmpFolder) )
-        hv_current = "caen_HV{:0>3}_Current".format(hv_number) ## eg. caen_HV001_Current
-        hv_voltage = "caen_HV{:0>3}_Voltage".format(hv_number) ## eg. caen_HV001_Voltage
-        lv_current = "caen_BLV{:0>2}_Current".format(lv_number) ## eg. caen_BLV01_Current
-        lv_voltage = "caen_BLV{:0>2}_Voltage".format(lv_number) ## eg. caen_BLV01_Voltage
+        hv_current = "caen_%s_Current"%(hv_channel) ## eg. caen_HV001_Current
+        hv_voltage = "caen_%s_Voltage"%(hv_channel) ## eg. caen_HV001_Voltage
+        lv_current = "caen_%s_Current"%(lv_channel) ## eg. caen_BLV01_Current
+        lv_voltage = "caen_%s_Voltage"%(lv_channel) ## eg. caen_BLV01_Voltage
 
-#        "caen_BLV{:0>2}_Voltage".format(lv_number),"caen_BLV{:0>2}_Current".format(lv_number),"caen_HV{:0>3}_Voltage".format(hv_number),"caen_HV{:0>3}_Current".format(hv_number)]
-        #plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
+#        "caen_BLV{:0>2}_Voltage".format(lv_channel),"caen_BLV{:0>2}_Current".format(lv_channel),"caen_HV{:0>3}_Voltage".format(hv_channel),"caen_HV{:0>3}_Current".format(hv_channel)]
+        plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
         
 
     c1 = TCanvas("c1", "")
@@ -634,7 +634,7 @@ def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
 
 
 def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder, 
-    sensors=["caen_BLV04_Voltage", "caen_BLV06_Voltage", "caen_BLV06_Current", "caen_HV006_Voltage", "caen_HV006_Current"]):
+    sensors=["caen_ASLOT0_Voltage", "caen_XSLOT0_Voltage", "caen_ASLOT0_Current", "caen_XSLOT0_Current"], org="pisaoutertracker"):
     print("makePlotInfluxdb")
     
     import os
@@ -695,10 +695,11 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     HV_current_min, HV_current_max     = 0, 6
     LV_current_min, LV_current_max     = 0, 1.5
 
-    start_time = start_time.replace("+00:00Z", "Z")
-    stop_time = stop_time.replace("+00:00Z", "Z")
+    start_time = (startTime_utc - timedelta(hours=100)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (startTime_utc + timedelta(hours=100)).isoformat("T").split("+")[0] + "Z"
     print(stop_time)
     # Loop over sensors and query data.
+    print(sensors)
     for sensorName in sensors:
         query = f'''
         from(bucket: "sensor_data")
@@ -711,16 +712,16 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
         
         times = []
         values = []
-        
-        client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
-        tables = client.query_api().query(query, org=org)
-        client.__del__()
+
+        print(query)
+        tables = getInfluxQueryAPI().query(query, org=org)
         
         for table in tables:
+            print(table)
             for record in table.records:
                 times.append(record.get_time())
                 values.append(record.get_value())
-        
+
         sensorNameNoCaen = sensorName.replace("caen_", "")
         # Choose the correct axis and color based on the sensor name.
         if "Voltage" in sensorName:
@@ -886,7 +887,6 @@ def getConnectionMap(run, xmlConfig, folder):
     connectionMap = response.json()
 
     print(connectionMap)
-    1/0
     return connectionMap
 '''
 
@@ -966,31 +966,25 @@ def updateTestResult(module_test, skipWebdav = False):
             txt = str(json_file.read())
             print(txt)
             connectionMap = eval(txt)
-    connectionMap = {}
     ### Add plot with voltage and currents
-    hv_number = -1
-    lv_number = -1
-    if False:
-        for con in connectionMap.values():
-            if not con["crate_port"] == "power": continue
-            lastCable = con['connections'][1]
-            print(lastCable)
-            if "HV" in lastCable['crate_port'][0]:
-                hv_number = int(lastCable['crate_port'][0].split("HV")[1])
-            elif "LV" in lastCable['crate_port'][0]:
-                lv_number = int(lastCable['crate_port'][0].split("LV")[1])
-        if hv_number == -1 or lv_number == -1:
-            print("HV/LV found: ", hv_number, lv_number)
-            raise Exception("No HV or LV found in connectionMap")
-        if verbose>0:
-            print("HV/LV found: ", hv_number, lv_number)
-
-
+    hv_channel = -1
+    lv_channel = -1
+    ## check if the last connection of each cable is either ASLOT or LV
+    for con in connectionMap.values():
+        lastConn = con['connections'][-1]
+        ### see https://github.com/pisaoutertracker/integration_tools/blob/625aaca54ddd45893fe118b1f0e6d7ce7f69facc/ui/main.py#L1600-L1603
+        if "ASLOT" in lastConn['cable']:
+            hv_channel = "HV"+lastConn['cable'][5:]+f"_{lastConn['line']}"
+        elif "XSLOT" in lastConn['cable']:
+            lv_channel = "LV"+lastConn['cable'][5:]+f"_{lastConn['line']}"
+    print(hv_channel, lv_channel)
+    if hv_channel == -1 or lv_channel == -1:
+        print("HV/LV found: ", hv_channel, lv_channel)
+        #raise Exception("No HV or LV found in connectionMap")
+    if verbose>0:
+        print("HV/LV found: ", hv_channel, lv_channel)
     #            connectionMap = json.load(json_file)
-        else:
-            connectionMap = {}
     print(connectionMap, connectionMapFileName)
-#    1/0
     print(run)
     ## download the file
     print(xmlConfig)
@@ -1002,7 +996,7 @@ def updateTestResult(module_test, skipWebdav = False):
 #    for board_optical in moduleHwIDs:
 #    board_id, opticalGroup_id = board_optical
     result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
-    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_number, lv_number)
+    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_channel, lv_channel)
     fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     nfolder = base+folder
@@ -1064,12 +1058,27 @@ def updateTestResult(module_test, skipWebdav = False):
     os.system("rm -rf /tmp/latest_ana")
     os.system("mv %s /tmp/latest_ana"%tmpFolder)
 
+def printAllSensors(org="pisaoutertracker"):
+    query = f'''
+    from(bucket: "sensor_data")
+    |> range(start: -1h)
+    |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
+    |> group(columns: ["_field"])
+    |> distinct(column: "_field")
+    |> yield(name: "distinct")
+    '''
+    tables = getInfluxQueryAPI().query(query, org=org)
+    for table in tables:
+        for record in table.records:
+            print(record.get_value())
+
 
 if __name__ == '__main__':
     import argparse
-    makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
+    #makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
     print(getTemperatureAt("2025-02-24T12:32:38", sensorName="Temp0"))
-    #makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38","2025-02-24T13:32:38", "/tmp/influxdb/", sensors=["caen_BLV07_Voltage", "caen_BLV07_Current", "caen_HV007_Voltage", "caen_HV007_Current"])
+    #makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38","2025-02-24T13:32:38", "/tmp/influxdb/")
+    #printAllSensors
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
