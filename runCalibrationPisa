@@ -101,9 +101,11 @@ def main():
             sys.exit(1)
         xml_file_to_use = args.xmlFile
 
+    moduleTest_path = os.path.dirname(os.path.abspath(__file__))+"/moduleTest.py"
+
     # Build the command for the moduleTest.py call
     command = [
-        "python3", "moduleTest.py",
+        "python3", moduleTest_path,
         "--ignoreConnection",
         "-f", xml_file_to_use,
         "-c", args.calibration,
