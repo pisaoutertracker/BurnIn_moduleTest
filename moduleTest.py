@@ -362,8 +362,10 @@ if __name__ == '__main__':
         
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
-        for file in [xmlPyConfigFile, xmlFile, "logs/%s.log"%testID]: #copy output files to CernBox
-            if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlFile): continue
+        logFile = "logs/%s.log"%testID
+        for file in [xmlPyConfigFile, xmlFile, ]: #copy output files to CernBox
+            ## do not copy py, xml, log if using existing module test (they are meaningless and they are already in the CernBox)
+            if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlFile or file == logFile): continue
             if file and file != rootFile.GetName():
                 shutil.copy(file, resultFolder)
 
