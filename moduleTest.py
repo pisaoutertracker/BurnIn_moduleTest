@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 ### Default values 
 verbose = 3
 lastPh2ACFversion = "ph2_acf_v6-04"
