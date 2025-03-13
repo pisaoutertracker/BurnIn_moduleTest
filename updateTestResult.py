@@ -641,16 +641,15 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     token_location = "~/private/influx.sct" 
     token = open(os.path.expanduser(token_location)).read().strip()
     
-    from datetime import timedelta
     import matplotlib.pyplot as plt
-
-    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
-
-    start_time = (startTime_utc - timedelta(hours=2)).isoformat("T") + "Z"
-    stop_time = (startTime_utc + timedelta(hours=2)).isoformat("T") + "Z"
-
-    print(start_time)
-    print(stop_time)
+    from datetime import timedelta
+    
+#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_utc = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_utc = getTimeFromUTCToRome(stopTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    
+    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (startTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
 
     # Create the base axis for Voltage HV (left side).
     fig, axHV_voltage = plt.subplots(figsize=(10, 5))
@@ -695,8 +694,6 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     HV_current_min, HV_current_max     = 0, 6
     LV_current_min, LV_current_max     = 0, 1.5
 
-    start_time = (startTime_utc - timedelta(hours=100)).isoformat("T").split("+")[0] + "Z"
-    stop_time = (startTime_utc + timedelta(hours=100)).isoformat("T").split("+")[0] + "Z"
     print(stop_time)
     # Loop over sensors and query data.
     print(sensors)
@@ -748,16 +745,17 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     axLV_current.set_ylabel("Current LV (mA)", color='red', labelpad=2)
 
     # Set the y-axis limits.
-    axHV_voltage.set_ylim(HV_voltage_min, HV_voltage_max)
-    axLV_voltage.set_ylim(LV_voltage_min, LV_voltage_max)
-    axHV_current.set_ylim(HV_current_min, HV_current_max)
-    axLV_current.set_ylim(LV_current_min, LV_current_max)
+#    axHV_voltage.set_ylim(HV_voltage_min, HV_voltage_max)
+#    axLV_voltage.set_ylim(LV_voltage_min, LV_voltage_max)
+#    axHV_current.set_ylim(HV_current_min, HV_current_max)
+#    axLV_current.set_ylim(LV_current_min, LV_current_max)
 
     # Combine legend entries from all axes.
     lines = []
     labels = []
     # Draw a vertical reference line on the left-most axis.
-    axLV_current.axvline(x=startTime_utc, color='gray', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     for ax in [axHV_voltage, axLV_voltage, axHV_current, axLV_current]:
         l, lab = ax.get_legend_handles_labels()
         lines.extend(l)
@@ -822,11 +820,8 @@ def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"
     startTime_rome, startTime_utc = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
     stopTime_rome, stopTime_utc = getTimeFromUTCToRome(stopTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-
     start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
     stop_time = (startTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
-
-    print(stop_time)
     
     sensorName = "Temp0"
     query = f'''
@@ -966,6 +961,9 @@ def updateTestResult(module_test, skipWebdav = False):
             txt = str(json_file.read())
             print(txt)
             connectionMap = eval(txt)
+    else:
+        print("WARNING: connectionMap not found in ",connectionMapFileName)
+        connectionMap = {}
     ### Add plot with voltage and currents
     hv_channel = -1
     lv_channel = -1
