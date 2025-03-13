@@ -110,7 +110,6 @@ def main():
         "-f", xml_file_to_use,
         "-c", args.calibration,
         "--module", "auto",
-        "--session", "session1",
         "--slot", "-1",
         "--board", "-1",
         "--ignoreConnection",  # This appears twice as in the original script
@@ -119,36 +118,18 @@ def main():
         "--version", "local"
     ]
 
+    ## Either -m is used, then a new session will be created
     if args.message and args.message != "-1":
-        command.append("-m")
+        command.append("--message")
         command.append(args.message)
-
-    if args.session and args.session != "-1":
-        # Overwrite the default session1 if the user provided something
-        # note: the original code sets --session session1 unconditionally
-        # If you want to not conflict, you might remove the --session "session1" earlier
-        # For now, let's remove the placeholder from the command, then add the user's value
-        # so the user-provided session wins.
-        # We'll do it by scanning + removing in place or by building fresh.
-        # let's build fresh.
-        command = [
-            "python3", "moduleTest.py",
-            "--ignoreConnection",
-            "-f", xml_file_to_use,
-            "-c", args.calibration,
-            "--module", "auto",
-            "--slot", "-1",
-            "--board", "-1",
-            "--ignoreConnection",
-            "--skipModuleCheck",
-            "--vetoFpgaConfig",
-            "--version", "local"
-        ]
-        # Re-insert message if present
-        if args.message and args.message != "-1":
-            command += ["-m", args.message]
-        # Insert user's session
-        command += ["--session", args.session]
+    ## Or -s is used, then the session will be the one specified
+    elif args.session and args.session != "-1":
+        command.append("--session")
+        command.append(args.session)
+    ## Otherwise, the default session1 will be used (for testing)
+    else:
+        command.append("--session")
+        command.append("session1")
 
     print("Calling:")
     print(" ".join(command))
