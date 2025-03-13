@@ -4,7 +4,7 @@ skipInfluxDb= False
 #skipInfluxDb= True
 allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
 hybridPlots = ["HybridStripNoiseDistribution", "HybridPixelNoiseDistribution", "HybridNoiseDistribution",
-"BitSlipValues", "WordAlignmentRetryNumbers", "PatternMatchingEfficiency", "CICinputPhaseHistogram", "BestCICinputPhases", "LockingEfficiencyCICinput", "CICwordAlignmentDelay", "PatternMatchingEfficiencyCIC", "PatternMatchingEfficiencyMPA_SSA"]
+"BitSlipValues", "WordAlignmentRetryNumbers", "PatternMatchingEfficiency", "CICinputPhaseHistogram", "BestCICinputPhases", "LockingEfficiencyCICinput", "CICwordAlignmentDelay", "PatternMatchingEfficiencyCIC", "PatternMatchingEfficiencyMPA_SSA","StripHybridHits"]
 
 opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBTinputFoundPhasesDistribution"]
 
