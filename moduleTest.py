@@ -63,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--firmware', type=str, nargs='?', const='', help='Firmware used in fpgaconfig. Default=%s'%firmware_5G)
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
+    parser.add_argument('--tempSensor', type=str, default="Temp0", nargs='?', const=True, help='Select which temperature sensor will be displayed in the analysis page.')
 
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
@@ -402,17 +403,18 @@ if __name__ == '__main__':
         date = date.replace(" ","T").split(".")[0] # drop ms
         if args.useExistingModuleTest:
             date = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
+            ## NOT NECESSARY ANYMORE: we use local time everywhere
             ## convert date from UTC to Rome time 
-            from datetime import datetime
-            from pytz import timezone
-            import pytz
-            rome = timezone('Europe/Rome')
-            utc = timezone('UTC')
-            if date[0:2] != "20": date = "20"+date
-            date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
-            date = utc.localize(date)
-            date = date.astimezone(rome)
-            date = date.strftime("%Y-%m-%dT%H:%M:%S")            
+            #from datetime import datetime
+            #from pytz import timezone
+            #import pytz
+            #rome = timezone('Europe/Rome')
+            #utc = timezone('UTC')
+            #if date[0:2] != "20": date = "20"+date
+            #date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
+            #date = utc.localize(date)
+            #date = date.astimezone(rome)
+            #date = date.strftime("%Y-%m-%dT%H:%M:%S")            
         
         if args.session != "-1":
             session = args.session
@@ -478,7 +480,7 @@ if __name__ == '__main__':
             print("######## Single Module Test: %s ########################" %moduleTestName)
             if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
-                updateTestResult(moduleTestName)
+                updateTestResult(moduleTestName, tempSensor=args.tempSensor)
                 print("################################################")
 
 
