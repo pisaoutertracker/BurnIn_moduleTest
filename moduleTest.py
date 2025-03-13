@@ -38,7 +38,7 @@ if __name__ == '__main__':
     required = parser.add_argument_group('required arguments')
     required.add_argument('--session', type=str, default='-1', help='Name of the existing session (eg. session1). ', required=False)
     required.add_argument('-m', '--message', type=str, default='-1', help='Messagge used to create a new session. It requires "|" to separate between the author and the message ', required=False)
-    required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102).', required=True)
+    required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102). "auto" will select the expected module according to the connection database.', required=True)
     required.add_argument('--slot', type=str, default='-1', help='Module name (eg. 0,1,2).', required=False)
     required.add_argument('--board', type=str, default='-1', help='Board name (eg. fc7ot2).', required=False)
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
