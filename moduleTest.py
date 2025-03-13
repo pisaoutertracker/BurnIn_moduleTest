@@ -17,7 +17,7 @@ runFpgaConfig = False ## it will run automatically if necessary
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
 podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 import os
-prefixCommand = 'cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
+prefixCommand = '\cp  /usr/share/zoneinfo/Europe/Rome /etc/localtime && cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder_docker = "/home/cmsTkUser/Ph2_ACF/settings"
 connectionMapFileName = "connectionMap_%s.json"
 

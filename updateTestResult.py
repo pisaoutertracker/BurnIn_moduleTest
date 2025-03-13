@@ -228,19 +228,19 @@ def get_histograms(directory, path=""):
 
 def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_channel, lv_channel):
     plots = []
-    startTime_utc = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
-    stopTime_utc = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
+    startTime_local = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
+    stopTime_local = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
     ## add Influxdb plot
     
     if not skipInfluxDb: 
-        plots.append(  makePlotInfluxdb(startTime_utc, stopTime_utc, tmpFolder) )
+        plots.append(  makePlotInfluxdb(startTime_local, stopTime_local, tmpFolder) )
         hv_current = "caen_%s_Current"%(hv_channel) ## eg. caen_HV001_Current
         hv_voltage = "caen_%s_Voltage"%(hv_channel) ## eg. caen_HV001_Voltage
         lv_current = "caen_%s_Current"%(lv_channel) ## eg. caen_BLV01_Current
         lv_voltage = "caen_%s_Voltage"%(lv_channel) ## eg. caen_BLV01_Voltage
 
 #        "caen_BLV{:0>2}_Voltage".format(lv_channel),"caen_BLV{:0>2}_Current".format(lv_channel),"caen_HV{:0>3}_Voltage".format(hv_channel),"caen_HV{:0>3}_Current".format(hv_channel)]
-        plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
+        plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
         
 
     c1 = TCanvas("c1", "")
@@ -517,10 +517,10 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 #    body += grayText("Run boards: ") + str(run["runBoards"]) + "<br>" +"\n"
     startTime = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector"))
     body += "<br>" +"\n"
-    body += grayText("CalibrationStartTimestamp [UTC time]: ") + startTime
+    body += grayText("CalibrationStartTimestamp [local time]: ") + startTime
     body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime.replace(" ","T"))
     stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
-    body += grayText("CalibrationStopTimestamp_Detector [UTC time]: ") + stopTime
+    body += grayText("CalibrationStopTimestamp_Detector [local time]: ") + stopTime
     body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime.replace(" ","T"))
     gitHash = str(rootFile.Get("Detector/GitCommitHash_Detector"))
     linkGit = "https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/tree/%s"%gitHash
@@ -617,7 +617,7 @@ def getTimeFromUTCToRome(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     utc_dt = utc_tz.localize(naive_dt)
     # Convert to Rome time
     rome_dt = utc_dt.astimezone(rome_tz)
-    return rome_dt, utc_dt
+    return utc_dt, utc_dt ## Do not make the conversion, we are using local time everywhere!
 
 def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     from datetime import datetime
@@ -630,10 +630,10 @@ def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     rome_dt = rome_tz.localize(naive_dt)
     # Convert to UTC
     utc_dt = rome_dt.astimezone(utc_tz)
-    return utc_dt, rome_dt
+    return rome_dt, rome_dt ## Do not make the conversion, we are using local time everywhere!
 
 
-def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder, 
+def makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, folder, 
     sensors=["caen_ASLOT0_Voltage", "caen_XSLOT0_Voltage", "caen_ASLOT0_Current", "caen_XSLOT0_Current"], org="pisaoutertracker"):
     print("makePlotInfluxdb")
     
@@ -644,12 +644,12 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     import matplotlib.pyplot as plt
     from datetime import timedelta
     
-#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    startTime_rome, startTime_utc = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    stopTime_rome, stopTime_utc = getTimeFromUTCToRome(stopTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+#    startTime_local, startTime_rome = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_local = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_local = getTimeFromUTCToRome(stopTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
-    stop_time = (startTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    start_time = (startTime_local - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (startTime_local + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
 
     # Create the base axis for Voltage HV (left side).
     fig, axHV_voltage = plt.subplots(figsize=(10, 5))
@@ -754,8 +754,8 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
     lines = []
     labels = []
     # Draw a vertical reference line on the left-most axis.
-    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
-    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_local, color='r', linestyle='--', label=startTime_local.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_local, color='b', linestyle='--', label=stopTime_local.strftime('%H:%M:%S'))
     for ax in [axHV_voltage, axLV_voltage, axHV_current, axLV_current]:
         l, lab = ax.get_legend_handles_labels()
         lines.extend(l)
@@ -764,7 +764,7 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_utc, stopTime_utc, folder,
 
     # Set the x-axis label using the main axis.
     timezone_h = "%+.1f" % (-startTime_rome.utcoffset().seconds/3600)
-    axHV_voltage.set_xlabel('UTC Time (= Rome Time %s h)' % timezone_h)
+    axHV_voltage.set_xlabel('Local Time (= Rome Time %s h)' % timezone_h)
 
     axHV_voltage.grid(True)
     plt.title('Sensor Data Over Time')
@@ -808,7 +808,7 @@ def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
         print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
         return -999
 
-def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"):
+def makePlotInfluxdb(startTime_local, stopTime_local, folder, org="pisaoutertracker"):
     print("makePlotInfluxdb")
 
     token_location = "~/private/influx.sct" 
@@ -816,12 +816,12 @@ def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"
     
     from datetime import datetime, timedelta
     
-#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    startTime_rome, startTime_utc = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    stopTime_rome, stopTime_utc = getTimeFromUTCToRome(stopTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+#    startTime_local, startTime_rome = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_local = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_local = getTimeFromUTCToRome(stopTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
-    stop_time = (startTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    start_time = (startTime_local - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (startTime_local + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
     
     sensorName = "Temp0"
     query = f'''
@@ -849,11 +849,11 @@ def makePlotInfluxdb(startTime_utc, stopTime_utc, folder, org="pisaoutertracker"
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
-    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
-    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_local, color='r', linestyle='--', label=startTime_local.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_local, color='b', linestyle='--', label=stopTime_local.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
     timezone_h = "%+.1f"%(-startTime_rome.utcoffset().seconds/3600)
-    plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
+    plt.xlabel('Local Time (= Rome Time %s h)'%timezone_h)
     plt.ylabel('Temperature')
     plt.title('Sensor Data Over Time')
     plt.legend()
