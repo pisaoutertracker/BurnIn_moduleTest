@@ -226,14 +226,14 @@ def get_histograms(directory, path=""):
 
     return histograms
 
-def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_channel, lv_channel):
+def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_channel, lv_channel, tempSensor):
     plots = []
     startTime_local = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
     stopTime_local = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
     ## add Influxdb plot
     
     if not skipInfluxDb: 
-        plots.append(  makePlotInfluxdb(startTime_local, stopTime_local, tmpFolder) )
+        plots.append(  makePlotInfluxdb(startTime_local, stopTime_local, tempSensor, tmpFolder) )
         hv_current = "caen_%s_Current"%(hv_channel) ## eg. caen_HV001_Current
         hv_voltage = "caen_%s_Voltage"%(hv_channel) ## eg. caen_HV001_Voltage
         lv_current = "caen_%s_Current"%(lv_channel) ## eg. caen_BLV01_Current
@@ -617,7 +617,7 @@ def getTimeFromUTCToRome(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     utc_dt = utc_tz.localize(naive_dt)
     # Convert to Rome time
     rome_dt = utc_dt.astimezone(rome_tz)
-    return utc_dt, utc_dt ## Do not make the conversion, we are using local time everywhere!
+    return rome_dt, utc_dt 
 
 def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     from datetime import datetime
@@ -630,10 +630,41 @@ def getTimeFromRomeToUTC(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     rome_dt = rome_tz.localize(naive_dt)
     # Convert to UTC
     utc_dt = rome_dt.astimezone(utc_tz)
-    return rome_dt, rome_dt ## Do not make the conversion, we are using local time everywhere!
+    return rome_dt, utc_dt
 
 
-def makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, folder, 
+def getInfluxQueryAPI(token_location = "~/private/influx.sct"):
+    import os
+    token = open(os.path.expanduser(token_location)).read().strip()
+    from influxdb_client import InfluxDBClient
+    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
+    return client.query_api()
+
+def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
+    # Define a small window around the timestamp (±30 seconds)
+    window = timedelta(seconds=30)
+    timestamp = datetime.fromisoformat(timestamp)
+    start_window = (timestamp - window).isoformat("T") + "Z"
+    end_window = (timestamp + window).isoformat("T") + "Z"
+    query = f'''
+    from(bucket: "sensor_data")
+        |> range(start: {start_window}, stop: {end_window})
+        |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
+        |> filter(fn: (r) => r["_field"] == "{sensorName}")
+        |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
+        |> yield(name: "mean")
+    '''
+    tables = getInfluxQueryAPI().query(query, org=org)
+    # Gather the temperature values found within the time window.
+    temps = [record.get_value() for table in tables for record in table.records]
+    if temps:
+        # Average values if more than one record is returned.
+        return sum(temps) / len(temps)
+    else:
+        print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
+        return -999
+
+def makePlotInfluxdbVoltageAndCurrent(startTime_rome, stopTime_rome, folder, 
     sensors=["caen_ASLOT0_Voltage", "caen_XSLOT0_Voltage", "caen_ASLOT0_Current", "caen_XSLOT0_Current"], org="pisaoutertracker"):
     print("makePlotInfluxdb")
     
@@ -644,12 +675,12 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, folder,
     import matplotlib.pyplot as plt
     from datetime import timedelta
     
-#    startTime_local, startTime_rome = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    startTime_rome, startTime_local = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    stopTime_rome, stopTime_local = getTimeFromUTCToRome(stopTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-    start_time = (startTime_local - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
-    stop_time = (startTime_local + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (stopTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
 
     # Create the base axis for Voltage HV (left side).
     fig, axHV_voltage = plt.subplots(figsize=(10, 5))
@@ -754,8 +785,8 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, folder,
     lines = []
     labels = []
     # Draw a vertical reference line on the left-most axis.
-    plt.axvline(x=startTime_local, color='r', linestyle='--', label=startTime_local.strftime('%H:%M:%S'))
-    plt.axvline(x=stopTime_local, color='b', linestyle='--', label=stopTime_local.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     for ax in [axHV_voltage, axLV_voltage, axHV_current, axLV_current]:
         l, lab = ax.get_legend_handles_labels()
         lines.extend(l)
@@ -777,38 +808,7 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, folder,
 
 
 
-def getInfluxQueryAPI(token_location = "~/private/influx.sct"):
-    import os
-    token = open(os.path.expanduser(token_location)).read().strip()
-    from influxdb_client import InfluxDBClient
-    client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
-    return client.query_api()
-
-def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
-    # Define a small window around the timestamp (±30 seconds)
-    window = timedelta(seconds=30)
-    timestamp = datetime.fromisoformat(timestamp)
-    start_window = (timestamp - window).isoformat("T") + "Z"
-    end_window = (timestamp + window).isoformat("T") + "Z"
-    query = f'''
-    from(bucket: "sensor_data")
-        |> range(start: {start_window}, stop: {end_window})
-        |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
-        |> filter(fn: (r) => r["_field"] == "{sensorName}")
-        |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
-        |> yield(name: "mean")
-    '''
-    tables = getInfluxQueryAPI().query(query, org=org)
-    # Gather the temperature values found within the time window.
-    temps = [record.get_value() for table in tables for record in table.records]
-    if temps:
-        # Average values if more than one record is returned.
-        return sum(temps) / len(temps)
-    else:
-        print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
-        return -999
-
-def makePlotInfluxdb(startTime_local, stopTime_local, folder, org="pisaoutertracker"):
+def makePlotInfluxdb(startTime_rome, stopTime_rome, tempSensor, folder, org="pisaoutertracker"):
     print("makePlotInfluxdb")
 
     token_location = "~/private/influx.sct" 
@@ -816,14 +816,15 @@ def makePlotInfluxdb(startTime_local, stopTime_local, folder, org="pisaoutertrac
     
     from datetime import datetime, timedelta
     
-#    startTime_local, startTime_rome = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    startTime_rome, startTime_local = getTimeFromUTCToRome(startTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
-    stopTime_rome, stopTime_local = getTimeFromUTCToRome(stopTime_local, timeFormat = "%Y-%m-%dT%H:%M:%S")
+#    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
+    stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
     
-    start_time = (startTime_local - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
-    stop_time = (startTime_local + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    start_time = (startTime_utc - timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
+    stop_time = (stopTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
     
-    sensorName = "Temp0"
+
+    sensorName = tempSensor
     query = f'''
     from(bucket: "sensor_data")
      |> range(start: {start_time}, stop: {stop_time})
@@ -849,11 +850,11 @@ def makePlotInfluxdb(startTime_local, stopTime_local, folder, org="pisaoutertrac
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
     plt.plot(time, value, label=sensorName)
-    plt.axvline(x=startTime_local, color='r', linestyle='--', label=startTime_local.strftime('%H:%M:%S'))
-    plt.axvline(x=stopTime_local, color='b', linestyle='--', label=stopTime_local.strftime('%H:%M:%S'))
+    plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
+    plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
     timezone_h = "%+.1f"%(-startTime_rome.utcoffset().seconds/3600)
-    plt.xlabel('Local Time (= Rome Time %s h)'%timezone_h)
+    plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
     plt.ylabel('Temperature')
     plt.title('Sensor Data Over Time')
     plt.legend()
@@ -886,7 +887,7 @@ def getConnectionMap(run, xmlConfig, folder):
 '''
 
 
-def updateTestResult(module_test, skipWebdav = False):
+def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     global plots
     tmpFolder = "/tmp/"
 
@@ -994,7 +995,7 @@ def updateTestResult(module_test, skipWebdav = False):
 #    for board_optical in moduleHwIDs:
 #    board_id, opticalGroup_id = board_optical
     result = getResultPerModule(noisePerChip, xmlConfig, str(board_id), str(opticalGroup_id))
-    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_channel, lv_channel)
+    plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_channel, lv_channel, tempSensor)
     fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     nfolder = base+folder
@@ -1080,7 +1081,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
+#    parser.add_argument('--tempSensor', type=str, const=True, default="-1", help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
-    updateTestResult(args.module_test , args.skipWebdav )
-
-
+    updateTestResult(module_test = args.module_test , tempSensor="Temp1", skipWebdav = args.skipWebdav)
