@@ -310,6 +310,9 @@ def checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args):
     for i, slot in enumerate(slots):
         error = None
         moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
+        if modules[i] == "auto":  
+            modules[i] = moduleFromDB
+            print("You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
         moduleFromCLI = modules[i]
         print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
         moduleBandwidth = getModuleBandwidthFromDB(moduleFromCLI)
