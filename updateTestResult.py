@@ -1038,8 +1038,8 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     json = {
         "moduleTestAnalysisName": folder, #"PS_26_05-IBA_00004__run79__Test", 
         "moduleTestName": module_test, #"PS_26_05-IBA_00004__run79", 
-        "moduleTempStart": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")),
-        "moduleTempStop": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")),
+        "moduleTempStart": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T"), tempSensor),
+        "moduleTempStop": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T"), tempSensor),
         "analysisVersion": version, #"Test", 
         "analysisResults": {module_test:result},
         "analysisSummary": noisePerChip,
