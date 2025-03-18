@@ -121,7 +121,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     for board_id, board in sorted(xmlConfig["boards"].items(), reverse=True):
         BeBoard = deepcopy(BeBoard_)
         BeBoard.set("Id", str(board_id))
-        connection.set("uri", "ipbusudp-2.0://%s"%board["ip"] )
+        connection.set("uri", "chtcp-2.0://localhost:10203?target=%s"%board["ip"] )
         connection.set("address_table", "file://settings/address_tables/uDTC_OT_address_table.xml" )
         BeBoard.insert(0, connection)
 #        BeBoard.insert(1, CDCE)
