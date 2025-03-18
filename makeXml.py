@@ -32,6 +32,7 @@ def makeConfigFromROOTfile(fileName):
                 print(ip)
                 ip = str(ip.GetString())
                 if "//" in ip: ip = ip.split("//")[1]
+                if "target=" in ip: ip = ip.split("target=")[1]
                 print(ip)
                 xmlConfig["boards"][board_id] = {"ip" : ip, "opticalGroups" : {}}
             for objO in ROOTfile.Get("Detector/%s"%objB_).GetListOfKeys(): 
