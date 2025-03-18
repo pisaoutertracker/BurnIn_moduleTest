@@ -366,11 +366,16 @@ if __name__ == '__main__':
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
         logFile = "logs/%s.log"%testID
-        for file in [xmlPyConfigFile, xmlFile, ]: #copy output files to CernBox
+        for file in [xmlPyConfigFile, xmlFile, logFile]: #copy output files to CernBox
+            ## make a symbolic link to the file in the Results folder
+            if args.useExistingModuleTest and file == logFile: 
+                logsFiles = [f for f in os.listdir("Results/"+folder) if ".log" in f]
+                os.symlink(logsFiles[-1],logFile.replace("logs/",resultFolder+"/"))
             ## do not copy py, xml, log if using existing module test (they are meaningless and they are already in the CernBox)
             if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlFile or file == logFile): continue
             if file and file != rootFile.GetName():
                 shutil.copy(file, resultFolder)
+                print("Copied %s to %s"%(file, resultFolder))
 
         ## create and upload connectionMap files
         from databaseTools import getConnectionMap, saveMapToFile
