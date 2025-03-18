@@ -516,12 +516,14 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += ". " + grayText("Status: ") + run["runStatus"] + "<br>" +"\n"
 #    body += grayText("Run boards: ") + str(run["runBoards"]) + "<br>" +"\n"
     startTime = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector"))
+    startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime, timeFormat = "%Y-%m-%d %H:%M:%S")
     body += "<br>" +"\n"
     body += grayText("CalibrationStartTimestamp [local time]: ") + startTime
-    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime.replace(" ","T"))
+    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime_utc.isoformat("T").split("+")[0])
     stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
+    stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime, timeFormat = "%Y-%m-%d %H:%M:%S")
     body += grayText("CalibrationStopTimestamp_Detector [local time]: ") + stopTime
-    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime.replace(" ","T"))
+    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0])
     gitHash = str(rootFile.Get("Detector/GitCommitHash_Detector"))
     linkGit = "https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/tree/%s"%gitHash
     body += grayText("GitCommitHash: <a href= %s> %s </a>"%(linkGit, gitHash)) + "<br>" +"\n"
@@ -795,7 +797,7 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_rome, stopTime_rome, folder,
 
     # Set the x-axis label using the main axis.
     timezone_h = "%+.1f" % (-startTime_rome.utcoffset().seconds/3600)
-    axHV_voltage.set_xlabel('Local Time (= Rome Time %s h)' % timezone_h)
+    axHV_voltage.set_xlabel('UTC Time (CET + %s h)'% timezone_h)
 
     axHV_voltage.grid(True)
     plt.title('Sensor Data Over Time')
@@ -854,7 +856,7 @@ def makePlotInfluxdb(startTime_rome, stopTime_rome, tempSensor, folder, org="pis
     plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
     timezone_h = "%+.1f"%(-startTime_rome.utcoffset().seconds/3600)
-    plt.xlabel('UTC Time (= Rome Time %s h)'%timezone_h)
+    plt.xlabel('UTC Time (CET + %s h'% timezone_h)
     plt.ylabel('Temperature')
     plt.title('Sensor Data Over Time')
     plt.legend()
@@ -1083,4 +1085,4 @@ if __name__ == '__main__':
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
 #    parser.add_argument('--tempSensor', type=str, const=True, default="-1", help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
-    updateTestResult(module_test = args.module_test , tempSensor="Temp1", skipWebdav = args.skipWebdav)
+    updateTestResult(module_test = args.module_test , tempSensor="Temp0", skipWebdav = args.skipWebdav)
