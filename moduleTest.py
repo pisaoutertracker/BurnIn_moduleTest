@@ -223,7 +223,6 @@ if __name__ == '__main__':
     from databaseTools import checkIfExpectedModulesMatchModulesInDB
     checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args)
 
-
     ###########################################################
     #################### START OF THE TEST ####################
     ###########################################################
@@ -303,6 +302,9 @@ if __name__ == '__main__':
                 if not args.skipModuleCheck: raise Exception(message + ". You can skip this error using --skipModuleCheck flag.")
                 continue
             moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module" ## module found in the database matching the hardware ID
+            if moduleExpected == None or moduleExpected == "auto":
+                print("As you don't know any expected module, I will take the module name from the module ID.")
+                modules[i] = moduleFound
             try:
                 print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, moduleFound, int(id_), moduleExpected))
             except:
