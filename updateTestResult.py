@@ -975,9 +975,9 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
         lastConn = con['connections'][-1]
         ### see https://github.com/pisaoutertracker/integration_tools/blob/625aaca54ddd45893fe118b1f0e6d7ce7f69facc/ui/main.py#L1600-L1603
         if "ASLOT" in lastConn['cable']:
-            hv_channel = "HV"+lastConn['cable'][5:]+f"_{lastConn['line']}"
+            hv_channel = "HV"+lastConn['cable'][5:]+f".{lastConn['line']}"
         elif "XSLOT" in lastConn['cable']:
-            lv_channel = "LV"+lastConn['cable'][5:]+f"_{lastConn['line']}"
+            lv_channel = "LV"+lastConn['cable'][5:]+f".{lastConn['line']}"
     print(hv_channel, lv_channel)
     if hv_channel == -1 or lv_channel == -1:
         print("HV/LV found: ", hv_channel, lv_channel)
