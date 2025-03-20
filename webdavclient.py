@@ -5,8 +5,8 @@ import xmltodict
 import datetime
 import os
 
-verbose = False;
-verbose = True;
+verbose = False
+#verbose = True
 
 
 class WebDAVWrapper:
@@ -16,8 +16,9 @@ class WebDAVWrapper:
         self.hash_value_write = hash_value_write
         self.completeurl_write = url+"/"+hash_value_write+"/"
         self.completeurl_read = url+"/"+hash_value_read+"/"
-        print ("Configured Write: ", self.completeurl_write)
-        print ("Configured Read : ", self.completeurl_read)
+        if verbose: 
+            print ("Configured Write: ", self.completeurl_write)
+            print ("Configured Read : ", self.completeurl_read)
 
     def list_files(self, remote_path):
         response = self._send_request_read('PROPFIND', remote_path)

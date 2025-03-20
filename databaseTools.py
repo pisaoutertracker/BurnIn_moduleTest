@@ -6,7 +6,7 @@ def evalMod(string):
     string = string.replace("true","True").replace("false","False").replace("null","None")
     return eval(string)
 
-verbose = 10
+#verbose = -1
 ### upload the test result to the "tests" DB
 
 ## (obsolete) ##
@@ -43,8 +43,7 @@ def uploadRunToDB(newRun = {}):
     
     # Send a PUT request
     response = requests.post(api_url, json=newRun)
-    print("AAAAA")
-    print(response)
+    if verbose>0: print(response)
     
     # Check the response
     if response.status_code == 201:
@@ -481,7 +480,7 @@ def addNewModule(moduleName, id_):
     }
 
     response = requests.post(api_url, json=json)
-    print(response)
+    if verbose>1: print(response)
     print(response.json())
     
     # Check the response

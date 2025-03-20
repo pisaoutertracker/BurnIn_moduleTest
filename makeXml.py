@@ -52,7 +52,7 @@ def makeConfigFromROOTfile(fileName):
                             for objPS in ROOTfile.Get("Detector/%s/%s/%s"%(objB_, objO_, objH_)).GetListOfKeys(): 
                                 objPS_ = objPS.GetName()
                                 hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
-                                print("makeConfigFromROOTfile:",objPS_)
+                                if verbose>5: print("makeConfigFromROOTfile:",objPS_)
                                 if "SSA" in objPS_ and len(objPS_)<7: ## if it is SSA_3 (not D_B(0)_O(0)_PatternMatchingEfficiencyMPA_SSA_Hybrid(0) !)
                                     hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
                                 if "MPA" in objPS_ and len(objPS_)<7:
@@ -269,7 +269,7 @@ def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
 
 
 def getInfosFromXmlPyConfig(xmlConfig):
-    print(xmlConfig)
+    if verbose>5: print(xmlConfig)
     board = xmlConfig["boards"]["0"]["ip"].split(":")[0]
     slots = list(xmlConfig["boards"]["0"]["opticalGroups"].keys())
     hybrids = list(xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"].keys())

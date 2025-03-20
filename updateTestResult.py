@@ -22,9 +22,9 @@ import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 from webdavclient import WebDAVWrapper
-from moduleTest import webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
+from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
 
-verbose = 5
+#verbose = 5
 
 import ROOT
 
@@ -48,16 +48,16 @@ ROOT.kGray,
 ]
 
 def makeMergedPlot(plots, chip):
-    print("makeMergedPlot")
+    if verbose>2: print("makeMergedPlot")
     merged = None
     for plot in plots:
-        print(plot.GetName())
+        if verbose>2: print(plot.GetName())
         if not merged: 
             chipN = "Chip(" + plot.GetName().split("Chip(")[1]
             chipN = chipN.split(")")[0] + ")"
-            print(chipN)
+            if verbose>2: print(chipN)
             newName = plot.GetName().replace(chipN, "Merged")+chip
-            print(newName)
+            if verbose>2: print(newName)
             merged = plot.Clone(newName)
             merged.SetTitle(newName)
         else: 
@@ -69,7 +69,7 @@ def makeMultiplePlot2D(plots, chip):
     hybridN = list(plots)[0]
     if len(plots[hybridN])==0: return None
     if type(plots[hybridN][0])!=ROOT.TH2F: return None
-    print("makeMultiplePlot2D")
+    if verbose>2: print("makeMultiplePlot2D")
     tempPlot = plots[hybridN][0]
     ## PS module:  https://ep-news.web.cern.ch/content/developing-new-electronics-cms-tracking-system 
     # along z: 5 cm long, divided in 2 hybrids, divided in 16 pixels 1.5mm each
@@ -82,7 +82,7 @@ def makeMultiplePlot2D(plots, chip):
     name = tempPlot.GetName()
     chipN = "Chip(" + name.split("Chip(")[1]
     chipN = chipN.split(")")[0] + ")"
-    print(chipN)
+    if verbose>2: print(chipN)
     newName = name.replace(chipN, "Multiple")+chip
     Nchip = 8
     if "2DPixelNoise" in name:
@@ -282,27 +282,27 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
 
     ## Check if the variables are in the root file#
     for collection in [allVariables, hybridPlots, opticalGroupPlots, exstensiveVariables]:
-        print("Checking %s"%collection)
+        if verbose>2: print("Checking %s"%collection)
         for name in collection[:]:
-            print("Checking %s"%name)
+            if verbose>2: print("Checking %s"%name)
             found = False
             for hist_path, hist_obj in histograms:
                 if name in hist_path:
                     found = True
                     break
-            print("found", found)
+            if verbose>2: print("found", found)
             if histograms:
                 print(hist_path)
             if not found:
-                print("#####################################################################################")
+                if verbose>2: print("#####################################################################################")
                 print("WARNING: %s not found in the root file. It will be excluded from the webpage"%name)
-                print("#####################################################################################")
+                if verbose>2: print("#####################################################################################")
                 collection.remove(name)
 
     ## if the plot is not found, it is removed from the list
     for hist_path, hist_obj in histograms:
         if "NoiseDistribution" in hist_path:
-            print(hist_path)
+            if verbose>2: print(hist_path)
             addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path)
     for chip in ["SSA", "MPA"]:
         if chip == "SSA": chipIds = hybrid['strips']
@@ -318,7 +318,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                 hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
                 plotsToBeMerged[hybrid_id] = []
                 for chipId in chipIds:
-                    print("chipId",str(chipId))
+                    if verbose>2: print("chipId",str(chipId))
                     plot = None
                     count = 0
                     while(plot==None):
@@ -467,8 +467,8 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
 #            if "Merged" in plot or not useOnlyMergedPlots:
                 plotsPerChip.append(plot)
         else: plotsInclusive.append(plot)
-    print(plotsInclusive)
-    print(plotsPerChip)
+    if verbose>2: print(plotsInclusive)
+    if verbose>2: print(plotsPerChip)
     imageCode = ""
 #    imageCode += addPlotSection("Combined Noise plot", [p for p in plots if "CombinedNoisePlot"in p], 30.0)
     imageCode += addPlotSection("Sensors", [p for p in plots if "sensor"in p], 30.0)
@@ -578,7 +578,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     
     html = html.replace("[ADD BODY]", body)
 
-    print(noiseRatioPerChip)
+    print("noiseRatioPerChip:", noiseRatioPerChip)
     
     finalbody = "<h1> XML configuration </h1>" + "\n"
     import pprint
@@ -595,7 +595,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     return fName
 
 def  uploadToWebDav(folder, files):
-    print(folder, files)
+    if verbose>2: print(folder, files)
     newfiles = {}
     for file in files:
         fileName = file.split("/")[-1]
@@ -727,9 +727,9 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_rome, stopTime_rome, folder,
     HV_current_min, HV_current_max     = 0, 6
     LV_current_min, LV_current_max     = 0, 1.5
 
-    print(stop_time)
+    if verbose>30: print(stop_time)
     # Loop over sensors and query data.
-    print(sensors)
+    if verbose>3: print(sensors)
     for sensorName in sensors:
         query = f'''
         from(bucket: "sensor_data")
@@ -743,11 +743,11 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_rome, stopTime_rome, folder,
         times = []
         values = []
 
-        print(query)
+        if verbose>3: print(query)
         tables = getInfluxQueryAPI().query(query, org=org)
         
         for table in tables:
-            print(table)
+            if verbose>3: print(table)
             for record in table.records:
                 times.append(record.get_time())
                 values.append(record.get_value())
@@ -923,7 +923,7 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     test = getModuleTestFromDB(module_test)
     if not ("test_runName" in test):
         raise Exception("%s not found in %s."%(module_test, ' curl -X GET -H "Content-Type: application/json" "http://192.168.0.45:5000/module_test"'))
-    print(module_test, test)
+    print("Module test:",module_test, " Test:", test)
     runName = test['test_runName']
     moduleName = test['moduleName']
     opticalGroup_id = test['opticalGroupName']
@@ -962,7 +962,7 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     if os.path.exists(connectionMapFileName):
         with open(connectionMapFileName) as json_file:
             txt = str(json_file.read())
-            print(txt)
+            if verbose>10: print("ConnectionMap: ", txt)
             connectionMap = eval(txt)
     else:
         print("WARNING: connectionMap not found in ",connectionMapFileName)
@@ -978,17 +978,16 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
             hv_channel = "HV"+lastConn['cable'][5:]+f".{lastConn['line']}"
         elif "XSLOT" in lastConn['cable']:
             lv_channel = "LV"+lastConn['cable'][5:]+f".{lastConn['line']}"
-    print(hv_channel, lv_channel)
     if hv_channel == -1 or lv_channel == -1:
         print("HV/LV found: ", hv_channel, lv_channel)
         #raise Exception("No HV or LV found in connectionMap")
     if verbose>0:
         print("HV/LV found: ", hv_channel, lv_channel)
     #            connectionMap = json.load(json_file)
-    print(connectionMap, connectionMapFileName)
-    print(run)
+    print("Connection map:", connectionMap, "Connection map filename:",connectionMapFileName)
+    print("Run:", run)
     ## download the file
-    print(xmlConfig)
+    if verbose>5: print(xmlConfig)
     global noisePerChip
     noisePerChip = getNoisePerChip(rootFile , xmlConfig )
     noiseRatioPerChip = getNoisePerChip(rootFile , xmlConfig, ratio = True)
@@ -1001,7 +1000,7 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     nfolder = base+folder
-    print("mkDir %s"%nfolder)
+    if verbose>1: print("mkDir %s"%nfolder)
     if webdav_website: webdav_website.mkDir(nfolder)
 ##        print(webdav_website.list_files(nfolder))
     fff = [f for f in fff if os.path.exists(f)]
@@ -1013,25 +1012,29 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     tmpUpFolder = '/'.join(tmpUpFolder.split("/")[:-1])
     name = tmpUpFolder.split("/")[-1]
     tmpUpFolder = '/'.join(tmpUpFolder.split("/")[:-1])+"/"
-    print(tmpUpFolder, name, tmpFolder, zipFile, nfolder)
+    if verbose>30: print(tmpUpFolder, name, tmpFolder, zipFile, nfolder)
     if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", tmpUpFolder+name, tmpFolder)
     shutil.make_archive(tmpUpFolder+name, 'zip', tmpFolder)
     if verbose>20: print("Done")
     if webdav_website: 
         newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
         if verbose>0: print("Uploaded %s"%newFile)
+    
+    if verbose>0: print("Plots:") 
     for p in plots:
-        print(p)
-    print(extracted_dir)
-    print(webpage)
-    print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal%s"%webpage)
+        if verbose>0: print(p)
+    print("Extracted folder:", extracted_dir)
+    print("Webpage:", webpage)
+    if verbose>0: print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal%s"%webpage)
     if webdav_website:
         print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
-        print("https://cmstkita.web.cern.ch/Pisa/TBPS/")
+        if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
         download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
-        print(download)
+        if verbose>1: print("Download link:", download)
         navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
-        print(navigator)
+        print("##################################################################################################################")
+        print("### Link to the new webpage:", navigator)
+        print("##################################################################################################################")
     else:
         download = "dummy"
         navigator = "dummy"

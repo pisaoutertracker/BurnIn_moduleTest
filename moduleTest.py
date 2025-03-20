@@ -1,7 +1,7 @@
 #!/bin/env python3
 
 ### Default values 
-verbose = 3
+verbose = -1
 lastPh2ACFversion = "ph2_acf_v6-04"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -95,6 +95,9 @@ if __name__ == '__main__':
         settingFolder = settingFolder_docker
     from shellCommands import updateSettingsLink
     updateSettingsLink(settingFolder)
+    print()
+    print("moduleTest configuration:")
+    print()
     print("Copying settings folder from: %s"%settingFolder)
     print("Ph2ACF version: %s"%ph2ACFversion)
     print("Verbose: %d"%verbose)
@@ -124,6 +127,8 @@ if __name__ == '__main__':
     print("xmlOutput: %s"%xmlOutput)
     print("xmlPyConfigFile: %s"%xmlPyConfigFile)
     print("connectionMapFileName: %s"%connectionMapFileName)
+    print()
+    print("#### Preliminary checks ###")
     board = args.board
     lpGBTfile = args.lpGBT
     slots = args.slot.split(",")
@@ -176,6 +181,7 @@ if __name__ == '__main__':
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
     ### read xml config file and create XML
+    print("#### Creation of the XML file ###")
     import shutil
     if args.useExistingModuleTest:
         matches = [folder for folder in os.listdir("Results") if args.useExistingModuleTest in folder ]
@@ -194,7 +200,7 @@ if __name__ == '__main__':
             board, slots, hybrids, strips, pixels  = getInfosFromXmlPyConfig(xmlConfig)
             opticalGroups = [int(s) for s in slots]
             print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
-            print(xmlConfig)      
+            if verbose>1: print(xmlConfig)      
         xmlFile = "Results/%s/%s"%(folder,xmlOutput)
         if os.path.exists(xmlFile):
             print("Using existing xml file: %s"%xmlFile)
@@ -217,9 +223,11 @@ if __name__ == '__main__':
         pprint(xmlConfig)
 
 
-    print(board)
-    print(slots)
+    if verbose>10:
+        print(board)
+        print(slots)
     #### check if the expected modules match the modules declared in the database for the slots ####
+    print("#### Check if expected modules matches the modules from DB ###")
     from databaseTools import checkIfExpectedModulesMatchModulesInDB
     checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args)
 
@@ -227,6 +235,7 @@ if __name__ == '__main__':
     #################### START OF THE TEST ####################
     ###########################################################
     ### launch fpga_config
+    print("#### Launch the test ###")
     if args.runFpgaConfig or args.g10 or args.g5: fpgaconfig(xmlFile, firmware, ph2ACFversion)
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
@@ -243,6 +252,7 @@ if __name__ == '__main__':
         if out == "Run fpgaconfig":
             raise Exception("fpgaconfig failed. Please check the error above.")
     testID, date = out
+    print("#### Test completed. Parse ROOT file ###")
     
     ### read the output file (if args.useExistingModuleTest is defined, read the that ROOT file)
     rootFile = getROOTfile(testID) if not args.useExistingModuleTest else getROOTfile(args.useExistingModuleTest) 
@@ -252,7 +262,7 @@ if __name__ == '__main__':
     # IDs is a map: IDs[(board_id, opticalGroup_id)] --> hardware ID
     IDs = getIDsFromROOT(rootFile, xmlConfig)
 
-    print("xmlPyConfigFile=",xmlPyConfigFile)
+    if verbose>3: print("xmlPyConfigFile=",xmlPyConfigFile)
 
 ## To change hardware ID for testing ##
 #    for bo in IDs:
@@ -274,20 +284,21 @@ if __name__ == '__main__':
     
     ### Read noise "NoiseDistribution_Chip" for each chip
     # noisePerChip is a map "D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)" --> noise
+    print("#### Get noise and evaluate module: pass/failed (to be removed?) ###")
     noisePerChip = getNoisePerChip(rootFile , xmlConfig)
     if verbose>5: pprint(noisePerChip)
     
     ### Define an outcome result "pass" or "failed"
     result = getResultsPerModule(noisePerChip, xmlConfig)
     
+    print()
+    print("#####  Module check #####")
     if not args.skipMongo: 
         ### create a map between lpGBT hardware ID to ModuleName and to MongoID, reading the module database
         hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
         
 #            for b, o in board_opticals:
         board = 0 
-        print()
-        print("#####  Module check #####")
         error = False
         allModules = hwToModuleName.values()
         for i, opticalGroup in enumerate(opticalGroups):
@@ -356,12 +367,14 @@ if __name__ == '__main__':
         if verbose>10: print("Creating folder %s"%testID)
         webdav_wrapper.mkDir("/%s"%testID)
 
+        ''' ### Old code used to upload single files to CERN box. Not used anymore, as everything is uploaded through the zip file ###
         ## upload all files
         for file in [xmlPyConfigFile, xmlFile, rootFile.GetName(), "logs/%s.log"%testID]: #copy output files to CernBox
             if file: 
                 if verbose>10: print("Uploading %s"%file)
                 newFile = webdav_wrapper.write_file(file, "/%s/%s"%(testID, file))
                 if verbose>1: print("Uploaded %s"%newFile)
+        '''
         
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
@@ -377,6 +390,7 @@ if __name__ == '__main__':
                 shutil.copy(file, resultFolder)
                 print("Copied %s to %s"%(file, resultFolder))
 
+        ''' ### Old code used to upload single files to CERN box. Not used anymore, as everything is uploaded through the zip file ###
         ## create and upload connectionMap files
         from databaseTools import getConnectionMap, saveMapToFile
         for module in modules:
@@ -393,7 +407,7 @@ if __name__ == '__main__':
                     if verbose>1: print("Uploaded %s"%newFile)
                 else:
                     print("No connection map found in %s. I will not make a new one."%(resultFolder+"/"+connectionMapFileName%module))
-
+        '''
 
         ## make a zip file and upload it
         zipFile = "output"
@@ -488,6 +502,6 @@ if __name__ == '__main__':
             if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
                 updateTestResult(moduleTestName, tempSensor=args.tempSensor)
-                print("################################################")
+                #print("################################################")
 
 
