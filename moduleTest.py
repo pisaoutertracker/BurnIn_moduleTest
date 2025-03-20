@@ -128,7 +128,7 @@ if __name__ == '__main__':
     print("xmlPyConfigFile: %s"%xmlPyConfigFile)
     print("connectionMapFileName: %s"%connectionMapFileName)
     print()
-    print("#### Preliminary checks ###")
+    print("++++++++++++++++++ Preliminary checks ++++++++++++++++++")
     board = args.board
     lpGBTfile = args.lpGBT
     slots = args.slot.split(",")
@@ -181,7 +181,7 @@ if __name__ == '__main__':
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
     ### read xml config file and create XML
-    print("#### Creation of the XML file ###")
+    print("++++++++++++++++++ Creation of the XML file++++++++++++++++++")
     import shutil
     if args.useExistingModuleTest:
         matches = [folder for folder in os.listdir("Results") if args.useExistingModuleTest in folder ]
@@ -227,7 +227,7 @@ if __name__ == '__main__':
         print(board)
         print(slots)
     #### check if the expected modules match the modules declared in the database for the slots ####
-    print("#### Check if expected modules matches the modules from DB ###")
+    print("++++++++++++++++++ Check if expected modules matches the modules from DB ++++++++++++++++++")
     from databaseTools import checkIfExpectedModulesMatchModulesInDB
     checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args)
 
@@ -252,7 +252,7 @@ if __name__ == '__main__':
         if out == "Run fpgaconfig":
             raise Exception("fpgaconfig failed. Please check the error above.")
     testID, date = out
-    print("#### Test completed. Parse ROOT file ###")
+    print("++++++++++++++++++ Test completed. Parse ROOT file ++++++++++++++++++")
     
     ### read the output file (if args.useExistingModuleTest is defined, read the that ROOT file)
     rootFile = getROOTfile(testID) if not args.useExistingModuleTest else getROOTfile(args.useExistingModuleTest) 
@@ -284,7 +284,7 @@ if __name__ == '__main__':
     
     ### Read noise "NoiseDistribution_Chip" for each chip
     # noisePerChip is a map "D_B(%s)_O(%s)_H(%s)_NoiseDistribution_Chip(%s)" --> noise
-    print("#### Get noise and evaluate module: pass/failed (to be removed?) ###")
+    print("++++++++++++++++++ Get noise and evaluate module: pass/failed (to be removed?) ++++++++++++++++++")
     noisePerChip = getNoisePerChip(rootFile , xmlConfig)
     if verbose>5: pprint(noisePerChip)
     
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     result = getResultsPerModule(noisePerChip, xmlConfig)
     
     print()
-    print("#####  Module check #####")
+    print("++++++++++++++++++  Check  module name vs hardware ID ++++++++++++++++++")
     if not args.skipMongo: 
         ### create a map between lpGBT hardware ID to ModuleName and to MongoID, reading the module database
         hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
@@ -363,6 +363,8 @@ if __name__ == '__main__':
         moduleNames = [ hwToModuleName[IDs[bo]] for bo in board_opticals ]
         moduleMongoIDs = [ hwToMongoID[IDs[bo]] for bo in board_opticals ]
 
+        print("++++++++++++++++++  Make a folder on CERNbox, create a zip file of Result folder, upload the zip file ++++++++++++++++++")
+    
         ## make a folder in CernBox
         if verbose>10: print("Creating folder %s"%testID)
         webdav_wrapper.mkDir("/%s"%testID)
@@ -417,6 +419,8 @@ if __name__ == '__main__':
         newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
         if verbose>0: print("Uploaded %s"%newFile)
         
+        print("++++++++++++++++++  Create session and run and upload it to DB ++++++++++++++++++")
+
         boardMap, moduleMap, noiseMap = makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleName)
         fakeRunResults = dict()
         for hwId in noiseMap:
@@ -501,6 +505,7 @@ if __name__ == '__main__':
             print("######## Single Module Test: %s ########################" %moduleTestName)
             if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
+                print("++++++++++++++++++  Run updateTestResult on %s ++++++++++++++++++"%moduleTestName)
                 updateTestResult(moduleTestName, tempSensor=args.tempSensor)
                 #print("################################################")
 
