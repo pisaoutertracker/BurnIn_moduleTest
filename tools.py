@@ -4,6 +4,7 @@ from moduleTest import verbose
 
 ### Get hardware ID from ot_module_test log (obsolete)
 
+
 def getID(output):
     output = output.stdout.decode() + output.stderr.decode()
     tag_word = "Fused Id is "
@@ -260,6 +261,33 @@ def parse_module_settings(xml_file):
     pixels = sorted(list(pixel_set))
 
     return board, slots, hybrids, strips, pixels
+
+def checkAndFixRunNumbersDat(file="RunNumbers.dat", target_dir="~"):
+    import os
+    target = os.path.expanduser(os.path.join(target_dir, file))
+    old_file = file + ".old"
+
+    try:
+        if os.path.exists(file):
+            if os.path.isfile(file) and not os.path.islink(file) :
+                os.rename(file, old_file)
+                os.symlink(target, file)
+                print(f"Moved {file} -> {old_file}, symlinked to {target}")
+            elif os.path.islink(file) and os.readlink(file) != target:
+                os.remove(file)
+                os.symlink(target, file)
+                print(f"Replaced incorrect symlink, now points to {target}")
+            elif os.path.islink(file): # correct symlink
+                print(f"{file} is already a correct symlink")
+            else:  # Other file types
+                print(f"{file} exists but is not a file or symlink. Doing nothing.")
+        else:
+            if not os.path.exists(target):  # Create target if it doesn't exist
+                open(target, 'w').close()
+            os.symlink(target, file)
+            print(f"Created symlink {file} -> {target}")
+    except OSError as e:
+        print(f"Error: {e}")
 
 if __name__ == '__main__':
     filename = "ModuleTest_settings.xml"

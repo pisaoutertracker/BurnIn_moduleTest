@@ -174,12 +174,15 @@ if __name__ == '__main__':
 #    verbose = args.verbose
     
     from pprint import pprint
-    from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule
+    from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule, checkAndFixRunNumbersDat
     from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
     from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
+    ### make a symbolic link from ~/RunNumber.dat to local folder
+    checkAndFixRunNumbersDat()
+
     ### read xml config file and create XML
     print("++++++++++++++++++ Creation of the XML file++++++++++++++++++")
     import shutil
