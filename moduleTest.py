@@ -454,6 +454,7 @@ if __name__ == '__main__':
         else:
             from databaseTools import createSession
             session = createSession(args.message, modules)
+        print("testID: %s"%testID)
         newRun = {
             'runDate': date, 
             'runSession': session,
