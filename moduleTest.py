@@ -391,7 +391,7 @@ if __name__ == '__main__':
             ## make a symbolic link to the file in the Results folder
             if args.useExistingModuleTest and file == logFile: 
                 logsFiles = [f for f in os.listdir("Results/"+folder) if ".log" in f]
-                os.symlink(logsFiles[-1],logFile.replace("logs/",resultFolder+"/"))
+                if len(logsFiles)>0: os.symlink(logsFiles[-1],logFile.replace("logs/",resultFolder+"/"))
             ## do not copy py, xml, log if using existing module test (they are meaningless and they are already in the CernBox)
             if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlFile or file == logFile): continue
             if file and file != rootFile.GetName():
