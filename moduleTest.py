@@ -15,8 +15,10 @@ firmware_10G="ps8m10gcic2l12octal8dio5v301" ##10 GBps - https://udtc-ot-firmware
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 import os
+thermalHome = os.environ['HOME']
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v %s/RunNumbers.dat:%s/RunNumbers.dat:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z -v $HOME/RunNumbers.dat:/root/RunNumbers.dat:z --net host '%(thermalHome, thermalHome)
+podmanCommand += '--entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 prefixCommand = '\cp  /usr/share/zoneinfo/Europe/Rome /etc/localtime && cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder_docker = "/home/cmsTkUser/Ph2_ACF/settings"
 connectionMapFileName = "connectionMap_%s.json"
@@ -181,7 +183,7 @@ if __name__ == '__main__':
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
     ### make a symbolic link from ~/RunNumber.dat to local folder
-    checkAndFixRunNumbersDat()
+    checkAndFixRunNumbersDat(target_dir=thermalHome) ### check if the RunNumbers.dat is in the right place. This file must be binded in podman!
 
     ### read xml config file and create XML
     print("++++++++++++++++++ Creation of the XML file++++++++++++++++++")

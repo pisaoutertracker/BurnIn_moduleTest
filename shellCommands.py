@@ -6,7 +6,7 @@ from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash', showInPrompt=True):
     if showInPrompt: 
         command = command + "| tee /dev/tty"
-    if verbose>2: print(command)
+    print("Launching command: %s"%command)
     try:
         return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
     except subprocess.CalledProcessError as e:
@@ -101,9 +101,9 @@ def getDateTimeAndTestID():
 def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=lastPh2ACFversion, commandOption="readOnlyID", logFolder="logs"):
     global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, useExistingModuleTest, ph2ACFversion, logFolder, commandOption)
-    date, testID = getDateTimeAndTestID()
-    logFile = "%s/%s.log"%(logFolder,testID)
-    if verbose>0: print(testID,logFile)
+    date, tmp_testID = getDateTimeAndTestID()
+    logFile = "%s/%s.log"%(logFolder,tmp_testID)
+    if verbose>0: print(tmp_testID,logFile)
     if not useExistingModuleTest: # -w $PWD 
         if commandOption=="readOnlyID":
             commandOption = "configureonly"
@@ -115,7 +115,7 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
             command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, commandOption, logFile)
             if commandOption=="help": command = "%s && runCalibration --help"%(prefixCommand)
             output = runCommand(podmanCommand%(ph2ACFversion,command))
-#        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,testID,logFile)
+#        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,tmp_testID,logFile)
     else:
         output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))
     if verbose>10: print(output)
@@ -156,9 +156,11 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
     ## find ROOT file from log file:
     if "Closing result file: " in error:
         rootFile = error.split("Closing result file: ")[1].split(".root")[0]+".root" ##eg. Results/Run_28/Results.root
-        oldTestID = rootFile.split("/")[1] ## get "Run_28"
+        testID = rootFile.split("/")[1] ## get "Run_28"
         import shutil
-        shutil.copytree("Results/"+oldTestID, "Results/"+testID)
+        #shutil.copytree("Results/"+testID, "Results/"+tmp_testID)
+        shutil.copy(logFile, logFile.replace(tmp_testID,testID))
+        print("Results copied to %s"%logFile.replace(tmp_testID,testID))
         
     return testID, date
 
