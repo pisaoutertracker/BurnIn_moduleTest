@@ -653,6 +653,7 @@ def getInfluxQueryAPI(token_location = "~/private/influx.sct"):
 
 def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
     # Define a small window around the timestamp (±30 seconds)
+    if verbose>2: print('Calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
     window = timedelta(seconds=30)
     timestamp = datetime.fromisoformat(timestamp)
     start_window = (timestamp - window).isoformat("T") + "Z"
@@ -1049,11 +1050,13 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
         navigator = "dummy"
     
     from databaseTools import createAnalysis
+    startTime_rome, startTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
+    stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
     json = {
         "moduleTestAnalysisName": folder, #"PS_26_05-IBA_00004__run79__Test", 
         "moduleTestName": module_test, #"PS_26_05-IBA_00004__run79", 
-        "moduleTempStart": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T"), tempSensor),
-        "moduleTempStop": getTemperatureAt(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T"), tempSensor),
+        "moduleTempStart": getTemperatureAt(startTime_utc.isoformat("T").split("+")[0], tempSensor),
+        "moduleTempStop": getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0], tempSensor),
         "analysisVersion": version, #"Test", 
         "analysisResults": {module_test:result},
         "analysisSummary": noisePerChip,
