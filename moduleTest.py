@@ -317,8 +317,9 @@ if __name__ == '__main__':
                 continue
             moduleFound = hwToModuleName[id_] if id_ in hwToModuleName else "unknown module" ## module found in the database matching the hardware ID
             if moduleExpected == None or moduleExpected == "auto":
-                print("As you don't know any expected module, I will take the module name from the module ID.")
+                print("As you don't know any expected module, I will take the module name from the module ID. Instead of %s I will use %s."%(moduleExpected, moduleFound))
                 modules[i] = moduleFound
+                moduleExpected = moduleFound
             try:
                 print("+++ Board %s Optical %d Module %s (%d). Expected %s. +++"%(xmlConfig["boards"][board]["ip"], opticalGroup, moduleFound, int(id_), moduleExpected))
             except:
@@ -395,7 +396,6 @@ if __name__ == '__main__':
                 shutil.copy(file, resultFolder)
                 print("Copied %s to %s"%(file, resultFolder))
 
-        ''' ### Old code used to upload single files to CERN box. Not used anymore, as everything is uploaded through the zip file ###
         ## create and upload connectionMap files
         from databaseTools import getConnectionMap, saveMapToFile
         for module in modules:
@@ -403,16 +403,19 @@ if __name__ == '__main__':
             ## I had a real test so I will make a new connection map
                 connectionMap = getConnectionMap(module)
                 saveMapToFile(connectionMap, resultFolder+"/"+connectionMapFileName%module)
-                newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
-                if verbose>1: print("Uploaded %s"%newFile)
+                #newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
+                #if verbose>1: print("Uploaded %s"%newFile)
             else: ## Use existing test --> no need to generate a new connection map
                 print("Use existing module test I will not generate a new connection map")
                 if os.path.exists(resultFolder+"/"+connectionMapFileName%module):
-                    newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
-                    if verbose>1: print("Uploaded %s"%newFile)
+                    if verbose>1: print("Connection map %s found."%newFile)
+                    #newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
+                    #if verbose>1: print("Uploaded %s"%newFile)
                 else:
-                    print("No connection map found in %s. I will not make a new one."%(resultFolder+"/"+connectionMapFileName%module))
-        '''
+                    print("WARNING: No connection map found in %s. I will make a new one."%(resultFolder+"/"+connectionMapFileName%module))
+                    connectionMap = getConnectionMap(module)
+                    saveMapToFile(connectionMap, resultFolder+"/"+connectionMapFileName%module)
+        
 
         ## make a zip file and upload it
         zipFile = "output"
