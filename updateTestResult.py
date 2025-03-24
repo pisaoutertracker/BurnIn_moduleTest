@@ -5,8 +5,9 @@ skipInfluxDb= False
 allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
 hybridPlots = ["HybridStripNoiseDistribution", "HybridPixelNoiseDistribution", "HybridNoiseDistribution",
 "BitSlipValues", "WordAlignmentRetryNumbers", "PatternMatchingEfficiency", "CICinputPhaseHistogram", "BestCICinputPhases", "LockingEfficiencyCICinput", "CICwordAlignmentDelay", "PatternMatchingEfficiencyCIC", "PatternMatchingEfficiencyMPA_SSA","StripHybridHits"]
-
 opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBTinputFoundPhasesDistribution"]
+
+logPlots = ["StripHybridHits"] ## plots to be shown in log scale
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
@@ -131,8 +132,16 @@ def addHistoPlot(plots, canvas, plot, fName):
                 else:
                     plot.Draw()
         canvas.Update()
+        plotName = plot.GetName()
+        isLog = False
+        for logPlot in logPlots:
+            if logPlot in plotName: isLog = True
         print("Creating %s"%fName)
+        if isLog: 
+            print("Setting log scale")
+            canvas.SetLogy()
         canvas.SaveAs(fName)
+        if isLog: canvas.SetLogy(0)
     ## append fName, even if it does not exist to show the missing plot
     if not("2DPixelNoise" in fName and "SSA" in fName):
         plots.append(fName)
