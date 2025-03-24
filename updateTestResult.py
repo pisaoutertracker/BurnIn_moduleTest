@@ -25,7 +25,7 @@ from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 from webdavclient import WebDAVWrapper
 from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
 
-#verbose = 5
+#verbose = 5000
 
 import ROOT
 
@@ -311,8 +311,8 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     ## if the plot is not found, it is removed from the list
     for hist_path, hist_obj in histograms:
         if "NoiseDistribution" in hist_path:
-            if verbose>2: print(hist_path)
-            addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path)
+            if verbose>2: print(hist_path.split("/")[-1])
+            addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path.split("/")[-1])
     for chip in ["SSA", "MPA"]:
         if chip == "SSA": chipIds = hybrid['strips']
         elif chip == "MPA": chipIds = hybrid['pixels']
@@ -330,8 +330,14 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     if verbose>2: print("chipId",str(chipId))
                     plot = None
                     count = 0
+                    histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId)
+                    folderName = "/".join(histoName.split("/")[:-1])
+                    folder = rootFile.Get(folderName)
+                    if verbose>5: print("Folder",folder)
+                    if folder == None:
+                        print("############# WARNING: Folder %s not found in ROOT file %s. Skipping."%(folderName, rootFile.GetName())) 
+                        continue
                     while(plot==None):
-                        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)"%(board_id, opticalGroup_id, hybridMod_id, chip, chipId, board_id, opticalGroup_id, hybridMod_id, name, chipId)
                         plot = rootFile.Get(histoName)
                         if count>0: 
                             print("WARNINGHERE:", count, "histoName ", histoName)
