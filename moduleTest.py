@@ -391,7 +391,7 @@ if __name__ == '__main__':
             ## make a symbolic link to the file in the Results folder
             if args.useExistingModuleTest and file == logFile: 
                 logsFiles = [f for f in os.listdir("Results/"+folder) if ".log" in f]
-                if len(logsFiles)>0: os.symlink(logsFiles[-1],logFile.replace("logs/",resultFolder+"/"))
+                if len(logsFiles)>0 and not os.path.exists(logFile.replace("logs/",resultFolder+"/")): os.symlink(logsFiles[-1],logFile.replace("logs/",resultFolder+"/"))
             ## do not copy py, xml, log if using existing module test (they are meaningless and they are already in the CernBox)
             if args.useExistingModuleTest and (file == xmlPyConfigFile or file == xmlFile or file == logFile): continue
             if file and file != rootFile.GetName():
@@ -455,7 +455,9 @@ if __name__ == '__main__':
             from databaseTools import createSession
             session = createSession(args.message, modules)
         print("testID: %s"%testID)
+        rNumber = testID.split("Run_")[1]
         newRun = {
+            'runNumber': "run%s"%rNumber,
             'runDate': date, 
             'runSession': session,
             'runStatus': 'done',
@@ -494,7 +496,7 @@ if __name__ == '__main__':
             'runConfiguration' : xmlConfig,
             'runFile' : "https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,newFile)
         }
-        
+        print("newRun:", newRun) 
         print("Output uploaded to %s"%newFile)
         print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,testID))
         print("CERN box link (zip file): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,newFile))

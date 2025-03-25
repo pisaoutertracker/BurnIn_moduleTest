@@ -161,7 +161,9 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         #shutil.copytree("Results/"+testID, "Results/"+tmp_testID)
         shutil.copy(logFile, logFile.replace(tmp_testID,testID))
         print("Results copied to %s"%logFile.replace(tmp_testID,testID))
-        
+    else:
+        testID = tmp_testID
+
     return testID, date
 
 
