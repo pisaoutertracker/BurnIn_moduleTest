@@ -265,8 +265,10 @@ def parse_module_settings(xml_file):
 def checkAndFixRunNumbersDat(file="RunNumbers.dat", target_dir="~"):
     import os
     target = os.path.expanduser(os.path.join(target_dir, file))
+    if os.path.abspath(target) == os.path.abspath(os.path.join(".", file)):
+        print("You are in %s folder, and you have already %s file in %s. Nothing to do."%(target_dir, file, os.path.abspath(target)))
+        return
     old_file = file + ".old"
-
     try:
         if os.path.exists(file):
             if os.path.isfile(file) and not os.path.islink(file) :
