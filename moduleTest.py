@@ -1,7 +1,7 @@
 #!/bin/env python3
 
 ### Default values 
-verbose = -1
+verbose = 0
 lastPh2ACFversion = "ph2_acf_v6-04"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -371,6 +371,10 @@ if __name__ == '__main__':
 
         print("++++++++++++++++++  Make a folder on CERNbox, create a zip file of Result folder, upload the zip file ++++++++++++++++++")
     
+        if args.useExistingModuleTest: ## Only Run_0 results are allowed to be re-uploaded
+            shutil.copytree("Results/"+testID, "Results/Run_0", dirs_exist_ok=True)
+            testID = "Run_0"
+
         ## make a folder in CernBox
         if verbose>10: print("Creating folder %s"%testID)
         webdav_wrapper.mkDir("/%s"%testID)
@@ -410,7 +414,7 @@ if __name__ == '__main__':
             else: ## Use existing test --> no need to generate a new connection map
                 print("Use existing module test I will not generate a new connection map")
                 if os.path.exists(resultFolder+"/"+connectionMapFileName%module):
-                    if verbose>1: print("Connection map %s found."%newFile)
+                    if verbose>1: print("Connection map %s found."%(resultFolder+"/"+connectionMapFileName%module))
                     #newFile = webdav_wrapper.write_file(resultFolder+"/"+connectionMapFileName%module, "/%s/%s"%(testID, connectionMapFileName%module))
                     #if verbose>1: print("Uploaded %s"%newFile)
                 else:
