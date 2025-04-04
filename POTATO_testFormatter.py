@@ -32,12 +32,11 @@ def main():
     outDir = "POTATOFiles"
     theFormatter = Formatter(outDir)
 
-    rootTrackerFileName = "/home/thermal/BurnIn_moduleTest/potatoconverters/SilvioTest/Results.root"
+    rootTrackerFileName = outDir + "/" + "ResultsWithMonitorDQM.root"
 
     mergeTwoROOTfiles(resultsFile, monitorDQMFile, rootTrackerFileName)
     print("Merged file created:", rootTrackerFileName)
 
-    rootTrackerFileName = "/home/thermal/BurnIn_moduleTest/potatoconverters/SilvioTest/Results.root"
     runNumber = "150"
     moduleBurninName = "Module4L"
     moduleCarrierName = "ModuleCarrier4Left"

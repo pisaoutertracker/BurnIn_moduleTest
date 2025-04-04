@@ -8,6 +8,7 @@ import uproot
 import numpy as np
 import pandas as pd
 import math
+from ROOT import TObjString, gROOT
 
 ## This code requires https://gitlab.cern.ch/otsdaq/potatoconverters/-/tree/master
 try:
@@ -30,7 +31,7 @@ class POTATOPisaFormatter():
         self.output_directory = pDirectory
         self.verbose = 1000
         self.influxQuery = self.getInfluxQueryAPI()
-        ROOT.gROOT.SetBatch(True)
+        gROOT.SetBatch(True)
     
     def getGraphValuesByTimestamp(self, graph, timestamps):
         #print('Graph name: ', graph.GetName())
@@ -301,99 +302,99 @@ class POTATOPisaFormatter():
         #Setting Info
         # Create a TObjString to store the string
         theHistogrammer.info_directory.cd()
-        ROOT.TObjString("Burnin").Write("Setup")
+        TObjString("Burnin").Write("Setup")
         #print("Task: ", detectorTrackerDirectory.Get("CalibrationName_Detector").GetName())
-        ROOT.TObjString(detectorTrackerDirectory.Get("CalibrationName_Detector").GetName()).Write("Task")
+        TObjString(detectorTrackerDirectory.Get("CalibrationName_Detector").GetName()).Write("Task")
         #print("Date: ", detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName())
-        ROOT.TObjString(detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()).Write("Date")
+        TObjString(detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()).Write("Date")
         #print("LocalRunNumber: ", str(runNumber))
-        ROOT.TObjString(str(runNumber)).Write("LocalRunNumber")
+        TObjString(str(runNumber)).Write("LocalRunNumber")
         #print("Location: ", moduleName[moduleName.find("-")-3:moduleName.find("-")])
-        ROOT.TObjString(moduleName[moduleName.find("-")-3:moduleName.find("-")]).Write("Location")
+        TObjString(moduleName[moduleName.find("-")-3:moduleName.find("-")]).Write("Location")
         #print("Module_ID: ", moduleName)
-        ROOT.TObjString(moduleName).Write("Module_ID")
-        ROOT.TObjString("Unknown").Write("Operator")
-        ROOT.TObjString("Unknown").Write("Result_Folder")
-        ROOT.TObjString("mod_final").Write("Run_Type")
+        TObjString(moduleName).Write("Module_ID")
+        TObjString("Unknown").Write("Operator")
+        TObjString("Unknown").Write("Result_Folder")
+        TObjString("mod_final").Write("Run_Type")
         #print("Module_Slot: ", opticalGroupToBurninSlot[opticalGroupNumber])
-        ROOT.TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
+        TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
         
 
         '''
         #Setting Summary
         theHistogrammer.summary_directory.cd()
         print("HV Current at start of IV (uA): ", str(moduleIVGraph.GetY()[0]))
-        ROOT.TObjString(str(moduleIVGraph.GetY()[0])).Write("HV Current at start of IV (uA)")
+        TObjString(str(moduleIVGraph.GetY()[0])).Write("HV Current at start of IV (uA)")
         print("HV Current at end of IV (uA): ", str(moduleIVGraph.GetY()[-1]))
-        ROOT.TObjString(str(moduleIVGraph.GetY()[-1])).Write("HV Current at stop of IV (uA)")
+        TObjString(str(moduleIVGraph.GetY()[-1])).Write("HV Current at stop of IV (uA)")
         print("HV Current at start of module test (uA): ", str(hvCurrentHistoryGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(hvCurrentHistoryGraph.Eval(testTimeStart))).Write("HV Current at start of Module Test (uA)")
+        TObjString(str(hvCurrentHistoryGraph.Eval(testTimeStart))).Write("HV Current at start of Module Test (uA)")
         print("HV Current at end of module test (uA): ", str(hvCurrentHistoryGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(hvCurrentHistoryGraph.Eval(testTimeStop))).Write("HV Current at stop of Module Test (uA)")
+        TObjString(str(hvCurrentHistoryGraph.Eval(testTimeStop))).Write("HV Current at stop of Module Test (uA)")
         
         #Takes the time at 1/2 IV curves and uses it to get the LV current
         print("LV Current during IV (A): ", str(lvCurrentHistoryGraph.Eval(moduleIVTimestampGraph.GetY()[0])))
         #print("Time: ", moduleIVTimestampGraph.GetY()[math.ceil(moduleIVGraph.GetN()/2)])
-        ROOT.TObjString(str(lvCurrentHistoryGraph.Eval(moduleIVTimestampGraph.GetY()[math.ceil(moduleIVGraph.GetN()/2)]))).Write("LV Current during IV (A)")
+        TObjString(str(lvCurrentHistoryGraph.Eval(moduleIVTimestampGraph.GetY()[math.ceil(moduleIVGraph.GetN()/2)]))).Write("LV Current during IV (A)")
 
         #Measurement taken after a power off
         print("LV Current module unconfigured (A): ", str(self.getCurrentAfterPowerOff(lvCurrentHistoryGraph)))
-        ROOT.TObjString(str(self.getCurrentAfterPowerOff(lvCurrentHistoryGraph))).Write("LV Current module unconfigured (A)")
+        TObjString(str(self.getCurrentAfterPowerOff(lvCurrentHistoryGraph))).Write("LV Current module unconfigured (A)")
 
 '''
         #Mean value of the module LV current during the test (+-TimeExtension)        
         #print("LV Current module configured (A): ", str(sum(lvCurrentGraph.GetY())/len(lvCurrentGraph.GetY())))
-        #ROOT.TObjString(str(sum(lvCurrentGraph.GetY())/len(lvCurrentGraph.GetY()))).Write("LV Current module configured (A)")
+        #TObjString(str(sum(lvCurrentGraph.GetY())/len(lvCurrentGraph.GetY()))).Write("LV Current module configured (A)")
         
         #Last test current value  (+-TimeExtension)        
         #print("LV Current at start of Module Test (A): ", str(lvCurrentGraph.Eval(testTimeStart)))
-        #ROOT.TObjString(str(lvCurrentGraph.Eval(testTimeStart))).Write("LV Current at start of Module Test (A)")
+        #TObjString(str(lvCurrentGraph.Eval(testTimeStart))).Write("LV Current at start of Module Test (A)")
         #Last test current value  (+-TimeExtension)        
         #print("LV Current at stop of Module Test (A): ", str(lvCurrentGraph.Eval(testTimeStop)))
-        #ROOT.TObjString(str(lvCurrentGraph.Eval(testTimeStop))).Write("LV Current at stop of Module Test (A)")
+        #TObjString(str(lvCurrentGraph.Eval(testTimeStop))).Write("LV Current at stop of Module Test (A)")
 
         '''
         print("Environment T at start of IV: ", str(ambientTemperatureDuringIV[0]))
-        ROOT.TObjString(str(ambientTemperatureDuringIV[0])).Write("Environment T at start of IV (C)")
+        TObjString(str(ambientTemperatureDuringIV[0])).Write("Environment T at start of IV (C)")
         print("Environment T at end of IV: ", str(ambientTemperatureDuringIV[-1]))
-        ROOT.TObjString(str(ambientTemperatureDuringIV[-1])).Write("Environment T at stop of IV (C)")
+        TObjString(str(ambientTemperatureDuringIV[-1])).Write("Environment T at stop of IV (C)")
         print("Environment T at start of Module Test: ", str(ambientTemperatureGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(ambientTemperatureGraph.Eval(testTimeStart))).Write("Environment T at start of Module Test (C)")
+        TObjString(str(ambientTemperatureGraph.Eval(testTimeStart))).Write("Environment T at start of Module Test (C)")
         print("Environment T at end of Module Test: ", str(ambientTemperatureGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(ambientTemperatureGraph.Eval(testTimeStop))).Write("Environment T at stop of Module Test (C)")
+        TObjString(str(ambientTemperatureGraph.Eval(testTimeStop))).Write("Environment T at stop of Module Test (C)")
         print("Carrier T at start of IV: ", str(carrierTemperatureDuringIV[0]))
-        ROOT.TObjString(str(carrierTemperatureDuringIV[0])).Write("Carrier T at start of IV (C)")
+        TObjString(str(carrierTemperatureDuringIV[0])).Write("Carrier T at start of IV (C)")
         print("Carrier T at end of IV: ", str(carrierTemperatureDuringIV[-1]))
-        ROOT.TObjString(str(carrierTemperatureDuringIV[-1])).Write("Carrier T at stop of IV (C)")
+        TObjString(str(carrierTemperatureDuringIV[-1])).Write("Carrier T at stop of IV (C)")
         print("Carrier T at start of Module Test: ", str(moduleCarrierTemperatureGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStart))).Write("Carrier T at start of Module Test (C)")
+        TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStart))).Write("Carrier T at start of Module Test (C)")
         print("Carrier T at end of Module Test: ", str(moduleCarrierTemperatureGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStop))).Write("Carrier T at stop of Module Test (C)")
+        TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStop))).Write("Carrier T at stop of Module Test (C)")
         print("Sensor T at start of IV: ", str(sensorTemperatureDuringIV[0]))
-        ROOT.TObjString(str(sensorTemperatureDuringIV[0])).Write("Sensor T at start of IV (C)")
+        TObjString(str(sensorTemperatureDuringIV[0])).Write("Sensor T at start of IV (C)")
         print("Sensor T at end of IV: ", str(sensorTemperatureDuringIV[-1]))
-        ROOT.TObjString(str(sensorTemperatureDuringIV[-1])).Write("Sensor T at stop of IV (C)")
+        TObjString(str(sensorTemperatureDuringIV[-1])).Write("Sensor T at stop of IV (C)")
         print("Chiller set T at start of IV: ", str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[0])))
-        ROOT.TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[0]))).Write("Chiller Setpoint T at start of IV (C)")
+        TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[0]))).Write("Chiller Setpoint T at start of IV (C)")
         print("Chiller set T at end of IV: ", str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[-1])))
-        ROOT.TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[-1]))).Write("Chiller Setpoint T at stop of IV (C)")
+        TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[-1]))).Write("Chiller Setpoint T at stop of IV (C)")
         print("Chiller set T at start of Module Test: ", str(chillerSetPointGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(chillerSetPointGraph.Eval(testTimeStart))).Write("Chiller Setpoint T at start of Module Test (C)")
+        TObjString(str(chillerSetPointGraph.Eval(testTimeStart))).Write("Chiller Setpoint T at start of Module Test (C)")
         print("Chiller set T at end of Module Test: ", str(chillerSetPointGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(chillerSetPointGraph.Eval(testTimeStop))).Write("Chiller Setpoint T at stop of Module Test (C)")
+        TObjString(str(chillerSetPointGraph.Eval(testTimeStop))).Write("Chiller Setpoint T at stop of Module Test (C)")
         print("RH at start of IV: ", str(humidityDuringIV[0]))
-        ROOT.TObjString(str(humidityDuringIV[0])).Write("Relative Humidity at start of IV (%)")
+        TObjString(str(humidityDuringIV[0])).Write("Relative Humidity at start of IV (%)")
         print("RH at end of IV: ", str(humidityDuringIV[-1]))
-        ROOT.TObjString(str(humidityDuringIV[-1])).Write("Relative Humidity at stop of IV (%)")
+        TObjString(str(humidityDuringIV[-1])).Write("Relative Humidity at stop of IV (%)")
         print("RH at start of Module Test: ", str(humidityGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(humidityGraph.Eval(testTimeStart))).Write("Relative Humidity at start of Module Test (%)")
+        TObjString(str(humidityGraph.Eval(testTimeStart))).Write("Relative Humidity at start of Module Test (%)")
         print("RH at end of Module Test: ", str(humidityGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(humidityGraph.Eval(testTimeStop))).Write("Relative Humidity at stop of Module Test (%)")
+        TObjString(str(humidityGraph.Eval(testTimeStop))).Write("Relative Humidity at stop of Module Test (%)")
 '''
         print("Sensor T at start of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStart)))
-        ROOT.TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
+        TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
         print("Sensor T at end of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStop)))
-        ROOT.TObjString(str(sensorTemperatureGraph.Eval(testTimeStop))).Write("Sensor T at stop of Module Test (C)")
+        TObjString(str(sensorTemperatureGraph.Eval(testTimeStop))).Write("Sensor T at stop of Module Test (C)")
 
         theHistogrammer.closeRootFile()
 #        powerSupplyFile.Close()

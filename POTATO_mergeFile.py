@@ -1,7 +1,7 @@
 ### Code used to merge Results.root and MonitorDQM.root files for the POTATO test
 
 
-import ROOT
+from ROOT import TFile
 import os
 def copy_directory_contents(src_dir, dst_dir):
     """
@@ -34,13 +34,13 @@ def mergeTwoROOTfiles(inputFileName1, inputFileName2, outputFileName):
     os.system("cp -f %s %s" % (inputFileName1, outputFileName))
 
     # Open the input file 2
-    inputFile2 = ROOT.TFile.Open(inputFileName2, "READ")
+    inputFile2 = TFile.Open(inputFileName2, "READ")
     # Get the "MonitorDQM" directory from the second file
     MonitorDQM     = inputFile2.Get("Detector")
 
 
     # Open the output file
-    outputFile = ROOT.TFile.Open(outputFileName, "UPDATE")
+    outputFile = TFile.Open(outputFileName, "UPDATE")
 
     # Create a new directory in the output file
     MonitorDQM_folder = outputFile.mkdir("MonitorDQM")
