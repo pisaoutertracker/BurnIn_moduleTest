@@ -392,7 +392,12 @@ if __name__ == '__main__':
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
         logFile = "logs/%s.log"%testID
         from tools import getMonitorDQMFileName
-        monitorDQMFile = getMonitorDQMFileName(logFile)
+        try:
+            monitorDQMFile = getMonitorDQMFileName(logFile)
+        except:
+            print("#################################################################")
+            print("WARNING: MonitorDQMFile not found in log file %s"%logFile)
+            print("#################################################################")
         print("monitorDQMFile", monitorDQMFile)
 
         for file in [xmlPyConfigFile, xmlFile, logFile, monitorDQMFile]: #copy output files to CernBox
