@@ -398,6 +398,7 @@ if __name__ == '__main__':
             print("#################################################################")
             print("WARNING: MonitorDQMFile not found in log file %s"%logFile)
             print("#################################################################")
+            monitorDQMFile = None
         print("monitorDQMFile", monitorDQMFile)
 
         for file in [xmlPyConfigFile, xmlFile, logFile, monitorDQMFile]: #copy output files to CernBox
