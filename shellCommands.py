@@ -163,7 +163,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         print("Results copied to %s"%logFile.replace(tmp_testID,testID))
     else:
         testID = tmp_testID
-
+    if useExistingModuleTest:
+        testID = useExistingModuleTest
     return testID, date
 
 
