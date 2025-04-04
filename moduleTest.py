@@ -387,7 +387,11 @@ if __name__ == '__main__':
         ## copy some important files (xml, log, py) in .../Results folder
         resultFolder = rootFile.GetName()[:rootFile.GetName().rfind("/")]
         logFile = "logs/%s.log"%testID
-        for file in [xmlPyConfigFile, xmlFile, logFile]: #copy output files to CernBox
+        from tools import getMonitorDQMFileName
+        monitorDQMFile = getMonitorDQMFileName(logFile)
+        print("monitorDQMFile", monitorDQMFile)
+
+        for file in [xmlPyConfigFile, xmlFile, logFile, monitorDQMFile]: #copy output files to CernBox
             ## make a symbolic link to the file in the Results folder
             if args.useExistingModuleTest and file == logFile: 
                 logsFiles = [f for f in os.listdir("Results/"+folder) if ".log" in f]

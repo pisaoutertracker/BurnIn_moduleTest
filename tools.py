@@ -15,6 +15,20 @@ def getID(output):
         raise Exception("Something wrong in getID() |%s|"%id_txt)
     return id_txt
 
+
+### Get MonitorDQM filename from the log
+
+def getMonitorDQMFileName(filename):
+    output = open(filename)
+    tag_word = "MonitorResults/"
+    for line in output.readlines():
+        if tag_word in line:
+            line = line.split(tag_word)[1].split(".root")[0]
+            return tag_word+line+".root"
+    raise Exception("getMonitorDQMFileName:: MonitorDQM file not found in log file: %s"%filename)
+
+
+
 ### Get the lpGBT hardware ID for each module from the ROOT file (CHIPID registers, CHIPID0)
 # Note: each module is identified by (board_id, opticalGroup_id)
 # IDs is a map: IDs[(board_id, opticalGroup_id)] --> hardware ID
