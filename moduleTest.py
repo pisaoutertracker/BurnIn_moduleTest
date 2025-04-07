@@ -399,8 +399,12 @@ if __name__ == '__main__':
             print("WARNING: MonitorDQMFile not found in log file %s"%logFile)
             print("#################################################################")
             monitorDQMFile = None
-        print("monitorDQMFile", monitorDQMFile)
-
+        if monitorDQMFile:
+            ## copy the file to MonitorDQM
+            monitorDQMFile_new = monitorDQMFile.split("MonitorDQM_")[0]+"MonitorDQM.root"
+            os.system("cp %s %s"%(monitorDQMFile, monitorDQMFile_new))
+            print("%s found and copied to %s"%(monitorDQMFile, monitorDQMFile_new))
+            monitorDQMFile = monitorDQMFile_new
         for file in [xmlPyConfigFile, xmlFile, logFile, monitorDQMFile]: #copy output files to CernBox
             ## make a symbolic link to the file in the Results folder
             if args.useExistingModuleTest and file == logFile: 
