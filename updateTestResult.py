@@ -669,7 +669,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                 print(hist_path)
             if not found:
                 if verbose>2: print("#####################################################################################")
-                print("WARNING: %s not found in the root file. It will be excluded from the webpage. Path: %s"%(name, hist_path))
+                print("WARNING: %s not found in the root file. It will be excluded from the webpage."%(name))
                 if verbose>2: print("#####################################################################################")
                 collection.remove(name)
 
