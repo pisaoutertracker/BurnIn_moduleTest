@@ -2,16 +2,166 @@ from datetime import datetime,timedelta
 
 skipInfluxDb= False
 #skipInfluxDb= True
-allVariables = ["2DPixelNoise", "VplusValue", "OffsetValues", "OccupancyAfterOffsetEqualization", "SCurve", "PedestalDistribution", "ChannelPedestalDistribution", "NoiseDistribution", "ChannelNoiseDistribution", "Occupancy"]
-hybridPlots = ["HybridStripNoiseDistribution", "HybridPixelNoiseDistribution", "HybridNoiseDistribution",
-"BitSlipValues", "WordAlignmentRetryNumbers", "PatternMatchingEfficiency", "CICinputPhaseHistogram", "BestCICinputPhases", "LockingEfficiencyCICinput", "CICwordAlignmentDelay", "PatternMatchingEfficiencyCIC", "PatternMatchingEfficiencyMPA_SSA","StripHybridHits"]
-opticalGroupPlots = ["LpGBTinputAlignmentSuccess", "LpGBTinputBestPhase", "LpGBTinputFoundPhasesDistribution"]
+
+allVariables = [
+    "OccupancyAfterOffsetEqualization",
+    "Occupancy",
+    "OffsetValues",
+    "VplusValue", 
+    "ChannelPedestalDistribution",
+    "ChannelNoiseDistribution",
+    "2DChannelOffsetValues", 
+    "2DChannelOccupancyAfterOffsetEqualization", 
+    "SCurve", 
+    "PedestalDistribution", 
+    "ChannelPedestal", 
+    "NoiseDistribution", 
+    "ChannelNoise", 
+    "2DChannelNoise", 
+    "2DPixelNoise", 
+    "2DChannelNoiseDistribution", 
+    "2DPixelNoiseDistribution",
+    "ChannelOffsetValues"
+]
+
+hybridPlots = [
+    "BitSlipValues", 
+    "WordAlignmentRetryNumbers", 
+
+    "HybridStripNoiseDistribution", 
+    "HybridPixelNoiseDistribution", 
+    "HybridNoiseDistribution",
+    "PatternMatchingEfficiency", 
+    "CICinputPhaseHistogram", 
+    "BestCICinputPhases", 
+    "LockingEfficiencyCICinput", 
+    "CICwordAlignmentDelay", 
+    "PatternMatchingEfficiencyCIC", 
+    "PatternMatchingEfficiencyMPA_SSA",
+    "StripHybridHits",
+    "MPAringOscillatorInverterCounts", 
+    "MPAringOscillatorDelayCounts", 
+    "SSAringOscillatorInverterCounts", 
+    "SSAringOscillatorDelayCounts", 
+    "PixelHybridHits", 
+    "SSA(0)toMPA(8)_correlation", 
+    "SSA(1)toMPA(9)_correlation", 
+    "SSA(2)toMPA(10)_correlation", 
+    "SSA(3)toMPA(11)_correlation", 
+    "SSA(4)toMPA(12)_correlation", 
+    "SSA(5)toMPA(13)_correlation", 
+    "SSA(6)toMPA(14)_correlation", 
+    "SSA(7)toMPA(15)_correlation", 
+    "StripPixelHybridHits", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_7", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_7", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_7", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_7", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_7", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_1", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_4", 
+    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_7", 
+    "SSAtoMPAStubPhaseScan_SLVScurrent_1", 
+    "SSAtoMPAL1PhaseScan_SLVScurrent_1", 
+    "SSAtoMPAStubPhaseScan_SLVScurrent_4", 
+    "SSAtoMPAL1PhaseScan_SLVScurrent_4", 
+    "SSAtoMPAStubPhaseScan_SLVScurrent_7", 
+    "SSAtoMPAL1PhaseScan_SLVScurrent_7", 
+    "SSAtoSSAStubPhaseScan_SLVScurrent_1", 
+    "SSAtoSSAStubPhaseScan_SLVScurrent_4", 
+    "SSAtoSSAStubPhaseScan_SLVScurrent_7", 
+    "LpGBTforCICbypassPhaseScan_phyPort0", 
+    "LpGBTforCICbypassBestPhase_phyPort0", 
+    "LpGBTforCICbypassPhaseScan_phyPort1", 
+    "LpGBTforCICbypassBestPhase_phyPort1", 
+    "LpGBTforCICbypassPhaseScan_phyPort2", 
+    "LpGBTforCICbypassBestPhase_phyPort2", 
+    "LpGBTforCICbypassPhaseScan_phyPort3", 
+    "LpGBTforCICbypassBestPhase_phyPort3", 
+    "LpGBTforCICbypassPhaseScan_phyPort4", 
+    "LpGBTforCICbypassBestPhase_phyPort4", 
+    "LpGBTforCICbypassPhaseScan_phyPort5", 
+    "LpGBTforCICbypassBestPhase_phyPort5", 
+    "LpGBTforCICbypassPhaseScan_phyPort6", 
+    "LpGBTforCICbypassBestPhase_phyPort6", 
+    "LpGBTforCICbypassPhaseScan_phyPort7", 
+    "LpGBTforCICbypassBestPhase_phyPort7", 
+    "LpGBTforCICbypassPhaseScan_phyPort8", 
+    "LpGBTforCICbypassBestPhase_phyPort8", 
+    "LpGBTforCICbypassPhaseScan_phyPort9", 
+    "LpGBTforCICbypassBestPhase_phyPort9", 
+    "LpGBTforCICbypassPhaseScan_phyPort10", 
+    "LpGBTforCICbypassBestPhase_phyPort10", 
+    "LpGBTforCICbypassPhaseScan_phyPort11", 
+    "LpGBTforCICbypassBestPhase_phyPort11", 
+    "MPAtoCICPhaseScan_SLVScurrent_1", 
+    "MPAtoCICPhaseScan_SLVScurrent_4", 
+    "MPAtoCICPhaseScan_SLVScurrent_7", 
+    "RegisterMatchingEfficiency",
+
+    "Board_WordAlignmentBitSlipValues",
+    "Board_WordAlignmentRetryNumbers",
+    "CICtoLpGBT_PatternMatchingErrorRate",
+    "CICtoLpGBT_PatternMatchingTestedBits",
+
+    "MPAtoCIC_InputPhaseDistribution",
+    "MPAtoCIC_BestInputPhases",
+    "MPAtoCIC_LockingEfficiency",
+    "MPAtoCIC_WordAlignmentDelay",
+    "MPAtoCIC_PatternMatchingTestedBits",
+    "MPAtoCIC_PatternMatchingErrorRate",
+    "SSAtoMPA_PatternMatchingTestedBits",
+    "SSAtoMPA_PatternMatchingErrorRate",
+    "MPA_RingOscillatorInverterCounts",
+    "MPA_RingOscillatorDelayCounts",
+    "SSA_RingOscillatorInverterCounts",
+    "SSA_RingOscillatorDelayCounts",
+
+    "StripChannelNoise",
+    "PixelChannelNoise",
+    "StripNoiseDistribution",
+    "PixelNoiseDistribution",
+]
+
+opticalGroupPlots = [
+    "LpGBTinputAlignmentSuccess", 
+    "LpGBTinputBestPhase", 
+    "LpGBTinputFoundPhasesDistribution",
+    "PixelModuleHits", 
+    "StripModuleHits",
+    "VTRx_LightYieldScan", 
+    "LpGBT_EyeOpeningScan_Power_0.333333", 
+    "LpGBT_EyeOpeningScan_Power_0.666667", 
+    "LpGBT_EyeOpeningScan_Power_1.000000", 
+    "Board_BestStubPackageDelay", 
+    "StripPixelModuleHits", 
+    "CICtoLpGBT_PhaseAlignmentEfficiency", 
+    "CICtoLpGBT_BestPhase", 
+    "CICtoLpGBT_FoundPhaseDistribution", 
+]
+
+## Check for duplicates
+all = set()
+for name in allVariables + hybridPlots + opticalGroupPlots:
+    if name in all:
+        raise Exception("Duplicate %s found in all variables"%name)
+    all.add(name)
 
 logPlots = ["StripHybridHits"] ## plots to be shown in log scale
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "Mar11"
+version = "2025-04-09"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -25,7 +175,7 @@ from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 from webdavclient import WebDAVWrapper
 from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
 
-#verbose = 5000
+verbose = 0
 
 import ROOT
 
@@ -115,11 +265,22 @@ def makeMultiplePlot2D(plots, chip):
 
 
 def addHistoPlot(plots, canvas, plot, fName):
+    if verbose>10: print("Calling addHistoPlot(%d, %s, %s, %s)"%(len(plots), canvas, plot, fName))
+    ## skip single chip plots if useOnlyMergedPlots is activated
+    if (("SSA" in fName) or ("MPA" in fName) or ("Chip" in fName)) and (not ("Merged" in fName)) and (not ("Multiple" in fName)) and (useOnlyMergedPlots):
+        isNum = "a"
+        # if "/SSA_" in fName: isNum = fName.split("/SSA_")[1][0]
+        # if "/MPA_" in fName: isNum = fName.split("/MPA_")[1][0]
+        # if not isNum.isnumeric():
+        if "SSA" in fName: isNum = fName.split("SSA")[1][0]
+        if "MPA" in fName: isNum = fName.split("MPA")[1][0]
+        if "Chip" in fName: isNum = fName.split("Chip")[1][0]
+        print("fName", fName, "isNum", isNum)
+        if isNum.isnumeric():
+            if verbose>20: print("Skipping %s"%fName)            
+            return
     ## save histo plot, and add it to "plots"
     if plot:
-        ## skip single chip plots if useOnlyMergedPlots is activated
-        if (("SSA" in fName) or ("MPA" in fName)) and (not ("Merged" in fName)) and (not ("Multiple" in fName)) and (useOnlyMergedPlots): 
-            return
         canvas.cd()
         if type(plot) == TGraphErrors:
             plot.Draw("AP")
@@ -142,8 +303,13 @@ def addHistoPlot(plots, canvas, plot, fName):
             canvas.SetLogy()
         canvas.SaveAs(fName)
         if isLog: canvas.SetLogy(0)
-    ## append fName, even if it does not exist to show the missing plot
-    if not("2DPixelNoise" in fName and "SSA" in fName):
+    ## append fName, even if it does not exist to show the missing plot, except for the known missing plots
+    if not("SSA" in fName and ("/2DPixelNoise_" in fName or "/2DChannelOffsetValues_" in fName or "/2DChannelOccupancyAfterOffsetEqualization_" in fName or "/2DChannelNoise_" in fName)) and not("MPA" in fName and ("/ChannelOffsetValues_" in fName)):
+        if verbose>10: 
+            if plot:
+                print("Adding %s to plots (existing plot)"%fName)
+            else:
+                print("Adding %s to plots even if they are not produced, to show missing plots"%fName)
         plots.append(fName)
     return
 
@@ -236,6 +402,24 @@ def get_histograms(directory, path=""):
     return histograms
 
 def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTimeRun, hv_channel, lv_channel, tempSensor):
+    if verbose>2:
+        print("Calling makePlots")
+        print("board_id: ", board_id)
+        print("opticalGroup_id: ", opticalGroup_id)
+        print("tmpFolder: ", tmpFolder)
+        print("dateTimeRun: ", dateTimeRun)
+        print("hv_channel: ", hv_channel)
+        print("lv_channel: ", lv_channel)
+        print("tempSensor: ", tempSensor)
+        print("xmlConfig: ", xmlConfig)
+        print("rootFile: ", rootFile)
+        print("rootFile.GetName(): ", rootFile.GetName())
+
+        print("allVariables: ", allVariables)
+        print("hybridPlots: ", hybridPlots)
+        print("opticalGroupPlots: ", opticalGroupPlots)
+        print("exstensiveVariables: ", exstensiveVariables)
+
     plots = []
     startTime_local = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
     stopTime_local = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
@@ -286,8 +470,16 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     ax.SetBinLabel(ax.FindBin(2.5), "MPA, H0")
     ax.SetBinLabel(ax.FindBin(3.5), "MPA, H1")
 
+    if verbose>1000: print("H")
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
     histograms = get_histograms(rootFile)
+    histogramPaths = [hist_path for hist_path, hist_obj in histograms]
+    if verbose>10:
+        print("List of histograms in the ROOT file:")
+        for hist_path, hist_obj in histograms:
+            if "Col" in hist_path: continue ## exclude single strip plots
+            print(hist_path)
+            hist_obj.Print()
 
     ## Check if the variables are in the root file#
     for collection in [allVariables, hybridPlots, opticalGroupPlots, exstensiveVariables]:
@@ -296,7 +488,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             if verbose>2: print("Checking %s"%name)
             found = False
             for hist_path, hist_obj in histograms:
-                if name in hist_path:
+                if "_%s_"%name in hist_path:
                     found = True
                     break
             if verbose>2: print("found", found)
@@ -304,7 +496,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                 print(hist_path)
             if not found:
                 if verbose>2: print("#####################################################################################")
-                print("WARNING: %s not found in the root file. It will be excluded from the webpage"%name)
+                print("WARNING: %s not found in the root file. It will be excluded from the webpage. Path: %s"%(name, hist_path))
                 if verbose>2: print("#####################################################################################")
                 collection.remove(name)
 
@@ -313,6 +505,12 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
         if "NoiseDistribution" in hist_path:
             if verbose>2: print(hist_path.split("/")[-1])
             addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path.split("/")[-1])
+    missingPlots = []
+    if verbose>2:
+        print("allVariables: ", allVariables)
+        print("hybridPlots: ", hybridPlots)
+        print("opticalGroupPlots: ", opticalGroupPlots)
+        print("exstensiveVariables: ", exstensiveVariables)
     for chip in ["SSA", "MPA"]:
         if chip == "SSA": chipIds = hybrid['strips']
         elif chip == "MPA": chipIds = hybrid['pixels']
@@ -337,27 +535,36 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     if folder == None:
                         print("############# WARNING: Folder %s not found in ROOT file %s. Skipping."%(folderName, rootFile.GetName())) 
                         continue
-                    while(plot==None):
+                    while(plot==None and count<3):
                         plot = rootFile.Get(histoName)
-                        if count>0: 
-                            print("WARNINGHERE:", count, "histoName ", histoName)
-                            print(rootFile.Print())
-                            from time import sleep
-                            sleep(1)
-                            rootFile.Recover()
-                        if count>5: 
-                            raise Exception("Problems with file %s"%rootFile.GetName())
+                        if histoName in histogramPaths:
+                            plot = histograms[histogramPaths.index(histoName)][1]
+                        else:
+                            print("WARNING: %s not found in ROOT file %s. Skipping."%(histoName, rootFile.GetName()))
+                            if verbose>100000: 
+                                print("List of histograms in the ROOT file:")
+                                for histo in histograms:
+                                    if "_Col" in histo[0]: continue ## exclude single strip plots
+                                    print("histo", histo)
+                            missingPlots.append(histoName)
+                            break
                         count+=1
                     print("T",str(plot))
                     ## selct 2DPixelNoise plots to make the combined 2D histogram
                     if plot: plotsToBeMerged[hybrid_id].append(plot)
                     counter += 1
+                    if verbose>1000: print("A")
                     addHistoPlot(plots, c1, plot, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, chipId))
                 ## re-normalize all non-extensive variable
+                if verbose>1: 
+                        print("Plots to be merged (hybrid %s)"%hybrid_id)
+                        for plot in plotsToBeMerged[hybrid_id]:
+                            print(plot.GetName())
                 merged = makeMergedPlot(plotsToBeMerged[hybrid_id], chip)
                 if merged and not name in exstensiveVariables:
                     merged.Scale(1./ counter)
                 print(merged)
+                if verbose>1000: print("B")
                 addHistoPlot(plots, c1, merged, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name, hybrid_id, chip, "Merged"+chip))
                 
                 ## add 1D projection 
@@ -365,20 +572,25 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     prx = merged.ProjectionX()
                     prx.SetTitle(merged.GetTitle() + " - X projection")
                     prx.Scale(1./merged.GetNbinsY())
+                    if verbose>1000: print("C")
                     addHistoPlot(plots, c1, prx, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projX", hybrid_id, chip, "Merged"+chip))
                     pry = merged.ProjectionY()
                     pry.SetTitle(merged.GetTitle() + " - Y projection")
                     pry.Scale(1./merged.GetNbinsX())
+                    if verbose>1000: print("D")
                     addHistoPlot(plots, c1, pry, fName = tmpFolder+"/%s_Hybrid%s_%s%s.png"%(name+"projY", hybrid_id, chip, "Merged"+chip))
             
 #            if "2DPixelNoise" in name:
             if type(plot)==ROOT.TH2F and not "SCurve" in name: ## too many bins, very slow!
 #            if type(plot)==ROOT.TH2F:
                 multiple = makeMultiplePlot2D(plotsToBeMerged, chip)
+                if verbose>1000: print("E")
                 addHistoPlot(plots, c1, multiple, fName = tmpFolder+"/%s_%s%s.png"%(name, chip, "Multiple"+chip))
 #            elif "NoiseDistribution" in name:
             elif type(plot)==ROOT.TH1F:
+                if verbose>1000: print("F")
                 addMultipleHistoPlot(plots, c1, plotsToBeMerged, fName = tmpFolder+"/%s_%s%s.png"%(name, chip, "Multiple"+chip))
+
                 
             merged = None
     for name in hybridPlots:
@@ -386,12 +598,26 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             hybrid = opticalGroup['hybrids'][str(hybrid_id)]
             hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
             plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_%s_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
+            if verbose>1000: print("F")
             addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
     
     for name in opticalGroupPlots:
-        plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_%s_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, name, opticalGroup_id))
+        path = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_%s_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, name, opticalGroup_id)
+        plot2 = rootFile.Get(path)
+        if verbose>1000: print("Doing %s %s"%(name, path), plot2)
+        if plot2 == None:
+            print("WARNING: %s not found in ROOT file %s. Skipping."%(path, rootFile.GetName()))
+            continue
+        if verbose>1000: print("G")
         addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_OpticalGroup%s.png"%(name, hybrid_id))
     
+    print()
+    print("################################################")
+    print("List of missing plots:")
+    for missingPlot in missingPlots:
+        print("WARNING: %s not found in ROOT file %s. Skipping."%(missingPlot, rootFile.GetName()))
+    print("################################################")
+    print()
     return plots
 
 
@@ -478,7 +704,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     print("All plots available:")
     for plot in plots:
         print(plot)
-        if "SSA" in plot or "MPA" in plot: 
+        if "_SSA" in plot or "_MPA" in plot: 
 #            if "Merged" in plot or not useOnlyMergedPlots:
                 plotsPerChip.append(plot)
         else: plotsInclusive.append(plot)
@@ -551,12 +777,13 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     directLinkToZip = run['runFile'].replace("files/link/public", "remote.php/dav/public-files")
     testId,zipFile = directLinkToZip.split("/")[-2:]
     directLinkToROOTFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/Results.root"%(testId,zipFile)
+    directLinkToMonitorDQMFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/root.html?file=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/MonitorDQM.root"%(testId,zipFile)
     directLinkToXmlFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/ModuleTest_settings.xml"%(testId,zipFile)
     directLinkToLogFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/log.html?logfile=https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/%s.log"%(testId,zipFile,testId)
     directLinkToConnectionMapFile = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/%s/%s/connectionMap_%s.json"%(testId,zipFile,moduleName)
     folderLink =  '/'.join(run['runFile'].split("/")[:-1])
     body += "<br>" + "\n"
-    body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a>, <a href="%s"> Connection map</a> <br>'%(directLinkToROOTFile, directLinkToLogFile, directLinkToXmlFile, directLinkToConnectionMapFile) + "\n"
+    body += grayText("Browse: ") + '<a href="%s">ROOT file</a>, <a href="%s">MonitorDQM file</a>, <a href="%s">log file</a>, <a href="%s"> Xml file</a>, <a href="%s"> Connection map</a> <br>'%(directLinkToROOTFile, directLinkToMonitorDQMFile, directLinkToLogFile, directLinkToXmlFile, directLinkToConnectionMapFile) + "\n"
     body += grayText("Link to: ") + '<a href="%s">Zip file</a>, <a href="%s">CERN box folder</a> <br>'%(directLinkToZip, folderLink) + "\n"
     utc, myTime_grafana = getTimeFromRomeToUTC(run["runDate"], timeFormat = "%Y-%m-%dT%H:%M:%S")
     start_time_grafana = (myTime_grafana - timedelta(hours=2))
@@ -906,6 +1133,12 @@ def getConnectionMap(run, xmlConfig, folder):
 
 
 def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
+    if verbose>2:
+        print("Calling updateTestResult")
+        print("module_test:", module_test)
+        print("tempSensor:", tempSensor)
+        print("skipWebdav:", skipWebdav)
+
     global plots
     tmpFolder = "/tmp/"
 
