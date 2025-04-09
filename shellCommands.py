@@ -5,7 +5,7 @@ from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash', showInPrompt=True):
     if showInPrompt: 
-        command = command + "| tee /dev/tty"
+        command = command + " 2>&1 | tee /dev/tty"
     print("Launching command: %s"%command)
     try:
         return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
@@ -108,16 +108,16 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         if commandOption=="readOnlyID":
             commandOption = "configureonly"
         if ph2ACFversion=="local":
-            command = "runCalibration -b -f %s -c %s  | tee %s"%(xmlFile, commandOption, logFile)
+            command = "runCalibration -b -f %s -c %s  2>&1 | tee %s"%(xmlFile, commandOption, logFile)
             if commandOption=="help": command = "runCalibration --help"
             output = runCommand(command)
         else:
-            command = "%s && runCalibration -b -f %s -c %s  | tee %s"%(prefixCommand, xmlFile, commandOption, logFile)
+            command = "%s && runCalibration -b -f %s -c %s 2>&1 | tee %s"%(prefixCommand, xmlFile, commandOption, logFile)
             if commandOption=="help": command = "%s && runCalibration --help"%(prefixCommand)
             output = runCommand(podmanCommand%(ph2ACFversion,command))
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,tmp_testID,logFile)
     else:
-        output = runCommand("cat logs/%s.log | tee %s"%(useExistingModuleTest, logFile))
+        output = runCommand("cat logs/%s.log 2>&1 | tee %s"%(useExistingModuleTest, logFile))
     if verbose>10: print(output)
     error = output.stdout.decode() ## if you are not launching command through podman/Docker you should use "stderr" instead.
     ## Remove known warning
