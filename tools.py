@@ -1,5 +1,6 @@
 from moduleTest import verbose
 
+#verbose = 1000
 #date, testID = getDateTimeAndTestID()
 
 ### Get hardware ID from ot_module_test log (obsolete)
@@ -107,11 +108,14 @@ def getNoiseRatio(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip):
             return -1, histoName.split("/")[-1]+chip
         histo = histo2D.ProjectionX()
     elif chip == "SSA":
-        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
+        histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_ChannelNoise_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
         histo = rootFile.Get(histoName)
         if not histo: 
-            print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
-            return -1, histoName.split("/")[-1]+chip
+            histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/%s_%s/D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)"%(board_id, opticalGroup_id, hybrid_id, chip, ps_id, board_id, opticalGroup_id, hybrid_id, ps_id)
+            histo = rootFile.Get(histoName)
+            if not histo: 
+                print("WARNING: Missing %s in %s"%(histoName, rootFile.GetName()))
+                return -1, histoName.split("/")[-1]+chip
     else:
         print(rootFile, board_id, opticalGroup_id, hybrid_id, ps_id, chip)
         raise Exception("Error in getNoiseRatio")
@@ -308,10 +312,10 @@ def checkAndFixRunNumbersDat(file="RunNumbers.dat", target_dir="~"):
 if __name__ == '__main__':
     filename = "ModuleTest_settings.xml"
     board, slots, hybrids, strips, pixels = parse_module_settings(filename)
-    print("Slot:", slot)
-    print("Board:", boad)
-    print("Pixel channels:", pixel)
-    print("Strip channels:", strip)
+#    print("Slot:", slot)
+    print("Board:", board)
+    print("Pixel channels:", pixels)
+    print("Strip channels:", strips)
     print("Hybrids:", hybrids)
 #    testID = "T2023_11_08_17_57_54_302065"
 #    testID = "T2023_11_08_17_57_54_302065"
@@ -320,7 +324,7 @@ if __name__ == '__main__':
 #    testID = "T2023_11_10_11_59_35_809872"
 #    testID = "T2023_11_08_18_59_35_892171"
 #    testID = "T2023_11_08_17_57_54_302065"
-    testID = "test10gradi"
+    testID = "PS_26_IBA-10003__run500120"
     #testID = "test0gradi"
     xmlPyConfigFile = "PS_Module_settings.py"
     rootFile = getROOTfile(testID)
