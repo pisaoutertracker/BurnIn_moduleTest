@@ -298,11 +298,41 @@ for collection in [allVariables, hybridPlots, opticalGroupPlots]:
             raise Exception("Duplicate %s found in all variables"%name)
         all.add(name)
 
-logPlots = ["StripHybridHits"] ## plots to be shown in log scale
+logPlots = [
+    "StripHybridHits", ## plots to be shown in log scale
+    "CommonNoiseHits_OccupancyDriven",
+    "CommonNoiseHits_SigmaNoise_3.000",
+    "CommonNoiseHitsStrip_OccupancyDriven",
+    "CommonNoiseHitsPixel_OccupancyDriven",
+    "SSA(0)toMPA(8)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(1)toMPA(9)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(2)toMPA(10)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(3)toMPA(11)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(4)toMPA(12)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(5)toMPA(13)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(6)toMPA(14)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(7)toMPA(15)_CommonNoiseCorrelation_OccupancyDriven",
+    "CommonNoiseStripPixelCorrelation_OccupancyDriven",
+    "CommonNoiseHitsStrip_SigmaNoise_3.000",
+    "CommonNoiseHitsPixel_SigmaNoise_3.000",
+    "SSA(0)toMPA(8)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(1)toMPA(9)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(2)toMPA(10)_CommonNoiseCorrelation_SigmaNoise_3.000",  
+    "SSA(3)toMPA(11)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(4)toMPA(12)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(5)toMPA(13)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(6)toMPA(14)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(7)toMPA(15)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "CommonNoiseStripPixelCorrelation_SigmaNoise_3.000",
+]
+
+plotsToBeRenamed = { ##old name --> new name
+    "/CommonNoiseHitsStrip_OccupancyDriven_": "/StripHybridHits_"
+}
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "2025-04-09"
+version = "2025-04-09b"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -761,6 +791,18 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
         print("WARNING: %s not found in ROOT file %s. Skipping."%(missingPlot, rootFile.GetName()))
     print("################################################")
     print()
+    for plot in plots:
+        for plotToBeRenamed in plotsToBeRenamed:
+            if plotToBeRenamed in plot:
+                plotRenamed = plot.replace(plotToBeRenamed, plotsToBeRenamed[plotToBeRenamed])
+                if os.path.isfile(plotRenamed):
+                    print("WARNING: %s already exists. Skipping."%plotRenamed)
+                elif os.path.isfile(plot):
+                    os.system("mv %s %s"%(plot, plotRenamed))
+                    plots[plots.index(plot)] = plotRenamed
+                    print("Renaming and moving %s to %s"%(plot, plotRenamed))
+                else:
+                    print("WARNING: %s not found. Skipping."%plot)
     return plots
 
 
