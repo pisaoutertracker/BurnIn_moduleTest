@@ -275,7 +275,8 @@ def addHistoPlot(plots, canvas, plot, fName):
         if "SSA" in fName: isNum = fName.split("SSA")[1][0]
         if "MPA" in fName: isNum = fName.split("MPA")[1][0]
         if "Chip" in fName: isNum = fName.split("Chip")[1][0]
-        print("fName", fName, "isNum", isNum)
+        if verbose>10:
+            print("fName", fName, "isNum", isNum)
         if isNum.isnumeric():
             if verbose>20: print("Skipping %s"%fName)            
             return
@@ -297,7 +298,8 @@ def addHistoPlot(plots, canvas, plot, fName):
         isLog = False
         for logPlot in logPlots:
             if logPlot in plotName: isLog = True
-        print("Creating %s"%fName)
+        if verbose>10:
+            print("Creating %s"%fName)
         if isLog: 
             print("Setting log scale")
             canvas.SetLogy()
@@ -474,7 +476,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
     histograms = get_histograms(rootFile)
     histogramPaths = [hist_path for hist_path, hist_obj in histograms]
-    if verbose>10:
+    if verbose>1000:
         print("List of histograms in the ROOT file:")
         for hist_path, hist_obj in histograms:
             if "Col" in hist_path: continue ## exclude single strip plots
@@ -639,8 +641,15 @@ def makeNoiseTable(noisePerChip, board_id, optical_id, ratio = False):
         html_table += "<tr><th>Max.</th><th>%.3f</th><th>%.3f</th><th>Max.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Maximum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
         html_table += "<tr><th>Min.</th><th>%.3f</th><th>%.3f</th><th>Min.</th><th>%.3f</th><th>%.3f</th></tr>\n"%(noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_SSA"%(board_id, optical_id, 2*int(optical_id)+1),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+0),0), noisePerChip.get("Minimum_B%s_O%s_H%s_MPA"%(board_id, optical_id, 2*int(optical_id)+1),0)) #<th>Board</th><th>Optical</th>
     else:
+        histoNameSSA = "ChannelNoiseDistribution"
+        histoNameMPA = "2DPixelNoise"
+        if not histoNameSSA in list(noisePerChip.keys())[0] and not histoNameMPA in list(noisePerChip.keys())[0]:
+            histoNameMPA = "2DChannelNoise"
+            histoNameSSA = "ChannelNoise"
+        print("Use %s %s in noise table ratio"%(histoNameSSA,histoNameMPA))
+
         for lineN in range(0,8):
-            html_table += "<tr><th>SSA%d</th><th>%.3f</th><th>%.3f</th><th>MPA%d</th><th>%.3f</th><th>%.3f</th></tr>\n"%(lineN, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+0, lineN),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_ChannelNoiseDistribution_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+1, lineN),0), lineN+8, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+0, lineN+8),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_2DPixelNoise_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+1, lineN+8),0)) #<th>Board</th><th>Optical</th>
+            html_table += "<tr><th>SSA%d</th><th>%.3f</th><th>%.3f</th><th>MPA%d</th><th>%.3f</th><th>%.3f</th></tr>\n"%(lineN, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+0, histoNameSSA, lineN),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)SSA"%(board_id, optical_id, 2*int(optical_id)+1, histoNameSSA, lineN),0), lineN+8, noisePerChip.get("D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+0, histoNameMPA, lineN+8),0), noisePerChip.get("D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)MPA"%(board_id, optical_id, 2*int(optical_id)+1, histoNameMPA, lineN+8),0)) #<th>Board</th><th>Optical</th>
         
         html_table += "</tr>\n"
         html_table += "</table>\n<br>\n"
@@ -1240,6 +1249,9 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     global noisePerChip
     noisePerChip = getNoisePerChip(rootFile , xmlConfig )
     noiseRatioPerChip = getNoisePerChip(rootFile , xmlConfig, ratio = True)
+    if verbose>10:
+        print("noisePerChip:", noisePerChip)
+        print("noiseRatioPerChip:", noiseRatioPerChip)
     moduleHwIDs = getIDsFromROOT(rootFile, xmlConfig)
     
 #    for board_optical in moduleHwIDs:
