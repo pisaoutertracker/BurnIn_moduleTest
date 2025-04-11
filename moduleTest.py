@@ -371,9 +371,18 @@ if __name__ == '__main__':
 
         print("++++++++++++++++++  Make a folder on CERNbox, create a zip file of Result folder, upload the zip file ++++++++++++++++++")
     
-        if args.useExistingModuleTest: ## Only Run_0 results are allowed to be re-uploaded
-            shutil.copytree("Results/"+testID, "Results/Run_0", dirs_exist_ok=True)
-            testID = "Run_0"
+        if args.useExistingModuleTest: 
+            runNumber = "run%d"%int(testID.split("_")[1])
+            run = getRunFromDB(runNumber) ## check if the testID is already in the DB
+            if hasattr(run, "test_runName"):
+                print("Run %s already exists in the DB."%runNumber)
+                print(run)
+            else:
+                print("Run %s does not exist in the DB."%runNumber)
+
+            ### Useful for testing: ## Only Run_0 results are allowed to be re-uploaded
+            #shutil.copytree("Results/"+testID, "Results/Run_0", dirs_exist_ok=True)
+            #testID = "Run_0"
 
         ## make a folder in CernBox
         if verbose>10: print("Creating folder %s"%testID)
