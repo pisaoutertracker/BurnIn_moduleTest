@@ -26,8 +26,13 @@ def main():
 #    outputFileNamesList = ['/home/uplegger/Programming/potatoconverters/test.root']
     #outputFileNamesList = ['/home/thermal/BurnIn_moduleTest/potatoconverters/SilvioTest/test.root']
     
-    resultsFile = "potatoconverters/TestFiles/Run_500009/Results.root"
-    monitorDQMFile = "potatoconverters/TestFiles/Run_500009/MonitorDQM_2025-03-25_17-17-32.root"
+    ### Example file: https://cernbox.cern.ch/remote.php/dav/public-files/zcvWnJKEk7YgSBh//Run_500087/output_lahes.zip
+    # (from webpage https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads//test3/Module_PS_26_IBA-10003_Run_run500087_Result_Mar11/results_ueshi.zip/) 
+    # wget https://cernbox.cern.ch/remote.php/dav/public-files/zcvWnJKEk7YgSBh//Run_500087/output_lahes.zip
+    # unzip output_lahes.zip -d Run_500087_output_lahes
+
+    resultsFile = "Run_500087_output_lahes/Results.root"
+    monitorDQMFile = "Run_500087_output_lahes/MonitorDQM_2025-04-04_11-34-05.root"
 
     outDir = "POTATOFiles"
     theFormatter = Formatter(outDir)
@@ -37,12 +42,27 @@ def main():
     mergeTwoROOTfiles(resultsFile, monitorDQMFile, rootTrackerFileName)
     print("Merged file created:", rootTrackerFileName)
 
-    runNumber = "150"
+    ## copy the connectionMap file to the same folder as the ROOT file
+    connectionMapFile = "connectionMap_PS_26_IBA-10003.json"
+    connectionMapFilePath = os.path.join(os.path.dirname(resultsFile), connectionMapFile)
+    if os.path.exists(connectionMapFilePath):
+        os.system("cp " + connectionMapFilePath + " " + outDir)
+    else:
+        print("Connection map file not found:", connectionMapFilePath)
+
+    runNumber = "Run_500087"
     moduleBurninName = "Module4L"
     moduleCarrierName = "ModuleCarrier4Left"
     opticalGroup = '1'
 
+    ### Important: PISA Formatter requires the connectionMap file to be in the same folder as the ROOT file (eg. connectionMap_PS_26_IBA-10003.json)
     theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName)
+
+    print()
+    print("PISA Formatter done")
+    print("Output file:", rootTrackerFileName)
+    print()
+    ### Now looping on all output files to add monitoring infos
 
 
 ############################################################################################
