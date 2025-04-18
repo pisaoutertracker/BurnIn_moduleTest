@@ -12,17 +12,14 @@ parser.add_argument('module_test', type=str, help='Single-module test name')
 
 module_test = parser.parse_args().module_test
 version = "v1-01"
-tmpFolder = "/tmp/"
 scriptName = "POTATO_run.sh"
 POTATOExpressFolder = "/home/thermal/potato/Express/"
-
 
 skipWebdav = True
 from moduleTest import verbose ## to be updated
 
 verbose = 1000
 outDir = "POTATOFiles"
-
 
 def downloadAndExtractZipFile(remote_path, local_path, webdav_wrapper=None, skipWebdav=False):
     if verbose>2: print("downloadAndExtractZipFile")
@@ -46,27 +43,14 @@ def downloadAndExtractZipFile(remote_path, local_path, webdav_wrapper=None, skip
     print("Unzipped to %s"%extracted_dir)
     return extracted_dir
 
-
-
-#allVariables = []
-gROOT.SetBatch()
-gStyle.SetOptStat(0)
-tmpFolder = tmpFolder+module_test+"_forPOTATO_%s/"%version
-base = "/test3/"
-hwToModuleID, hwToMongoID = makeModuleNameMapFromDB()
-
 test = getModuleTestFromDB(module_test)
-runName = test['test_runName']
-moduleName = test['moduleName']
-run = getRunFromDB(runName)
+run = getRunFromDB(test['test_runName'])
 fName = run['runFile'].split("//")[-1].replace("/", "_")
-run = getRunFromDB(runName)
 
 remote_path=run['runFile'].split("//")[-1]
 local_path="/tmp/%s"%fName
 
 extracted_dir = downloadAndExtractZipFile(remote_path, local_path, skipWebdav=skipWebdav)
-
 
 ###############################################################################################
 
@@ -81,8 +65,8 @@ for file in os.listdir(extracted_dir):
 
 runNumber = test['test_runName']
 moduleBurninName = "Module4L"
-moduleCarrierName = "ModuleCarrier4Left"
 opticalGroup = str(test['opticalGroupName'])
+moduleCarrierName = "01" ##FIXME: here we need a map between the OpticalGroup and the SLOT (slot number)
 
 module_name = test['moduleName']
 date = run['runDate']
@@ -97,6 +81,7 @@ formatted_temp = format(int(temp), "+d")
 formatted_date = dateTime_rome.strftime("%Y-%m-%d_%Hh%Mm%Ss")
 runType = run['runType']
 tag = version
+
 
 #PS_16_FNL-00002_2024-09-15_11h42m33s_+15C_PSfullTest_v1-01.root
 #PS_26_IBA-10003_2025-04-04_11h34m04s_+20C_PSfullTest_v1-01.root
@@ -114,39 +99,44 @@ theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, modu
 
 ############### Prepare a script to run POTATO
 
-rootTrackerPath = os.path.abspath(rootTrackerFileName)
-script = f""" cd {POTATOExpressFolder}
-source ../setupPotato.sh
-export POTATODIR={POTATOExpressFolder}
-mkdir -p backup
-mv data/LocalFiles/TestOutput/* backup
-mv data/LocalFiles/DropBox/* backup
-mv data/ReferenceFiles/* backup
+def runPotatoExpress(rootTrackerFileName):
+    rootTrackerPath = os.path.abspath(rootTrackerFileName)
+    script = f""" cd {POTATOExpressFolder}
+    source ../setupPotato.sh
+    export POTATODIR={POTATOExpressFolder}
+    mkdir -p backup
+    mv data/LocalFiles/TestOutput/* backup
+    mv data/LocalFiles/DropBox/* backup
+    mv data/ReferenceFiles/* backup
 
-cp {rootTrackerPath} data/LocalFiles/TestOutput
-cp {rootTrackerPath} data/LocalFiles/DropBox
-cp {rootTrackerPath} data/ReferenceFiles
+    cp {rootTrackerPath} data/LocalFiles/TestOutput
+    cp {rootTrackerPath} data/LocalFiles/DropBox
+    cp {rootTrackerPath} data/ReferenceFiles
 
-## Compile POTATO express, if necessary
-#./compile.py
+    ## Compile POTATO express, if necessary
+    #./compile.py
 
-## Run POTATO express
-./PotatoExpress
-"""
+    ## Run POTATO express
+    ./PotatoExpress
+    """
 
-scriptPath = "%s/%s"%(outDir, scriptName)
-open(scriptPath, "w").write(script)
+    scriptPath = "%s/%s"%(outDir, scriptName)
+    open(scriptPath, "w").write(script)
 
-## make script executable
-os.system("chmod +x %s"%scriptPath)
+    ## make script executable
+    os.system("chmod +x %s"%scriptPath)
 
-from shellCommands import runCommand
-output = runCommand(scriptPath)
-for l in str(output.stdout).split("\\n"): 
-    if ".xml"  in l:
-        xmlFile = l.split(" ")[-1]
-        break ## the first one is the one we want
+    from shellCommands import runCommand
+    output = runCommand(scriptPath)
+    for l in str(output.stdout).split("\\n"): 
+        if ".xml"  in l:
+            xmlFile = l.split(" ")[-1]
+            break ## the first one is the one we want
 
-## Copy back the xml file
-os.system("cp %s/%s %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
-print("XML file copied from %s/%s to %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
+    ## Copy back the xml file
+    os.system("cp %s/%s %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
+    if verbose>10: print("XML file copied from %s/%s to %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
+    return "%s/%s"%(outDir, xmlFile)
+
+xmlFile = runPotatoExpress(rootTrackerFileName)
+print("XML file created:", xmlFile)

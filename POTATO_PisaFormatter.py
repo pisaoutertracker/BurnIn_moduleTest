@@ -507,9 +507,9 @@ class POTATOPisaFormatter():
         dewPointGraph                  = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
         chillerSetPointGraph           = self.getGraphFromInfluxDB(chillerSetPointName, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
 
-        ambientTemperatureGraph_IV          = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
-        moduleCarrierTemperatureGraph_IV    = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
-        dewPointGraph_IV    = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
+        ambientTemperatureGraph_IV_Influx          = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
+        moduleCarrierTemperatureGraph_IV_Influx    = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
+        dewPointGraph_IV_Influx    = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
 
         lvCurrentHistoryGraph = theHistogrammer.makeMonitorLVCurrent  (moduleLVCurrentGraph.GetX(), moduleLVCurrentGraph.GetY(), module=moduleName)
         print(moduleLVCurrentGraph.GetX()[0], moduleLVCurrentGraph.GetX()[-1], testTimeStart, testTimeStop)
@@ -536,10 +536,10 @@ class POTATOPisaFormatter():
         humidityHistoryGraph = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph, ambientTemperatureGraph), module=moduleName)
         humidityGraph        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph.GetX(), humidityHistoryGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
-        print("Humidity: ", dewPointGraph_IV.GetName(), " N: ", dewPointGraph_IV.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
-        print("ambientTemperatureGraph_IV: ", ambientTemperatureGraph_IV.GetName(), " N: ", ambientTemperatureGraph_IV.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
-        humidityHistoryGraph_IV = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV, ambientTemperatureGraph_IV), module=moduleName)
-        humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV.GetX(), humidityHistoryGraph_IV.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
+        print("Humidity: ", dewPointGraph_IV_Influx.GetName(), " N: ", dewPointGraph_IV_Influx.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
+        print("ambientTemperatureGraph_IV_Influx: ", ambientTemperatureGraph_IV_Influx.GetName(), " N: ", ambientTemperatureGraph_IV_Influx.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
+        humidityHistoryGraph_IV_Influx = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV_Influx, ambientTemperatureGraph_IV_Influx), module=moduleName)
+        humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV_Influx.GetX(), humidityHistoryGraph_IV_Influx.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
 
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), module=moduleName)
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
@@ -563,20 +563,20 @@ class POTATOPisaFormatter():
 
         #voltages = -np.array(moduleIVGraph.GetX())
         voltages = np.array(moduleIVGraph.GetX())
-        
-        #theHistogrammer.makeIVCurve(voltages, -np.array(moduleIVGraph.GetY()), moduleName)
         theHistogrammer.makeIVCurve(voltages, np.array(moduleIVGraph.GetY()), moduleName)
+        #theHistogrammer.makeIVCurve(voltages, -np.array(moduleIVGraph.GetY()), moduleName)
 
-        ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
+        ### HERE TWO OPTIONS AVAILABLE. ONLY ONE OF THEM SHOULD BE USED
+        ########################### Plots done using Influx data ##############################
 
-        carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph_IV, moduleIVTimestampGraph.GetY()))
+        ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
+        theHistogrammer.makeIVEnvironment("ENV_Temperature_FromInflux", voltages, ambientTemperatureDuringIV, moduleName)
+
+        carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("CARRIER_Temperature", voltages, carrierTemperatureDuringIV, moduleName)
 
-        humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
-
-        theHistogrammer.makeIVEnvironment("Timestamp"  , voltages, np.array(moduleIVTimestampGraph.GetY()), moduleName)#The X data points match the one in the moduleIVGraph, so it is all good
+        humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
+        theHistogrammer.makeIVEnvironment("Humidity_FromInflux"   , voltages, humidityDuringIV, moduleName)
 
         print("--------------------------------------------------------------------")
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
@@ -585,8 +585,24 @@ class POTATOPisaFormatter():
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
         print("--------------------------------------------------------------------")
 
+        ########################### Plots done using IV .csv data ##############################
+
+        ambientTemperatureDuringIV = np.array(self.IV_df["TEMP_DEGC"])
+        theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
+
+        #carrierTemperatureDuringIV = np.array(self.IV_df["TEMP_CARRIER"])  ### Missing Carrier temperature from .csv
+        #theHistogrammer.makeIVEnvironment("CARRIER_Temperature", voltages, carrierTemperatureDuringIV, moduleName)
+
+        humidityDuringIV = np.array(self.IV_df["RH_PRCNT"])
+        theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
+
+        #sensorTemperatureDuringIV = = np.array(self.IV_df["TEMP_SENSOR"])  ### Missing Sensor temperature from .csv
+        #theHistogrammer.makeIVEnvironment("SENSOR_Temperature", voltages, sensorTemperatureDuringIV, moduleName)
 
         ##############################################################################
+
+        theHistogrammer.makeIVEnvironment("Timestamp"  , voltages, np.array(moduleIVTimestampGraph.GetY()), moduleName)#The X data points match the one in the moduleIVGraph, so it is all good
+
         print(detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName())
         #Setting Info
         # Create a TObjString to store the string
