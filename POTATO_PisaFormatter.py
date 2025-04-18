@@ -18,16 +18,17 @@ except ImportError:
     raise ImportError("potatoconvertes.Histogrammer cannot be loaded. Please install potatoconvertes from https://gitlab.cern.ch/otsdaq/potatoconverters/-/tree/master or add it to your PYTHONPATH.")
 
 from potatoconverters.BurninMappings import opticalGroupToBurninSlot
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 extraTime = 3 # minutes (time)
+IVfile = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
 
-temperatureSensor = "Temp0" ###FIXME: devo prenderlo da MonitorDQM??
+sensorTempPlotName = "LpGBT_DQM_SensorTemp"
+#temperatureSensor = "Temp0" ###FIXME/CHECK: non lo uso piu', lo prendo da MonitorDQM (vedi sensorTempPlotName) 
 ambientTemperatureSensor = "/fnalbox/full/AirTemp"
 moduleCarrierTemperatureSensor = "/fnalbox/full/OW%s"
 dewPointSensor = "/fnalbox/full/DewPoint" 
 chillerSetPointName = "/julabo/full/Temp_SP1" ##can we please get rid of the 3 setpoint stuff in the BurnIN GUI ? we do not need it
-
 #ambientHumiditySensor = "/fnalbox/full/Humidity"
 #
 
@@ -37,6 +38,112 @@ verbose = 1000
 #main_directory = "./data"
 #output_directory = "./potato"
 # output_directory = "../potato/POTATO_data/LocalFiles/TestOutput"
+
+import pandas as pd
+
+def makeGraphFromDataframe(df, x_col, y_col, is_datetime=False):
+    """
+    Create a ROOT TGraph from a Pandas DataFrame.
+    
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing the data.
+        x_col (str): The name of the column to use for the x-axis.
+        y_col (str): The name of the column to use for the y-axis.
+    
+    Returns:
+        ROOT.TGraph: A TGraph object created from the DataFrame.
+    """
+    import array as arr
+    print(x_col, y_col)
+    print(df[x_col].values)
+    print(df[y_col].values)
+
+    x = arr.array('f', df[x_col].values)
+    print(type(df[y_col].values[0]))
+    if is_datetime:
+        # Convert datetime to timestamp
+        df[y_col] = pd.to_datetime(df[y_col])
+        df[y_col] = df[y_col].astype(np.int64) // 10**9  # Convert to seconds since epoch 
+    y = arr.array('f', df[y_col].values)
+    graph = ROOT.TGraph(len(x), x, y)
+    print("Y: ", y)
+    return graph
+
+def readIVcsv(filename):
+    """
+    Parses a custom text file containing:
+      - '#' metadata lines (key, value)
+      - multiple CSV-like sections with header lines and data lines
+    Returns:
+      - metadata: a dict of metadata from lines starting with '#'
+      - dataframes: a list of Pandas DataFrames, one per CSV section
+    """
+    # -- Read all non-empty lines (strip whitespace), store in a list:
+    with open(filename, 'r', encoding='utf-8') as f:
+        lines = [line.strip() for line in f if line.strip()]
+
+    # -- Step 1: Parse metadata lines
+    metadata = {}
+    idx = 0
+    while idx < len(lines):
+        line = lines[idx]
+        if line.startswith('#'):
+            # Remove '#' at the start and split into two parts max
+            no_hash = line[1:].strip()
+            if ',' in no_hash:
+                key, value = no_hash.split(',', 1)
+                metadata[key.strip()] = value.strip()
+            idx += 1
+        else:
+            break
+
+    # -- Step 2: Parse data sections
+    dataframes = []
+    while idx < len(lines):
+        # The next line should be a header line
+        header_line = lines[idx]
+        idx += 1
+        header_cols = [col.strip() for col in header_line.split(',')]
+
+        rows = []
+        # Capture lines until we reach end-of-file or a line
+        # that has a different number of comma-separated fields (new header).
+        while idx < len(lines):
+            candidate = lines[idx]
+            split_candidate = candidate.split(',')
+            ## convert to float
+            floats = []
+            for col in split_candidate:
+                try:
+                    floats.append(float(col))
+                except ValueError: ## keep dates as strings
+                    floats.append(col)
+            split_candidate = floats
+            # If the line doesn't match the column count, it's likely the next header
+            if len(split_candidate) != len(header_cols):
+                break
+            rows.append(split_candidate)
+            idx += 1
+
+        # Create a DataFrame for this section
+        df = pd.DataFrame(rows, columns=header_cols)
+        dataframes.append(df)
+
+    return metadata, dataframes[1], dataframes[0]
+
+
+def getGraphFromMonitorDQM(trackerMonitorDirectory, plotName="LpGBT_DQM_SensorTemp", board=0, opticalGroup=0):
+    #print("Getting plot from MonitorDQM: ", plotName, " Board: ", board, " OpticalGroup: ", opticalGroup)
+    #trackerMonitorFile = ROOT.TFile.Open(trackerMonitorFileName)
+    if trackerMonitorDirectory == None:
+        raise RuntimeError(f"MonitorDQM directory not found in file: {trackerMonitorDirectory.GetName()}")
+    plotPath = "Board_" + str(board) + "/OpticalGroup_" + str(opticalGroup) + "/" + "D_B(%d)_%s_OpticalGroup(%s)"%(board, plotName, opticalGroup)
+    moduleCanvas = trackerMonitorDirectory.Get(plotPath)
+    if moduleCanvas == None:
+        raise RuntimeError(f"Module canvas not found in file: {trackerMonitorDirectory.GetName()} with path: {plotPath}")
+    print("getGraphFromMonitorDQM: X-max: ", moduleCanvas.GetXaxis().GetXmax())
+    print("getGraphFromMonitorDQM: X-min: ", moduleCanvas.GetXaxis().GetXmin())
+    return moduleCanvas
 
 def getConnectionMap(rootTrackerFileName):
     import glob
@@ -99,6 +206,15 @@ class POTATOPisaFormatter():
         for timestamp in timestamps:
             #print(timestamp, graph.Eval(timestamp))
             values.append(graph.Eval(timestamp))
+            if timestamp < min(graph.GetX()) or timestamp > max(graph.GetX()):
+                print("################################")
+                print(f"WARNING: Reading value outside graph range: {graph.GetName()} {timestamp} {min(graph.GetX())} {max(graph.GetX())}")
+                print("################################")
+        if len(values) == 0:
+            print("################################")
+            print(f"WARNING: Something wrong calling getGraphValuesByTimestamp {graph.GetName()} {timestamps}")
+            print("################################")
+        print("getGraphValuesByTimestamp: Graph name: ", graph.GetName(), " N: ", graph.GetN(), " Start: ", graph.GetX()[0], " Stop: ", graph.GetX()[graph.GetN()-1])
         return values
 
     def getInfluxQueryAPI(self, token_location = "~/private/influx.sct"):
@@ -255,7 +371,7 @@ class POTATOPisaFormatter():
                 return primitive
         raise RuntimeError(f"Can't find TGraph in canvas: {canvas.GetName()}")              
         '''
-
+     
     def getCurrentAfterPowerOff(self, graph):
         values = np.array(graph.GetY())
         powerOff = False
@@ -278,6 +394,7 @@ class POTATOPisaFormatter():
     def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName):
         print("Calling do_burnin_format with: rootTrackerFileName: ", rootTrackerFileName, " runNumber: ", runNumber, " opticalGroupNumber: ", opticalGroupNumber, " moduleBurninName: ", moduleBurninName, " moduleCarrierName: ", moduleCarrierName)
         theHistogrammer = Histogrammer()
+        self.theHistogrammer = theHistogrammer
         print("Opening ROOT file: ", rootTrackerFileName)
         theHistogrammer.openRootFile(rootTrackerFileName)
 
@@ -309,19 +426,29 @@ class POTATOPisaFormatter():
         print("Formatting file for module: " + moduleName)
 
 
-        timeStamp_start = detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()
-        timeStamp_stop  = detectorTrackerDirectory.Get("CalibrationStopTimestamp_Detector").GetName()
+        timeFromRoot_start = detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()
+        timeFromRoot_stop  = detectorTrackerDirectory.Get("CalibrationStopTimestamp_Detector").GetName()
         
-        startTime_rome, startTime_utc = getTimeFromRomeToUTC(timeStamp_start, timeFormat = "%Y-%m-%d %H:%M:%S")
-        stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(timeStamp_stop, timeFormat = "%Y-%m-%d %H:%M:%S")
+        startTime_rome, startTime_utc = getTimeFromRomeToUTC(timeFromRoot_start, timeFormat = "%Y-%m-%d %H:%M:%S")
+        stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(timeFromRoot_stop, timeFormat = "%Y-%m-%d %H:%M:%S")
 
         ### For influxDB:
-        timeStamp_start_utc = startTime_utc.isoformat("T").split("+")[0] 
-        timeStamp_stop_utc = stopTime_utc.isoformat("T").split("+")[0] 
+        time_start_utc = startTime_utc.isoformat("T").split("+")[0] 
+        time_stop_utc = stopTime_utc.isoformat("T").split("+")[0] 
 
+        testTimeStart = datetime.strptime(timeFromRoot_start, TIME_FORMAT).timestamp()
+        testTimeStop  = datetime.strptime(timeFromRoot_stop, TIME_FORMAT).timestamp()
 
-        testTimeStart = datetime.strptime(timeStamp_start, TIME_FORMAT).timestamp()
-        testTimeStop  = datetime.strptime(timeStamp_stop, TIME_FORMAT).timestamp()
+        ## TO BE CHECKED:
+        # move time from CEST to UTC
+
+        import zoneinfo
+        cest_zone = zoneinfo.ZoneInfo("Europe/Berlin")  # Berlin uses CEST in summer
+        utc_zone = zoneinfo.ZoneInfo("UTC")  # Berlin uses CEST in summer
+
+        #testTimeStart = datetime.fromtimestamp(testTimeStart, cest_zone).replace(tzinfo=utc_zone).timestamp()
+        #testTimeStop = datetime.fromtimestamp(testTimeStop, cest_zone).replace(tzinfo=utc_zone).timestamp()
+
 
 #        powerSupplyStatusDirectory = powerSupplyFile.Get("PowerSupply/Status") ## To be fixed
 #        burninStatusDirectory      = burninFile.Get("BurninBox/Status")
@@ -346,23 +473,46 @@ class POTATOPisaFormatter():
 #         plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
         
 
+        self.IV_metadata, self.IV_df, self.IV_df_station = readIVcsv(IVfile)
+        startTime_IV_rome, startTime_IV_utc = getTimeFromRomeToUTC(self.IV_df.TIME.iloc[0], timeFormat = "%Y-%m-%d %H:%M:%S")
+        stopTime_IV_rome, stopTime_IV_utc = getTimeFromRomeToUTC(self.IV_df.TIME.iloc[-1], timeFormat = "%Y-%m-%d %H:%M:%S")
+
+        ### For influxDB:
+        timeFromRoot_start_IV_utc = startTime_IV_rome.isoformat("T").split("+")[0] 
+        timeFromRoot_stop_IV_utc = stopTime_IV_rome.isoformat("T").split("+")[0] 
+
+        testTimeStart_IV = datetime.strptime(self.IV_df.TIME.iloc[0], TIME_FORMAT).timestamp()
+        testTimeStop_IV  = datetime.strptime(self.IV_df.TIME.iloc[-1], TIME_FORMAT).timestamp()
+
+        ## TO BE CHECKED:
+        # move time from CEST to UTC
+
+        testTimeStart_IV = datetime.fromtimestamp(testTimeStart_IV, cest_zone).replace(tzinfo=utc_zone).timestamp()
+        testTimeStop_IV = datetime.fromtimestamp(testTimeStop_IV, cest_zone).replace(tzinfo=utc_zone).timestamp()
+
+        print("IV metadata: ", self.IV_metadata)
+        print("IV df: ", self.IV_df)
+
         connectionMap = getConnectionMap(rootTrackerFileName)
         hv_channel, lv_channel = getHVLVchannels(connectionMap)
-        moduleLVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Voltage", start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        moduleLVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Current", start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        moduleHVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Voltage", start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        moduleHVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Current", start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
+        moduleLVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Voltage", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        moduleLVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Current", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        moduleHVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Voltage", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        moduleHVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Current", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
 
         ## No extra time as we want the temperature spot, not in a range
-        temp = self.getTemperatureAt(timeStamp_start_utc, sensorName=temperatureSensor, org="pisaoutertracker")
-        print("Temperature at start of test: ", temp)
-        sensorTemperatureGraph         = self.getGraphFromInfluxDB(temperatureSensor, start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        ambientTemperatureGraph        = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        moduleCarrierTemperatureGraph  = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor, start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        dewPointGraph                  = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
-        chillerSetPointGraph           = self.getGraphFromInfluxDB(chillerSetPointName, start_time_TS=timeStamp_start_utc, stop_time_TS=timeStamp_stop_utc)
+        sensorTemperatureGraph         = getGraphFromMonitorDQM(detectorTrackerMonitorDirectory, plotName=sensorTempPlotName, board=0, opticalGroup=opticalGroupNumber)
+        ambientTemperatureGraph        = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        moduleCarrierTemperatureGraph  = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        dewPointGraph                  = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        chillerSetPointGraph           = self.getGraphFromInfluxDB(chillerSetPointName, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+
+        ambientTemperatureGraph_IV          = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
+        moduleCarrierTemperatureGraph_IV    = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
+        dewPointGraph_IV    = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
 
         lvCurrentHistoryGraph = theHistogrammer.makeMonitorLVCurrent  (moduleLVCurrentGraph.GetX(), moduleLVCurrentGraph.GetY(), module=moduleName)
+        print(moduleLVCurrentGraph.GetX()[0], moduleLVCurrentGraph.GetX()[-1], testTimeStart, testTimeStop)
         lvCurrentGraph        = theHistogrammer.makeMonitorLVCurrent  (moduleLVCurrentGraph.GetX(), moduleLVCurrentGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
         theHistogrammer.makeMonitorLVVoltage  (moduleLVVoltageGraph.GetX(), moduleLVVoltageGraph.GetY(), module=moduleName)
@@ -386,6 +536,11 @@ class POTATOPisaFormatter():
         humidityHistoryGraph = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph, ambientTemperatureGraph), module=moduleName)
         humidityGraph        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph.GetX(), humidityHistoryGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
+        print("Humidity: ", dewPointGraph_IV.GetName(), " N: ", dewPointGraph_IV.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
+        print("ambientTemperatureGraph_IV: ", ambientTemperatureGraph_IV.GetName(), " N: ", ambientTemperatureGraph_IV.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
+        humidityHistoryGraph_IV = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV, ambientTemperatureGraph_IV), module=moduleName)
+        humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV.GetX(), humidityHistoryGraph_IV.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
+
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), module=moduleName)
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
@@ -394,13 +549,16 @@ class POTATOPisaFormatter():
 
         theHistogrammer.makeChillerSetPointTemperature(chillerSetPointGraph.GetX(), chillerSetPointGraph.GetY(), module=moduleName)
         theHistogrammer.makeChillerSetPointTemperature(chillerSetPointGraph.GetX(), chillerSetPointGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
-        '''
+
+        moduleIVGraph           = makeGraphFromDataframe(self.IV_df, "VOLTS","CURRNT_NAMP")
+        moduleIVTimestampGraph  = makeGraphFromDataframe(self.IV_df, "VOLTS","TIME", is_datetime=True)
+
+        print("IV Graph: ", moduleIVGraph.GetName(), " N: ", moduleIVGraph.GetN(), " Start: ", startTime_IV_utc, " Stop: ", stopTime_IV_utc)
+
 
         ############################
         #Adding IV curve
-        powerSupplyIVDirectory = powerSupplyFile.Get("PowerSupply/IVCurves")
-        moduleIVGraph           = self.getGraphFromCanvas(powerSupplyIVDirectory.Get(moduleBurninName + "_HV_IVCurve"))
-        moduleIVTimestampGraph  = self.getGraphFromCanvas(powerSupplyIVDirectory.Get(moduleBurninName + "_HV_IVCurveTimestamp"))
+        #powerSupplyIVDirectory = powerSupplyFile.Get("PowerSupply/IVCurves")
 
 
         #voltages = -np.array(moduleIVGraph.GetX())
@@ -409,21 +567,23 @@ class POTATOPisaFormatter():
         #theHistogrammer.makeIVCurve(voltages, -np.array(moduleIVGraph.GetY()), moduleName)
         theHistogrammer.makeIVCurve(voltages, np.array(moduleIVGraph.GetY()), moduleName)
 
-        ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph, moduleIVTimestampGraph.GetY()))
+        ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
 
-        carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph, moduleIVTimestampGraph.GetY()))
+        carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph_IV, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("CARRIER_Temperature", voltages, carrierTemperatureDuringIV, moduleName)
 
-
-        humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph, moduleIVTimestampGraph.GetY()))
+        humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
 
         theHistogrammer.makeIVEnvironment("Timestamp"  , voltages, np.array(moduleIVTimestampGraph.GetY()), moduleName)#The X data points match the one in the moduleIVGraph, so it is all good
 
+        print("--------------------------------------------------------------------")
+        print("KNOWN ISSUE... we don't have the sensor temperature during IV")
         sensorTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(sensorTemperatureGraph, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("SENSOR_Temperature", voltages, sensorTemperatureDuringIV, moduleName)
-        '''
+        print("KNOWN ISSUE... we don't have the sensor temperature during IV")
+        print("--------------------------------------------------------------------")
 
 
         ##############################################################################
@@ -451,7 +611,6 @@ class POTATOPisaFormatter():
         TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
         
 
-        '''
         #Setting Summary
         theHistogrammer.summary_directory.cd()
         print("HV Current at start of IV (uA): ", str(moduleIVGraph.GetY()[0]))
@@ -467,7 +626,6 @@ class POTATOPisaFormatter():
         print("LV Current during IV (A): ", str(lvCurrentHistoryGraph.Eval(moduleIVTimestampGraph.GetY()[0])))
         #print("Time: ", moduleIVTimestampGraph.GetY()[math.ceil(moduleIVGraph.GetN()/2)])
         TObjString(str(lvCurrentHistoryGraph.Eval(moduleIVTimestampGraph.GetY()[math.ceil(moduleIVGraph.GetN()/2)]))).Write("LV Current during IV (A)")
-        '''
 
         #Measurement taken after a power off
         print("LV Current module unconfigured (A): ", str(self.getCurrentAfterPowerOff(lvCurrentHistoryGraph)))
@@ -484,27 +642,22 @@ class POTATOPisaFormatter():
         print("LV Current at stop of Module Test (A): ", str(lvCurrentGraph.Eval(testTimeStop)))
         TObjString(str(lvCurrentGraph.Eval(testTimeStop))).Write("LV Current at stop of Module Test (A)")
 
-        '''
         print("Environment T at start of IV: ", str(ambientTemperatureDuringIV[0]))
         TObjString(str(ambientTemperatureDuringIV[0])).Write("Environment T at start of IV (C)")
         print("Environment T at end of IV: ", str(ambientTemperatureDuringIV[-1]))
         TObjString(str(ambientTemperatureDuringIV[-1])).Write("Environment T at stop of IV (C)")
-        '''
         print("Environment T at start of Module Test: ", str(ambientTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(ambientTemperatureGraph.Eval(testTimeStart))).Write("Environment T at start of Module Test (C)")
         print("Environment T at end of Module Test: ", str(ambientTemperatureGraph.Eval(testTimeStop)))
         TObjString(str(ambientTemperatureGraph.Eval(testTimeStop))).Write("Environment T at stop of Module Test (C)")
-        '''
         print("Carrier T at start of IV: ", str(carrierTemperatureDuringIV[0]))
         TObjString(str(carrierTemperatureDuringIV[0])).Write("Carrier T at start of IV (C)")
         print("Carrier T at end of IV: ", str(carrierTemperatureDuringIV[-1]))
         TObjString(str(carrierTemperatureDuringIV[-1])).Write("Carrier T at stop of IV (C)")
-        '''
         print("Carrier T at start of Module Test: ", str(moduleCarrierTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStart))).Write("Carrier T at start of Module Test (C)")
         print("Carrier T at end of Module Test: ", str(moduleCarrierTemperatureGraph.Eval(testTimeStop)))
         TObjString(str(moduleCarrierTemperatureGraph.Eval(testTimeStop))).Write("Carrier T at stop of Module Test (C)")
-        '''
         print("Sensor T at start of IV: ", str(sensorTemperatureDuringIV[0]))
         TObjString(str(sensorTemperatureDuringIV[0])).Write("Sensor T at start of IV (C)")
         print("Sensor T at end of IV: ", str(sensorTemperatureDuringIV[-1]))
@@ -513,17 +666,14 @@ class POTATOPisaFormatter():
         TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[0]))).Write("Chiller Setpoint T at start of IV (C)")
         print("Chiller set T at end of IV: ", str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[-1])))
         TObjString(str(chillerSetPointGraph.Eval(moduleIVTimestampGraph.GetY()[-1]))).Write("Chiller Setpoint T at stop of IV (C)")
-        '''
         print("Chiller set T at start of Module Test: ", str(chillerSetPointGraph.Eval(testTimeStart)))
         TObjString(str(chillerSetPointGraph.Eval(testTimeStart))).Write("Chiller Setpoint T at start of Module Test (C)")
         print("Chiller set T at end of Module Test: ", str(chillerSetPointGraph.Eval(testTimeStop)))
         TObjString(str(chillerSetPointGraph.Eval(testTimeStop))).Write("Chiller Setpoint T at stop of Module Test (C)")
-        '''
         print("RH at start of IV: ", str(humidityDuringIV[0]))
         TObjString(str(humidityDuringIV[0])).Write("Relative Humidity at start of IV (%)")
         print("RH at end of IV: ", str(humidityDuringIV[-1]))
         TObjString(str(humidityDuringIV[-1])).Write("Relative Humidity at stop of IV (%)")
-        '''
         print("RH at start of Module Test: ", str(humidityGraph.Eval(testTimeStart)))
         TObjString(str(humidityGraph.Eval(testTimeStart))).Write("Relative Humidity at start of Module Test (%)")
         print("RH at end of Module Test: ", str(humidityGraph.Eval(testTimeStop)))

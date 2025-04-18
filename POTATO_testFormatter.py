@@ -9,8 +9,7 @@ from POTATO_PisaFormatter import POTATOPisaFormatter as Formatter
 from POTATO_mergeFile import mergeTwoROOTfiles
 
 
-###############################################################################################
-def main():
+if __name__ == "__main__":
 #    trackerFileRadix        = "TrackerHistos"
 #    trackerMonitorFileRadix = "TrackerMonitorHistos"
 #    trackerFilesDir         = os.environ['TRACKER_FILES']
@@ -52,8 +51,8 @@ def main():
 
     runNumber = "Run_500087"
     moduleBurninName = "Module4L"
-    moduleCarrierName = "ModuleCarrier4Left"
-    opticalGroup = '1'
+    moduleCarrierName = "01" ## used to read sensor OW01 was "ModuleCarrier4Left"
+    opticalGroup = '0'
 
     ### Important: PISA Formatter requires the connectionMap file to be in the same folder as the ROOT file (eg. connectionMap_PS_26_IBA-10003.json)
     theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName)
@@ -64,7 +63,3 @@ def main():
     print()
     ### Now looping on all output files to add monitoring infos
 
-
-############################################################################################
-if __name__ == "__main__":
-    main()
