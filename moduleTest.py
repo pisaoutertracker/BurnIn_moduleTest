@@ -2,7 +2,7 @@
 
 ### Default values 
 verbose = 0
-lastPh2ACFversion = "ph2_acf_v6-04"
+lastPh2ACFversion = "ph2_acf_v6-08"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
