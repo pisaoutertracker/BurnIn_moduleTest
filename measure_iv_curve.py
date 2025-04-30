@@ -162,7 +162,7 @@ class TCPUtil():
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.headerBytes = 4
-        self.socket.settimeout(0.5) # Increased timeout slightly
+        self.socket.settimeout(0.5) 
 
         self.connectSocket()
 
@@ -207,31 +207,14 @@ class TCPUtil():
             return None
         
         data = b''
-        try:
-            while True:
+        while True:
+            try:
                 chunk = self.socket.recv(BUFFER_SIZE)
                 if not chunk:
-                    # Connection closed prematurely
-                    print("Warning: Socket connection closed before receiving full message.")
                     break
-                data += chunk
-
-                try:
-                    next_chunk = self.socket.recv(BUFFER_SIZE)
-                    if not next_chunk:
-                        break # Connection closed
-                    data += next_chunk
-                except socket.timeout:
-                    break
-        except socket.timeout:
-            # This can happen if the server doesn't send anything
-            print("Warning: Socket timeout during receive.")
-            # Return whatever data we got, might be incomplete
-        except socket.error as e:
-            print(f"Error receiving message: {e}")
-            self.closeSocket() # Close socket on error
-            return None # Indicate error
-
+                data+=chunk
+            except:
+                break
         if len(data) > 8: # Check if we have at least the header
              return data[8:].decode("utf-8") # Strip header and decode
         elif len(data) > 0:
@@ -256,19 +239,18 @@ class IVCurveMeasurement:
         self.voltage_threshold_retries = voltage_threshold_retries
         self.settling_time = settling_time
         self.measurements = []
-        self.max_data_retries = 3  # Add max retries for incomplete data
+        self.max_data_retries = 10  # Add max retries for incomplete data
         self.final_voltage = final_voltage
         
-    def get_caen_data(self):
+    def get_caen_data(self, tcp_conn=None):
         """Get data from CAEN with retry logic for incomplete data"""
-        measure_conn = None # Initialize connection variable
+        if not tcp_conn:
+            raise ValueError("TCP connection is required to get CAEN data")
         for attempt in range(self.max_data_retries):
             try:
-                measure_conn = TCPUtil(ip='192.168.0.45', port=7000)
-                measure_conn.sendMessage('GetStatus,PowerSupplyId:caen')
+                tcp_conn.sendMessage('GetStatus,PowerSupplyId:caen')
                 # Use the new receiveMessage method
-                data_str = measure_conn.receiveMessage()
-                measure_conn.closeSocket() # Close socket after receiving
+                data_str = tcp_conn.receiveMessage()
 
                 if data_str is None:
                     print(f"Attempt {attempt + 1}: Failed to receive data, retrying...")
@@ -301,24 +283,19 @@ class IVCurveMeasurement:
 
             except (socket.error, RuntimeError, ConnectionRefusedError) as e:
                  print(f"Attempt {attempt + 1}: Communication error - {e}, retrying...")
-                 if measure_conn:
-                     measure_conn.closeSocket() # Ensure socket is closed on error
-                 time.sleep(2) # Longer wait after communication error
                  continue
-            finally:
-                 # Ensure socket is closed even if parsing fails within the loop
-                 if measure_conn and measure_conn.socket:
-                     measure_conn.closeSocket()
 
 
         raise RuntimeError("Failed to get valid data from CAEN after maximum retries")
 
-    def verify_voltage(self, target_voltage):
+    def verify_voltage(self, target_voltage, tcp_conn=None):
         attempt = 0
+        if not tcp_conn:
+            raise ValueError("TCP connection is required to verify voltage")
         
         while attempt < self.voltage_threshold_retries:
             try:
-                parsed_data = self.get_caen_data()
+                parsed_data = self.get_caen_data(tcp_conn=tcp_conn)
                 current_voltage = parsed_data[f'caen_{self.channel}_Voltage']
                 # print(f"Current voltage: {current_voltage}V")
                 if abs(current_voltage - target_voltage) <= self.voltage_threshold:
@@ -336,20 +313,13 @@ class IVCurveMeasurement:
         return False
 
     def measure_curve(self):
-        on_conn = None
-        voltage_conn = None
-        final_conn = None
-        set_final_voltage_conn = None
+        conn = TCPUtil(ip='192.168.0.45', port=7000)
 
         try:
             # turn on channel
             print(f"Turning on channel {self.channel}")
-            on_conn = TCPUtil(ip='192.168.0.45', port=7000)
-            on_conn.sendMessage(f'TurnOn,PowerSupplyId:caen,ChannelId:{self.channel}')
-            # Optional: receive ack if needed, but often not necessary for commands
-            # ack = on_conn.receiveMessage()
-            # print(f"Received acknowledgment for TurnOn: {ack}")
-            on_conn.closeSocket()
+            conn.sendMessage(f'TurnOn,PowerSupplyId:caen,ChannelId:{self.channel}')
+
             print(f"Channel {self.channel} turned on.")
             time.sleep(1) # Short delay after turning on
 
@@ -357,27 +327,22 @@ class IVCurveMeasurement:
                 print(f"Setting voltage to {voltage} V")
                 try:
                     # Create new connection for voltage setting
-                    voltage_conn = TCPUtil(ip='192.168.0.45', port=7000)
-                    voltage_conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{self.channel},Voltage:{voltage}')
-                    # Optional: receive ack
-                    # ack = voltage_conn.receiveMessage()
-                    # print(f"Received acknowledgment for SetVoltage: {ack}")
-                    voltage_conn.closeSocket()
+                    conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{self.channel},Voltage:{voltage}')
+
                 except (socket.error, RuntimeError) as e:
                     print(f"Error setting voltage to {voltage}V: {e}. Skipping step.")
-                    if voltage_conn: voltage_conn.closeSocket()
                     continue # Skip to next voltage step
 
                 time.sleep(self.delay)  # Wait for voltage to stabilize
 
                 # Verify voltage is within threshold
-                if not self.verify_voltage(voltage):
+                if not self.verify_voltage(voltage, tcp_conn=conn):
                     print(f"Warning: Could not reach target voltage {voltage}V within threshold")
                     # Decide whether to continue or stop based on requirements
                     continue # Continue to next step for now
 
                 try:
-                    parsed_data = self.get_caen_data()
+                    parsed_data = self.get_caen_data(tcp_conn=conn)
                     # --- Get Temp/Humidity Data --- 
                     now = datetime.now()
                     
@@ -410,37 +375,27 @@ class IVCurveMeasurement:
                     continue
 
         finally:
-            # Ensure all connections attempted are closed
-            if on_conn and on_conn.socket: on_conn.closeSocket()
-            if voltage_conn and voltage_conn.socket: voltage_conn.closeSocket()
 
             # Turn off channel with new connection
             try:
                 print(f"Turning off channel {self.channel}")
-                final_conn = TCPUtil(ip='192.168.0.45', port=7000)
-                final_conn.sendMessage(f'TurnOff,PowerSupplyId:caen,ChannelId:{self.channel}')
-                # Optional: receive ack
-                # ack = final_conn.receiveMessage()
-                # print(f"Received acknowledgment for TurnOff: {ack}")
-                final_conn.closeSocket()
+                conn.sendMessage(f'TurnOff,PowerSupplyId:caen,ChannelId:{self.channel}')
                 print(f"Channel {self.channel} turned off.")
             except (socket.error, RuntimeError) as e:
                 print(f"Error turning off channel {self.channel}: {e}")
-                if final_conn: final_conn.closeSocket()
 
             # Set final voltage after turning off
             try:
                 print(f"Setting final voltage to {self.final_voltage} V on channel {self.channel}")
-                set_final_voltage_conn = TCPUtil(ip='192.168.0.45', port=7000)
-                set_final_voltage_conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{self.channel},Voltage:{self.final_voltage}')
-                # Optional: receive ack
-                # ack = set_final_voltage_conn.receiveMessage()
-                # print(f"Received acknowledgment for final SetVoltage: {ack}")
-                set_final_voltage_conn.closeSocket()
+                conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{self.channel},Voltage:{self.final_voltage}')
+
                 print(f"Final voltage set to {self.final_voltage} V.")
             except (socket.error, RuntimeError) as e:
                 print(f"Error setting final voltage on channel {self.channel}: {e}")
-                if set_final_voltage_conn: set_final_voltage_conn.closeSocket()
+
+            
+        # Ensure all connections attempted are closed
+            if conn and conn.socket: conn.closeSocket()
 
 
     def save_to_csv(self, output_path, run_info):
