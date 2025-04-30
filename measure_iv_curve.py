@@ -155,15 +155,19 @@ def handle_interactive_process(command, timeout=60):
     
     return process.returncode
 
+    
 class TCPUtil():
-    """Utility class for tcp communication management."""
-    def __init__(self, ip, port):
+    """Utility class for tcp communication management with auto-reconnection."""
+    def __init__(self, ip, port, max_reconnect_attempts=3, reconnect_delay=1.0):
         self.ip = ip
         self.port = port
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.headerBytes = 4
-        self.socket.settimeout(0.5) 
-
+        self.max_reconnect_attempts = max_reconnect_attempts
+        self.reconnect_delay = reconnect_delay
+        self.socket = None
+        
+        # Initialize socket
+        self.createSocket()
         self.connectSocket()
 
     def __del__(self):
@@ -171,57 +175,117 @@ class TCPUtil():
         try:
             self.closeSocket()
         except Exception:
-            pass # Ignore errors during cleanup
+            pass  # Ignore errors during cleanup
+
+    def createSocket(self):
+        """Creates a new socket with appropriate settings"""
+        if self.socket:
+            try:
+                self.socket.close()
+            except:
+                pass
+        
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(0.5)
 
     def connectSocket(self):
-        """Connects socket"""
+        """Connects socket with basic retry"""
+        for attempt in range(self.max_reconnect_attempts):
+            try:
+                if not self.socket:
+                    self.createSocket()
+                self.socket.connect((self.ip, self.port))
+                return True
+            except socket.error as e:
+                if attempt < self.max_reconnect_attempts - 1:
+                    print(f"Connection attempt {attempt+1} failed: {e}. Retrying in {self.reconnect_delay}s...")
+                    time.sleep(self.reconnect_delay)
+                else:
+                    print(f"Error connecting socket after {self.max_reconnect_attempts} attempts: {e}")
+                    raise  # Re-raise the exception after all attempts fail
+        return False
+
+    def ensureConnection(self):
+        """Checks if connection is alive and reconnects if needed"""
+        if not self.socket:
+            return self.connectSocket()
+            
+        # Check if socket is still connected
         try:
-            self.socket.connect((self.ip, self.port))
-        except socket.error as e:
-            print(f"Error connecting socket: {e}")
-            raise # Re-raise the exception
+            # Send empty data (non-blocking) to check connection status
+            self.socket.settimeout(0.1)
+            self.socket.send(b'')
+            return True
+        except (socket.error, OSError) as e:
+            print(f"Connection lost: {e}. Attempting to reconnect...")
+            self.closeSocket()
+            return self.connectSocket()
+        finally:
+            # Reset timeout to original value
+            if self.socket:
+                self.socket.settimeout(0.5)
 
     def closeSocket(self):
         """Closes socket connection"""
         if self.socket:
-            self.socket.close()
-            self.socket = None # Mark as closed
+            try:
+                self.socket.close()
+            except:
+                pass
+            finally:
+                self.socket = None  # Mark as closed
 
-    def sendMessage(self, message):
-        """Encodes message and sends it on socket"""
-        if not self.socket:
-            print("Error: Socket is not connected.")
-            return
+    def sendMessage(self, message, retry_on_failure=True):
+        """Encodes message and sends it on socket, with reconnection if needed"""
+        if not self.ensureConnection() and retry_on_failure:
+            print("Reconnection failed before sending message")
+            return False
+            
         try:
             encodedMessage = self.encodeMessage(message)
-            self.socket.sendall(encodedMessage) # Use sendall for reliability
+            self.socket.sendall(encodedMessage)  # Use sendall for reliability
+            return True
         except socket.error as e:
             print(f"Error sending message: {e}")
-            self.closeSocket() # Close socket on error
-            raise # Re-raise the exception
+            if retry_on_failure:
+                print("Attempting to reconnect and resend...")
+                if self.connectSocket():
+                    return self.sendMessage(message, retry_on_failure=False)  # Prevent infinite recursion
+            return False
 
-    def receiveMessage(self):
-        """Receives message from socket, handling fragmentation"""
-        if not self.socket:
-            print("Error: Socket is not connected.")
+    def receiveMessage(self, retry_on_failure=True):
+        """Receives message from socket, handling fragmentation and reconnection if needed"""
+        if not self.ensureConnection() and retry_on_failure:
+            print("Reconnection failed before receiving message")
             return None
         
         data = b''
-        while True:
-            try:
-                chunk = self.socket.recv(BUFFER_SIZE)
-                if not chunk:
+        try:
+            while True:
+                try:
+                    chunk = self.socket.recv(BUFFER_SIZE)
+                    if not chunk:
+                        break
+                    data += chunk
+                except socket.timeout:
+                    # Just a timeout, could be end of data
                     break
-                data+=chunk
-            except:
-                break
-        if len(data) > 8: # Check if we have at least the header
-             return data[8:].decode("utf-8") # Strip header and decode
-        elif len(data) > 0:
-             print(f"Warning: Received incomplete data (length {len(data)})")
-             return None # Indicate incomplete data
-        else:
-             return None # No data received
+                except socket.error as e:
+                    print(f"Error receiving data: {e}")
+                    if retry_on_failure and self.connectSocket():
+                        return self.receiveMessage(retry_on_failure=False)  # Try once more
+                    return None
+                    
+            if len(data) > 8:  # Check if we have at least the header
+                return data[8:].decode("utf-8")  # Strip header and decode
+            elif len(data) > 0:
+                print(f"Warning: Received incomplete data (length {len(data)})")
+                return None  # Indicate incomplete data
+            else:
+                return None  # No data received
+        except Exception as e:
+            print(f"Error in receiveMessage: {e}")
+            return None
 
     def encodeMessage(self, message):
         """Encodes message adding 4 bytes header"""
