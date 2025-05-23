@@ -117,7 +117,18 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
             output = runCommand(podmanCommand%(ph2ACFversion,command))
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,tmp_testID,logFile)
     else:
-        output = runCommand("cat logs/%s.log 2>&1 | tee %s"%(useExistingModuleTest, logFile))
+        log = "logs/%s.log"%useExistingModuleTest
+        import os
+        if os.path.exists(log):
+            output = runCommand("cat %s 2>&1 | tee %s"%(log, logFile))
+        else:
+            ## fake log if missing
+            print("######################################")
+            print("######################################")
+            print("WARNING: log file %s not found. Using a fake log file."%log)
+            print("######################################")
+            print("######################################")
+            output = runCommand("echo 'Closing result file: Results/%s/Results.root' 2>&1 | tee %s"%(useExistingModuleTest, logFile))
     if verbose>10: print(output)
     error = output.stdout.decode() ## if you are not launching command through podman/Docker you should use "stderr" instead.
     ## Remove known warning
