@@ -56,11 +56,19 @@ extracted_dir = downloadAndExtractZipFile(remote_path, local_path, skipWebdav=sk
 
 resultsFile = extracted_dir + "/Results.root"
 ## Get monitorDQM file
+if not os.path.isfile(resultsFile):
+    print("Results file not found in %s"%extracted_dir)
+    exit(1)
+
 monitorDQMFile = None
 for file in os.listdir(extracted_dir):
-    if file.startswith("MonitorDQM_") and file.endswith(".root"):
+    if file.startswith("MonitorDQM") and file.endswith(".root"):
         monitorDQMFile = os.path.join(extracted_dir, file)
         break
+
+if not monitorDQMFile:
+    print("MonitorDQM file not found in %s"%extracted_dir)
+    exit(1)
 
 
 runNumber = test['test_runName']
@@ -107,11 +115,11 @@ def runPotatoExpress(rootTrackerFileName):
     mkdir -p backup
     mv data/LocalFiles/TestOutput/* backup
     mv data/LocalFiles/DropBox/* backup
-    mv data/ReferenceFiles/* backup
+    mv ReferenceFiles/* backup
 
     cp {rootTrackerPath} data/LocalFiles/TestOutput
     cp {rootTrackerPath} data/LocalFiles/DropBox
-    cp {rootTrackerPath} data/ReferenceFiles
+    cp {rootTrackerPath} ReferenceFiles/PS_16_FNL-00000_2025-04-07_16h18m13s_+15C_PSfullTest_v1-00_reference.root
 
     ## Compile POTATO express, if necessary
     #./compile.py

@@ -21,7 +21,8 @@ from potatoconverters.BurninMappings import opticalGroupToBurninSlot
 from datetime import datetime, timedelta, timezone
 
 extraTime = 3 # minutes (time)
-IVfile = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
+#IVfile = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
+IVfile = "IVdata/IV_curve_HV0.1_TEST_after_encapsulation_20250522_211105.csv"
 
 sensorTempPlotName = "LpGBT_DQM_SensorTemp"
 #temperatureSensor = "Temp0" ###FIXME/CHECK: non lo uso piu', lo prendo da MonitorDQM (vedi sensorTempPlotName) 
@@ -414,16 +415,23 @@ class POTATOPisaFormatter():
 #            raise IOError(f"Could not open the ROOT file: {burninFile}")
         
         detectorTrackerDirectory        = theHistogrammer.outputRootFile.Get("Detector")
-        detectorTrackerMonitorDirectory = theHistogrammer.outputRootFile.Get("MonitorDQM")
-        if detectorTrackerDirectory == None:
+        detectorTrackerMonitorDirectory = theHistogrammer.outputRootFile.Get("MonitorDQM/Detector")
+        if detectorTrackerDirectory == 0:
             raise RuntimeError(f"Detector directory not found in file: {rootTrackerFileName}")
-        if detectorTrackerMonitorDirectory == None:
+        if detectorTrackerMonitorDirectory == 0:
             raise RuntimeError(f"MonitorDQM directory not found in file: {rootTrackerFileName}")
 #        print(theHistogrammer.Print())
-        print(detectorTrackerDirectory.Print())
-        print(detectorTrackerMonitorDirectory.Print())
-        moduleName = str(detectorTrackerDirectory.Get("Board_0/OpticalGroup_" + opticalGroupNumber + "/D_B(0)_NameId_OpticalGroup(" + opticalGroupNumber + ")"))
+        print("Detector directory: ", detectorTrackerDirectory.GetName())
+        for el in detectorTrackerDirectory.GetListOfKeys():
+            print("Key: ", el.GetName(), " Class: ", el.GetClassName())
+        print("MonitorDQM directory: ", detectorTrackerMonitorDirectory.GetName())
+        for el in detectorTrackerMonitorDirectory.GetListOfKeys():
+            print("Key: ", el.GetName(), " Class: ", el.GetClassName())
+        moduleNameIdStr = "Board_0/OpticalGroup_" + opticalGroupNumber + "/D_B(0)_NameId_OpticalGroup(" + opticalGroupNumber + ")"
+        moduleName = str(detectorTrackerDirectory.Get(moduleNameIdStr))
         print("Formatting file for module: " + moduleName)
+        if moduleName == None or moduleName == "":
+            raise RuntimeError(f"Module name not found in file: {rootTrackerFileName}, moduleNameIdStr: {moduleNameIdStr}")
 
 
         timeFromRoot_start = detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()
@@ -536,8 +544,6 @@ class POTATOPisaFormatter():
         humidityHistoryGraph = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph, ambientTemperatureGraph), module=moduleName)
         humidityGraph        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph.GetX(), humidityHistoryGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
-        print("Humidity: ", dewPointGraph_IV_Influx.GetName(), " N: ", dewPointGraph_IV_Influx.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
-        print("ambientTemperatureGraph_IV_Influx: ", ambientTemperatureGraph_IV_Influx.GetName(), " N: ", ambientTemperatureGraph_IV_Influx.GetN(), " Start: ", startTime_utc, " Stop: ", stopTime_utc)
         humidityHistoryGraph_IV_Influx = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV_Influx, ambientTemperatureGraph_IV_Influx), module=moduleName)
         humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV_Influx.GetX(), humidityHistoryGraph_IV_Influx.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
 
@@ -570,13 +576,13 @@ class POTATOPisaFormatter():
         ########################### Plots done using Influx data ##############################
 
         ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("ENV_Temperature_FromInflux", voltages, ambientTemperatureDuringIV, moduleName)
+        theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
 
         carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("CARRIER_Temperature", voltages, carrierTemperatureDuringIV, moduleName)
 
         humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("Humidity_FromInflux"   , voltages, humidityDuringIV, moduleName)
+        theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
 
         print("--------------------------------------------------------------------")
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
@@ -687,13 +693,13 @@ class POTATOPisaFormatter():
         print("Chiller set T at end of Module Test: ", str(chillerSetPointGraph.Eval(testTimeStop)))
         TObjString(str(chillerSetPointGraph.Eval(testTimeStop))).Write("Chiller Setpoint T at stop of Module Test (C)")
         print("RH at start of IV: ", str(humidityDuringIV[0]))
-        TObjString(str(humidityDuringIV[0])).Write("Relative Humidity at start of IV (%)")
+        TObjString(str(humidityDuringIV[0])).Write("RH at start of IV (%)")
         print("RH at end of IV: ", str(humidityDuringIV[-1]))
-        TObjString(str(humidityDuringIV[-1])).Write("Relative Humidity at stop of IV (%)")
+        TObjString(str(humidityDuringIV[-1])).Write("RH at stop of IV (%)")
         print("RH at start of Module Test: ", str(humidityGraph.Eval(testTimeStart)))
-        TObjString(str(humidityGraph.Eval(testTimeStart))).Write("Relative Humidity at start of Module Test (%)")
+        TObjString(str(humidityGraph.Eval(testTimeStart))).Write("RH at start of Module Test (%)")
         print("RH at end of Module Test: ", str(humidityGraph.Eval(testTimeStop)))
-        TObjString(str(humidityGraph.Eval(testTimeStop))).Write("Relative Humidity at stop of Module Test (%)")
+        TObjString(str(humidityGraph.Eval(testTimeStop))).Write("RH at stop of Module Test (%)")
         print("Sensor T at start of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
         print("Sensor T at end of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStop)))
