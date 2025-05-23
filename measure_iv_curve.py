@@ -20,8 +20,112 @@ INFLUX_AVAILABLE = True
 # Global variable to cache the query API object
 _influx_query_api = None
 
+
+class tcp_util():
+    """Utility class for tcp
+    comunication management. """
+    def __init__(self, ip, port):
+        self.ip          = ip
+        self.port        = port
+        self.socket      = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.settimeout(0.5)
+        self.headerBytes = 4
+
+        self.connectSocket()
+        pass
+
+    def __del__ (self):
+        """Desctuctor, closes socket"""
+        try:
+            self.closeSocket()
+        except:
+            pass
+
+    def connectSocket(self):
+        """Connects socket"""
+        self.socket.connect((self.ip,self.port))
+        pass
+
+    def closeSocket(self):
+        """Closes socket connection"""
+        self.socket.close()
+        pass
+
+    def sendMessage(self,message):
+        """Encodes message and sends it on socket"""
+        encodedMessage = self.encodeMessage(message)
+        self.socket.send(encodedMessage)
+        pass
+
+    def encodeMessage(self,message):
+        """Encodes message adding 4 bytes header"""
+        messageLength = len(message) + self.headerBytes +4
+        N=0
+        encodedMessage = (messageLength).to_bytes(4, byteorder='big') + N.to_bytes(4, byteorder='big') + message.encode('utf-8')
+        return encodedMessage
+    
+    
 # Define buffer size for TCP communication
-BUFFER_SIZE = 100000 # Can be adjusted
+BUFFER_SIZE = 100000
+class CAENQuery():
+    """ class for handling CAEN queries"""
+    def __init__(self, ip='192.168.0.45', port=7000):
+        super().__init__()
+        self.ip = ip
+        self.port = port
+        self.message = None
+        self.receive = False
+        self.running = True
+
+    def run(self):
+        """ main method"""
+        if not self.message:
+            return
+
+        try:
+            tcpClass = tcp_util(ip=self.ip, port=self.port)
+            tcpClass.sendMessage(self.message)
+            if self.receive:
+                data = b''
+                while(True) :
+                    try:
+                        chunk = tcpClass.socket.recv(BUFFER_SIZE)
+                        if not chunk:
+                            break
+                        data+=chunk
+                    except:
+                        break
+                data=data[8:]
+        #        print(data[-10:])
+                data=data.decode("utf-8")
+            
+                parsedData = {}
+                for token in data.split(','):
+                    if token.startswith('caen'):
+                        key, value = token.split(":")
+                        value = float(value)
+                        parsedData[key] = value
+                        
+                # clear the message
+                self.message = None
+            
+                tcpClass.closeSocket()
+                return parsedData
+            else:
+                self.message = None
+                tcpClass.closeSocket()
+                return 
+            
+            
+        except Exception as e:
+            raise RuntimeError(f"Error in CAENQuery: {e}")
+        
+    def sendMessage(self, message, receive=False):
+        """Send message to CAEN"""
+        self.message = message
+        self.receive = receive
+        return self.run()
+    
 
 def getInfluxQueryAPI(token_location="~/private/influx.sct", force_new=False): 
     """Gets a cached InfluxDB query API client.""" 
@@ -47,7 +151,7 @@ def getInfluxQueryAPI(token_location="~/private/influx.sct", force_new=False):
     return _influx_query_api
 
 
-def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", bucket="sensor_data", measurement="mqtt_consumer", lookback_window=timedelta(seconds=3)):
+def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", bucket="sensor_data", measurement="mqtt_consumer", lookback_window=timedelta(seconds=15)):
     """Fetches the latest sensor value from InfluxDB before a given timestamp."""
     query_api = getInfluxQueryAPI()
     if query_api is None:
@@ -96,6 +200,7 @@ def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", buc
     
 # Define scan types
 SCAN_CONFIGS = {
+    'quick_test': {'max_voltage': 100, 'step': 10},
     'before_encapsulation': {'max_voltage': 350, 'step': 10},
     'after_encapsulation': {'max_voltage': 800, 'step': 10}
 }
@@ -155,144 +260,6 @@ def handle_interactive_process(command, timeout=60):
     
     return process.returncode
 
-    
-class TCPUtil():
-    """Utility class for tcp communication management with auto-reconnection."""
-    def __init__(self, ip, port, max_reconnect_attempts=3, reconnect_delay=1.0):
-        self.ip = ip
-        self.port = port
-        self.headerBytes = 4
-        self.max_reconnect_attempts = max_reconnect_attempts
-        self.reconnect_delay = reconnect_delay
-        self.socket = None
-        
-        # Initialize socket
-        self.createSocket()
-        self.connectSocket()
-
-    def __del__(self):
-        """Destructor, closes socket"""
-        try:
-            self.closeSocket()
-        except Exception:
-            pass  # Ignore errors during cleanup
-
-    def createSocket(self):
-        """Creates a new socket with appropriate settings"""
-        if self.socket:
-            try:
-                self.socket.close()
-            except:
-                pass
-        
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(0.5)
-
-    def connectSocket(self):
-        """Connects socket with basic retry"""
-        for attempt in range(self.max_reconnect_attempts):
-            try:
-                if not self.socket:
-                    self.createSocket()
-                self.socket.connect((self.ip, self.port))
-                return True
-            except socket.error as e:
-                if attempt < self.max_reconnect_attempts - 1:
-                    print(f"Connection attempt {attempt+1} failed: {e}. Retrying in {self.reconnect_delay}s...")
-                    time.sleep(self.reconnect_delay)
-                else:
-                    print(f"Error connecting socket after {self.max_reconnect_attempts} attempts: {e}")
-                    raise  # Re-raise the exception after all attempts fail
-        return False
-
-    def ensureConnection(self):
-        """Checks if connection is alive and reconnects if needed"""
-        if not self.socket:
-            return self.connectSocket()
-            
-        # Check if socket is still connected
-        try:
-            # Send empty data (non-blocking) to check connection status
-            self.socket.settimeout(0.1)
-            self.socket.send(b'')
-            return True
-        except (socket.error, OSError) as e:
-            print(f"Connection lost: {e}. Attempting to reconnect...")
-            self.closeSocket()
-            return self.connectSocket()
-        finally:
-            # Reset timeout to original value
-            if self.socket:
-                self.socket.settimeout(0.5)
-
-    def closeSocket(self):
-        """Closes socket connection"""
-        if self.socket:
-            try:
-                self.socket.close()
-            except:
-                pass
-            finally:
-                self.socket = None  # Mark as closed
-
-    def sendMessage(self, message, retry_on_failure=True):
-        """Encodes message and sends it on socket, with reconnection if needed"""
-        if not self.ensureConnection() and retry_on_failure:
-            print("Reconnection failed before sending message")
-            return False
-            
-        try:
-            encodedMessage = self.encodeMessage(message)
-            self.socket.sendall(encodedMessage)  # Use sendall for reliability
-            return True
-        except socket.error as e:
-            print(f"Error sending message: {e}")
-            if retry_on_failure:
-                print("Attempting to reconnect and resend...")
-                if self.connectSocket():
-                    return self.sendMessage(message, retry_on_failure=False)  # Prevent infinite recursion
-            return False
-
-    def receiveMessage(self, retry_on_failure=True):
-        """Receives message from socket, handling fragmentation and reconnection if needed"""
-        if not self.ensureConnection() and retry_on_failure:
-            print("Reconnection failed before receiving message")
-            return None
-        
-        data = b''
-        try:
-            while True:
-                try:
-                    chunk = self.socket.recv(BUFFER_SIZE)
-                    if not chunk:
-                        break
-                    data += chunk
-                except socket.timeout:
-                    # Just a timeout, could be end of data
-                    break
-                except socket.error as e:
-                    print(f"Error receiving data: {e}")
-                    if retry_on_failure and self.connectSocket():
-                        return self.receiveMessage(retry_on_failure=False)  # Try once more
-                    return None
-                    
-            if len(data) > 8:  # Check if we have at least the header
-                return data[8:].decode("utf-8")  # Strip header and decode
-            elif len(data) > 0:
-                print(f"Warning: Received incomplete data (length {len(data)})")
-                return None  # Indicate incomplete data
-            else:
-                return None  # No data received
-        except Exception as e:
-            print(f"Error in receiveMessage: {e}")
-            return None
-
-    def encodeMessage(self, message):
-        """Encodes message adding 4 bytes header"""
-        messageLength = len(message) + self.headerBytes + 4
-        N = 0
-        return (messageLength).to_bytes(4, byteorder='big') + N.to_bytes(4, byteorder='big') + message.encode('utf-8')
-
 class IVCurveMeasurement:
     def __init__(self, channel, voltage_steps, delay=5.0, voltage_threshold=0.5, voltage_threshold_time=0.5, voltage_threshold_retries=20, settling_time=0.5, final_voltage=300):
         self.channel = channel
@@ -306,38 +273,43 @@ class IVCurveMeasurement:
         self.max_data_retries = 10  # Add max retries for incomplete data
         self.final_voltage = final_voltage
         
-    def get_caen_data(self, tcp_conn=None):
+    def get_caen_data(self, caen_conn=None):
         """Get data from CAEN with retry logic for incomplete data"""
-        if not tcp_conn:
-            raise ValueError("TCP connection is required to get CAEN data")
+        if not caen_conn:
+            raise ValueError("caen connection is required to get CAEN data")
         for attempt in range(self.max_data_retries):
             try:
-                tcp_conn.sendMessage('GetStatus,PowerSupplyId:caen')
-                # Use the new receiveMessage method
-                data_str = tcp_conn.receiveMessage()
+                message = 'GetStatus,PowerSupplyId:caen'
+                data_str = caen_conn.sendMessage(message, receive=True)
+                # print(f"Attempt {attempt}, Message sent", message)
 
                 if data_str is None:
                     print(f"Attempt {attempt + 1}: Failed to receive data, retrying...")
                     time.sleep(1)
                     continue
+                
+                if (data_str != None) & (len(data_str) > 0) & (type(data_str) == dict):
+                    valid_data = True
+                    parsed_data = data_str
+                
 
-                # Verify data integrity
-                parsed_data = {}
-                valid_data = True
+                # # Verify data integrity
+                # parsed_data = {}
+                # valid_data = True
 
-                for token in data_str.split(','):
-                    if token.startswith('caen'):
-                        if ":" not in token:
-                            print(f"Invalid token in attempt {attempt + 1}: {token}")
-                            valid_data = False
-                            break
-                        key, value = token.split(":")
-                        try:
-                            parsed_data[key] = float(value)
-                        except ValueError:
-                            print(f"Invalid value in attempt {attempt + 1}: {token}")
-                            valid_data = False
-                            break
+                # for token in data_str.split(','):
+                #     if token.startswith('caen'):
+                #         if ":" not in token:
+                #             print(f"Invalid token in attempt {attempt + 1}: {token}")
+                #             valid_data = False
+                #             break
+                #         key, value = token.split(":")
+                #         try:
+                #             parsed_data[key] = float(value)
+                #         except ValueError:
+                #             print(f"Invalid value in attempt {attempt + 1}: {token}")
+                #             valid_data = False
+                #             break
 
                 if valid_data and len(parsed_data) > 0:
                     return parsed_data
@@ -352,14 +324,14 @@ class IVCurveMeasurement:
 
         raise RuntimeError("Failed to get valid data from CAEN after maximum retries")
 
-    def verify_voltage(self, target_voltage, tcp_conn=None):
+    def verify_voltage(self, target_voltage, caen_conn=None):
         attempt = 0
-        if not tcp_conn:
+        if not caen_conn:
             raise ValueError("TCP connection is required to verify voltage")
         
         while attempt < self.voltage_threshold_retries:
             try:
-                parsed_data = self.get_caen_data(tcp_conn=tcp_conn)
+                parsed_data = self.get_caen_data(caen_conn=caen_conn)
                 current_voltage = parsed_data[f'caen_{self.channel}_Voltage']
                 # print(f"Current voltage: {current_voltage}V")
                 if abs(current_voltage - target_voltage) <= self.voltage_threshold:
@@ -377,7 +349,7 @@ class IVCurveMeasurement:
         return False
 
     def measure_curve(self):
-        conn = TCPUtil(ip='192.168.0.45', port=7000)
+        conn = CAENQuery(ip='192.168.0.45', port=7000)
 
         try:
             # turn on channel
@@ -400,15 +372,16 @@ class IVCurveMeasurement:
                 time.sleep(self.delay)  # Wait for voltage to stabilize
 
                 # Verify voltage is within threshold
-                if not self.verify_voltage(voltage, tcp_conn=conn):
+                if not self.verify_voltage(voltage, caen_conn=conn):
                     print(f"Warning: Could not reach target voltage {voltage}V within threshold")
                     # Decide whether to continue or stop based on requirements
                     continue # Continue to next step for now
 
                 try:
-                    parsed_data = self.get_caen_data(tcp_conn=conn)
+                    parsed_data = self.get_caen_data(caen_conn=conn)
                     # --- Get Temp/Humidity Data --- 
-                    now = datetime.now()
+                    now = datetime.utcnow()
+                    print(f"Fetching temperature and humidity data at {now}")
                     
                     # Attempt to get temperature (replace 'Temp0' if needed)
                     temp_value = get_latest_sensor_value(now, sensor_field="Temp0")
@@ -433,7 +406,7 @@ class IVCurveMeasurement:
                         'Timestamp': now.strftime('%Y-%m-%d %H:%M:%S') # Modified: Use consistent timestamp
                     }
                     self.measurements.append(measurement)
-                    print(f"Measured: V={measurement['Voltage']:.2f} V, I={measurement['Current']:.3f} nA, T={measurement['Temperature']:.1f} C, RH={measurement['Relative Humidity']:.1f} %")
+                    print(f"Measured: V={measurement['Voltage']:.2f} V, I={measurement['Current']:.3f} nA, T={measurement['Temperature']:.1f} C, RH={measurement['Relative Humidity']:.3f} %")
                 except Exception as e:
                     print(f"Error during measurement or sensor reading at {voltage}V: {e}") # Modified error message slightly
                     continue
@@ -456,10 +429,6 @@ class IVCurveMeasurement:
                 print(f"Final voltage set to {self.final_voltage} V.")
             except (socket.error, RuntimeError) as e:
                 print(f"Error setting final voltage on channel {self.channel}: {e}")
-
-            
-        # Ensure all connections attempted are closed
-            if conn and conn.socket: conn.closeSocket()
 
 
     def save_to_csv(self, output_path, run_info):
