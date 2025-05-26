@@ -746,7 +746,6 @@ class POTATOPisaFormatter():
         print("Time test start: ", testTimeStart, " Time test stop: ", testTimeStop)
         print("X-min of Sensor T Graph: ", sensorTemperatureGraph.GetXaxis().GetXmin())
         print("X-max of Sensor T Graph: ", sensorTemperatureGraph.GetXaxis().GetXmax())
-        1/0
     
         theHistogrammer.closeRootFile()
 #        powerSupplyFile.Close()
