@@ -42,6 +42,34 @@ verbose = 1000
 
 import pandas as pd
 
+def spikeRemoval(graph, threshold=0.1):
+    '''        Remove spikes from a TGraph by checking if the difference between consecutive points exceeds a threshold.
+    '''
+    x = graph.GetX()
+    y = graph.GetY()
+    n = graph.GetN()
+    toDo = True
+    new_x = x
+    new_y = y
+    while toDo:
+        toDo = False
+        x = new_x
+        y = new_y
+        new_x = []
+        new_y = []
+        for i in range(len(y) - 1):
+            print("SpikeRemoval: ", i, " ", y[i], " ", y[i + 1], " ", abs(y[i + 1] - y[i]), " ", threshold)
+            if abs(y[i + 1] - y[i]) < threshold:
+                new_x.append(x[i])
+                new_y.append(y[i])
+            else:
+                toDo = True
+        # Add the last point
+        new_x.append(x[-1])
+        new_y.append(y[-1])
+    from array import array
+    return ROOT.TGraph(len(new_x), array('f', new_x), array('f', new_y))
+
 def makeGraphFromDataframe(df, x_col, y_col, is_datetime=False):
     """
     Create a ROOT TGraph from a Pandas DataFrame.
@@ -544,8 +572,8 @@ class POTATOPisaFormatter():
         humidityHistoryGraph = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph, ambientTemperatureGraph), module=moduleName)
         humidityGraph        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph.GetX(), humidityHistoryGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
-        humidityHistoryGraph_IV_Influx = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV_Influx, ambientTemperatureGraph_IV_Influx), module=moduleName)
-        humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV_Influx.GetX(), humidityHistoryGraph_IV_Influx.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
+        #humidityHistoryGraph_IV_Influx = theHistogrammer.makeMonitorHumidity   (*self.calculateHumidity(dewPointGraph_IV_Influx, ambientTemperatureGraph_IV_Influx), module=moduleName)
+        #humidityGraph_IV        = theHistogrammer.makeMonitorHumidity(humidityHistoryGraph_IV_Influx.GetX(), humidityHistoryGraph_IV_Influx.GetY(), testTimeStart_IV, testTimeStop_IV, module=moduleName)
 
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), module=moduleName)
         theHistogrammer.makeMonitorDewPoint   (dewPointGraph.GetX(), dewPointGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
@@ -574,15 +602,16 @@ class POTATOPisaFormatter():
 
         ### HERE TWO OPTIONS AVAILABLE. ONLY ONE OF THEM SHOULD BE USED
         ########################### Plots done using Influx data ##############################
+        # We should always use the data from the IV .csv file, as it is more accurate and has the correct timestamps
 
-        ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
+        #ambientTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(ambientTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
+        #theHistogrammer.makeIVEnvironment("ENV_Temperature", voltages, ambientTemperatureDuringIV, moduleName)
 
         carrierTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(moduleCarrierTemperatureGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
         theHistogrammer.makeIVEnvironment("CARRIER_Temperature", voltages, carrierTemperatureDuringIV, moduleName)
 
-        humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
-        theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
+        #humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
+        #theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
 
         print("--------------------------------------------------------------------")
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
@@ -700,11 +729,25 @@ class POTATOPisaFormatter():
         TObjString(str(humidityGraph.Eval(testTimeStart))).Write("RH at start of Module Test (%)")
         print("RH at end of Module Test: ", str(humidityGraph.Eval(testTimeStop)))
         TObjString(str(humidityGraph.Eval(testTimeStop))).Write("RH at stop of Module Test (%)")
+
+        ## Remove spikes larger than 5 degrees from the sensorTemperatureGraph
+        sensorTemperatureGraph = spikeRemoval(sensorTemperatureGraph, threshold=2)
+
         print("Sensor T at start of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
         print("Sensor T at end of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStop)))
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStop))).Write("Sensor T at stop of Module Test (C)")
 
+        c1 = ROOT.TCanvas("c1", "Sensor Temperature Graph", 800, 600)
+        sensorTemperatureGraph.Draw("")
+        c1.SaveAs("SensorTemperatureGraph.root")
+        c1.SaveAs("SensorTemperatureGraph.png")
+        ## print x-axis range of sensorTemperatureGraph
+        print("Time test start: ", testTimeStart, " Time test stop: ", testTimeStop)
+        print("X-min of Sensor T Graph: ", sensorTemperatureGraph.GetXaxis().GetXmin())
+        print("X-max of Sensor T Graph: ", sensorTemperatureGraph.GetXaxis().GetXmax())
+        1/0
+    
         theHistogrammer.closeRootFile()
 #        powerSupplyFile.Close()
 #        burninFile.Close()

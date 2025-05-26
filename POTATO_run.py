@@ -93,6 +93,28 @@ tag = version
 
 #PS_16_FNL-00002_2024-09-15_11h42m33s_+15C_PSfullTest_v1-01.root
 #PS_26_IBA-10003_2025-04-04_11h34m04s_+20C_PSfullTest_v1-01.root
+
+## Move all files in the output directory / old:
+if not os.path.exists(outDir):
+    os.makedirs(outDir)
+if not os.path.exists(outDir+"/old"):
+    os.makedirs(outDir+"/old")
+for file in os.listdir(outDir):
+    if os.path.isdir(f"{outDir}/{file}"):
+        continue
+    print(outDir, file)
+    os.rename(os.path.join(outDir, file), os.path.join(outDir, "old", file))
+
+## Copy the connection map file to the same folder as the ROOT file
+connectionMapFile = "connectionMap_%s.json"%module_name
+connectionMapFilePath = os.path.join(os.path.dirname(resultsFile), connectionMapFile)
+if os.path.exists(connectionMapFilePath):
+    os.system("cp " + connectionMapFilePath + " " + outDir)
+    print("Connection map file %s copied to %s"%(connectionMapFile, outDir))
+else:
+    raise Exception("Connection map file not found: %s"%connectionMapFilePath)
+
+
 rootTrackerFileName = outDir + "/" + f"{module_name}_{formatted_date}_{formatted_temp}C_{runType}_{tag}.root"
 
 ## Merge Results and MonitorDQM files
