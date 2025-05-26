@@ -400,7 +400,7 @@ class IVCurveMeasurement:
 
                     measurement = {
                         'Voltage': -parsed_data[f'caen_{self.channel}_Voltage'], # NOTE: Negative voltage for IV curve
-                        'Current': parsed_data[f'caen_{self.channel}_Current'] * 1e3, # NOTE: Convert to nA assuming the readout is in uA
+                        'Current': parsed_data[f'caen_{self.channel}_Current'],
                         'Temperature': temperature, # Modified: Use fetched or default value
                         'Relative Humidity': humidity, # Modified: Use fetched or default value
                         'Timestamp': now.strftime('%Y-%m-%d %H:%M:%S') # Modified: Use consistent timestamp
