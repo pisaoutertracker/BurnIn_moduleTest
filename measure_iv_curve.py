@@ -16,9 +16,13 @@ import tempfile
 from datetime import timedelta 
 from influxdb_client import InfluxDBClient 
 from influxdb_client.client.write_api import SYNCHRONOUS 
+import requests
+
 INFLUX_AVAILABLE = True 
 # Global variable to cache the query API object
 _influx_query_api = None
+# local db variables
+API_URL = "http://192.168.0.45:5000"
 
 
 class tcp_util():
@@ -200,7 +204,7 @@ def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", buc
     
 # Define scan types
 SCAN_CONFIGS = {
-    'quick_test': {'max_voltage': 100, 'step': 10},
+    'quick_test': {'max_voltage': 30, 'step': 10},
     'before_encapsulation': {'max_voltage': 350, 'step': 10},
     'after_encapsulation': {'max_voltage': 800, 'step': 10}
 }
@@ -400,7 +404,7 @@ class IVCurveMeasurement:
 
                     measurement = {
                         'Voltage': -parsed_data[f'caen_{self.channel}_Voltage'], # NOTE: Negative voltage for IV curve
-                        'Current': parsed_data[f'caen_{self.channel}_Current'],
+                        'Current': parsed_data[f'caen_{self.channel}_Current'] * 1e3, # Convert to nA
                         'Temperature': temperature, # Modified: Use fetched or default value
                         'Relative Humidity': humidity, # Modified: Use fetched or default value
                         'Timestamp': now.strftime('%Y-%m-%d %H:%M:%S') # Modified: Use consistent timestamp
@@ -480,6 +484,7 @@ def measure_and_upload(
     output_file=None,
     output_dir='./IVdata',
     module_name='TEST',
+    session='session0',
     upload=False,
     store_locally=False,
     final_voltage=300
@@ -522,7 +527,7 @@ def measure_and_upload(
         run_info = {
             "Module_ID": module_name,
             "Comment": f"{scan_type} measurement",
-            "Location": "INFN Pisa",
+            "Location": "Pisa",
             "Operator": os.getenv('USER', 'TEST_USER'),
             "Run_type": "IV_TEST",
             "Station_Name": "cleanroom"
@@ -530,19 +535,50 @@ def measure_and_upload(
         
         saved_file = iv_curve.save_to_csv(output_path, run_info)
         
-        if upload:
-            print("Uploading to central database...")
-            upload_command = f"source py4dbupload/bin/setup.sh && python3 ./py4dbupload/run/uploadOTModuleIV.py --upload --store --data={saved_file}"
-            returncode = handle_interactive_process(upload_command)
-            if returncode != 0:
-                print("Upload failed")
-                return 1
-        
         if store_locally:
             os.makedirs(os.path.dirname(final_output_path), exist_ok=True)
             with open(saved_file, 'r') as src, open(final_output_path, 'w') as dst:
                 dst.write(src.read())
             print(f"Measurements saved to: {final_output_path}")
+            
+        # upload to mongoDB
+        # Prepare document
+        document = {
+            "nameLabel": module_name,
+            "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "comment": run_info.get('Comment', 'IV curve measurement'),
+            "location": run_info.get('Location', 'TEST_LOCATION'),
+            "inserter": run_info.get('Operator', 'TEST_OPERATOR'),
+            "runType": run_info.get('Run_type', 'IV_CURVE'),
+            "station": run_info.get('Station_Name', 'TEST_STATION'),
+            "averageTemperature": sum(m['Temperature'] for m in iv_curve.measurements) / len(iv_curve.measurements) if iv_curve.measurements else -999,
+            "averageHumidity": sum(m['Relative Humidity'] for m in iv_curve.measurements) / len(iv_curve.measurements) if iv_curve.measurements else -999,
+            "sessionName": session,  # Use session name from args
+            "IVScanId": f"{channel}_{module_name}_{scan_type}",
+            "data": {
+                "VOLTS": [m['Voltage'] for m in iv_curve.measurements],  # Negative voltage for IV curve
+                "CURRNT_NAMP": [m['Current'] for m in iv_curve.measurements],
+                "TEMP_DEGC": [m['Temperature'] for m in iv_curve.measurements],
+                "RH_PRCNT": [m['Relative Humidity'] for m in iv_curve.measurements],
+                "TIME": [m['Timestamp'] for m in iv_curve.measurements]
+            }
+        }
+        
+        # Convert document to JSON
+        document_json = document # json.dumps(document, indent=4)
+        # use request to upload with get on API_URL
+        response = requests.post(
+            f"{API_URL}/iv_scans",
+            json=document_json
+        )
+        print(f"Upload on local db response: {response.status_code}")
+        
+        if upload:
+            print("Uploading to central database...")
+            upload_command = f"source py4dbupload/bin/setup.sh && python3 ./py4dbupload/run/uploadOTModuleIV.py --upload --store --data={saved_file}"
+            returncode = handle_interactive_process(upload_command)
+            if returncode != 0:
+                print("WARNING!! Upload to Central DB failed")
     
     return 0
 
@@ -567,6 +603,7 @@ if __name__ == "__main__":
                       help='Output directory (default: /IVdata in current directory)')
     parser.add_argument('--module-name', type=str, default='TEST',
                       help='Module name (default: TEST)')
+    parser.add_argument('--session', type=str, default='session0', help='Session name (default: session0)') 
     parser.add_argument('--upload', action='store_true', help='Upload to central database')
     parser.add_argument('--store-locally', action='store_true', help='Store the CSV file locally')
     parser.add_argument('--final-voltage', type=float, default=300,
@@ -585,6 +622,7 @@ if __name__ == "__main__":
         output_file=args.output_file,
         output_dir=args.output_dir,
         module_name=args.module_name,
+        session=args.session,
         upload=args.upload,
         store_locally=args.store_locally,
         final_voltage=args.final_voltage
