@@ -217,7 +217,7 @@ if __name__ == '__main__':
         if not args.useExistingXmlFile:
             from shellCommands import copyXml
             copyXml(ph2ACFversion)
-        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=50)
+        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=1000)
         if args.useExistingXmlFile:
             xmlFile = args.useExistingXmlFile
         else:
