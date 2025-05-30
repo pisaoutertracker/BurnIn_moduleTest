@@ -144,6 +144,8 @@ test = {
 ##run0 is a zero run
 test5 = {'runNumber': 'run0', 'runDate': '2025-03-24T17:35:03', 'runSession': 'session1', 'runStatus': 'done', 'runType': 'PSquickTest', 'runBoards': {0: 'fc7ot3'}, 'runModules': {'fc7ot3_optical4': ('PS_26_IBA-10007', 2351590349)}, 'runNoise': {2351590349: {'H0_SSA0': -1, 'H0_SSA1': -1, 'H0_SSA2': -1, 'H0_SSA3': -1, 'H0_SSA4': -1, 'H0_SSA5': -1, 'H0_SSA6': -1, 'H0_SSA7': -1, 'H0_MPA8': -1, 'H0_MPA9': -1, 'H0_MPA10': -1, 'H0_MPA11': -1, 'H0_MPA12': -1, 'H0_MPA13': -1, 'H0_MPA14': -1, 'H0_MPA15': -1, 'H1_SSA0': -1, 'H1_SSA1': -1, 'H1_SSA2': -1, 'H1_SSA3': -1, 'H1_SSA4': -1, 'H1_SSA5': -1, 'H1_SSA6': -1, 'H1_SSA7': -1, 'H1_MPA8': -1, 'H1_MPA9': -1, 'H1_MPA10': -1, 'H1_MPA11': -1, 'H1_MPA12': -1, 'H1_MPA13': -1, 'H1_MPA14': -1, 'H1_MPA15': -1}}, 'runConfiguration': {'commonSettings': 'fake', 'Nevents': '-1', 'boards': {'0': {'ip': 'fc7ot3:50001', 'opticalGroups': {'4': {'lpGBT': 'fake', 'hybrids': {'0': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}, '1': {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}}}}}}}, 'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//Run_500006/output_lqjoo.zip'}
 
+test6 = {'runNumber': 'run0', 'runDate': '2025-05-30T10:41:38', 'runSession': 'session701', 'runStatus': 'done', 'runType': 'PSquickTest', 'runBoards': {0: 'fc7ot3'}, 'runModules': {'fc7ot3_optical3': ('PS_26_IBA-10006', 69797093)}, 'runNoise': {69797093: {'H0_SSA0': 4.28083112637202, 'H0_SSA1': 4.233606553077697, 'H0_SSA2': 3.9873088081677754, 'H0_SSA3': 3.8374729911486307, 'H0_SSA4': 3.566343597571055, 'H0_SSA5': 3.76549977461497, 'H0_SSA6': 3.8263083040714263, 'H0_SSA7': 3.689466538031896, 'H0_MPA8': 2.6149305514370402, 'H0_MPA9': 2.4980155545752494, 'H0_MPA10': 2.5167403345927597, 'H0_MPA11': 2.4177929119517407, 'H0_MPA12': 2.4220428101718428, 'H0_MPA13': 2.3955575624480843, 'H0_MPA14': 2.383240073546767, 'H0_MPA15': 2.3108451042324303, 'H1_SSA0': 3.816861559947332, 'H1_SSA1': 3.991798065106074, 'H1_SSA2': 3.912967765331268, 'H1_SSA3': 4.1736451168855035, 'H1_SSA4': 4.308169861634572, 'H1_SSA5': 4.46592218875885, 'H1_SSA6': 4.527612062295278, 'H1_SSA7': 5.005771537621816, 'H1_MPA8': 2.401216814791163, 'H1_MPA9': 2.373286120283107, 'H1_MPA10': 2.4040729884679117, 'H1_MPA11': 2.415298300587056, 'H1_MPA12': 2.4606825107708574, 'H1_MPA13': 2.517803604279955, 'H1_MPA14': 2.492430444372197, 'H1_MPA15': 2.5219858306770524}}, 'runConfiguration': {'Nevents': 1000, 'boards': {0: {'ip': 'fc7ot3:50001', 'opticalGroups': {3: {'lpGBT': 'lpGBT_v1_PS.txt', 'hybrids': {0: {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}, 1: {'strips': [0, 1, 2, 3, 4, 5, 6, 7], 'pixels': [8, 9, 10, 11, 12, 13, 14, 15]}}}}}}}, 'runFile': 'https://cernbox.cern.ch/files/link/public/zcvWnJKEk7YgSBh//Run_500780/output_igaof.zip'}
+
 #test_run_data = {
 
 #{
@@ -165,7 +167,7 @@ api_url = "http://%s:%d/addRun"%(ip, port)
 
 print("import requests")
 # Send a PUT request
-json = test5
+json = test6
 response = requests.post(api_url, json=json)
 print("response = requests.post('%s', json=%s)" %(api_url, json))
 print("response.status_code:", response.status_code)
