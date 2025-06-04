@@ -16,7 +16,7 @@ parser.add_argument('--skipPOTATO', type=bool, default=False, const=True, nargs=
 session = parser.parse_args().session
 skipPOTATO = parser.parse_args().skipPOTATO
 version = "v1-01"
-scriptName = "POTATO_run.sh"
+scriptName_base = "POTATO_run_%s.sh"
 POTATOExpressFolder = "/home/thermal/potato/Express/"
 
 skipWebdav = True
@@ -25,6 +25,7 @@ from moduleTest import verbose ## to be updated
 verbose = 1000
 outDir = "POTATOFiles"
 
+moveEverythingToOld = False
 def createCSVFromIVScan(iv_scan, path):
     """
     Convert a full scan dictionary (containing both metadata and the
@@ -113,13 +114,9 @@ def createIVScanCSVFile(runNumber, module_name, outDir):
     for iv_scan in iv_scans:
         if iv_scan["sessionName"] == session:
             iv_scan_date = datetime.strptime(iv_scan["date"], "%Y-%m-%d %H:%M:%S") 
-            print("IV scan date:", iv_scan_date, "Run date:", run_date, "Last IV scan date:", iv_scan_date_last)
-            print(iv_scan_date < run_date)
-            print(iv_scan_date > iv_scan_date_last)
             if iv_scan_date < run_date and iv_scan_date > iv_scan_date_last:
                 iv_scan_date_last = iv_scan_date
                 iv_scan_selected = iv_scan
-                print("SELECTED")
     del iv_scan ## we don't need the loop variable anymore
     if not iv_scan_selected:
         print("IV scans:")
@@ -235,25 +232,30 @@ for run in runs:
         #PS_26_IBA-10003_2025-04-04_11h34m04s_+20C_PSfullTest_v1-01.root
 
         ## Move all files in the output directory / old:
-        if not os.path.exists(outDir):
-            os.makedirs(outDir)
-        if not os.path.exists(outDir+"/old"):
-            os.makedirs(outDir+"/old")
-        for file in os.listdir(outDir):
-            if os.path.isdir(f"{outDir}/{file}"):
-                continue
-            print(outDir, file)
-            os.rename(os.path.join(outDir, file), os.path.join(outDir, "old", file))
+        if moveEverythingToOld:
+            print("Moving all files in the output directory to /old")
+            if not os.path.exists(outDir):
+                os.makedirs(outDir)
+            if not os.path.exists(outDir+"/old"):
+                os.makedirs(outDir+"/old")
+            for file in os.listdir(outDir):
+                if os.path.isdir(f"{outDir}/{file}"):
+                    continue
+                print(outDir, file)
+                os.rename(os.path.join(outDir, file), os.path.join(outDir, "old", file))
 
         ## Copy the connection map file to the same folder as the ROOT file
         connectionMapFile = "connectionMap_%s.json"%module_name
         connectionMapFilePath = os.path.join(os.path.dirname(resultsFile), connectionMapFile)
+        connectionMapFilePath_new = os.path.join(outDir, connectionMapFile.replace(".json", "_%s.json"%(runNumber)))
         if os.path.exists(connectionMapFilePath):
-            os.system("cp " + connectionMapFilePath + " " + outDir)
-            print("Connection map file %s copied to %s"%(connectionMapFile, outDir))
+            os.system("cp " + connectionMapFilePath + " " + connectionMapFilePath_new)
+            print("Connection map file %s copied to %s"%(connectionMapFilePath, connectionMapFilePath_new))
         else:
             raise Exception("Connection map file not found: %s"%connectionMapFilePath)
 
+        connectionMapFilePath = connectionMapFilePath_new
+        del connectionMapFile ##obsolete variable
 
         rootTrackerFileName = outDir + "/" + f"{module_name}_{formatted_date}_{formatted_temp}C_{runType}_{tag}.root"
 
@@ -263,39 +265,40 @@ for run in runs:
 
         ## Run potatoconverter (or formatter)
         from POTATO_PisaFormatter import POTATOPisaFormatter as Formatter
+        print("#"*200)
         mergeTwoROOTfiles(resultsFile, monitorDQMFile, rootTrackerFileName)
         iv_csv_path = createIVScanCSVFile(runNumber, module_name, outDir)
         theFormatter = Formatter(outDir)
-        theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path)
+        print(f"Calling POTATO Pisa Formatter version with files {rootTrackerFileName}, {iv_csv_path}")
+        print(f"using as input {resultsFile} and {monitorDQMFile}")
+        print("#"*200)
+        theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath)
 
         ############### Prepare a script to run POTATO
 
-        def runPotatoExpress(rootTrackerFileName, skipPOTATO=False):
+        def runPotatoExpress(rootTrackerFileName, descriptionLine="", skipPOTATO=False):
             rootTrackerPath = os.path.abspath(rootTrackerFileName)
             if skipPOTATO: 
                 skipPOTATO_string = "## Skipping POTATO express##"
                 print("Skipping POTATO Express run. Only preparing the files for it.")
             else:
                 skipPOTATO_string = ""
-            script = f""" cd {POTATOExpressFolder}
-            source ../setupPotato.sh
-            export POTATODIR={POTATOExpressFolder}
-            mkdir -p backup
-            mv data/LocalFiles/TestOutput/* backup
-            mv data/LocalFiles/DropBox/* backup
-            mv ReferenceFiles/* backup
+            script = f"""{descriptionLine}
+cd {POTATOExpressFolder}
+source ../setupPotato.sh
+export POTATODIR={POTATOExpressFolder}
+mkdir -p backup
+mv data/LocalFiles/DropBox/* backup
 
-            cp {rootTrackerPath} data/LocalFiles/TestOutput
-            cp {rootTrackerPath} data/LocalFiles/DropBox
-            cp {rootTrackerPath} ReferenceFiles/PS_16_FNL-00000_2025-04-07_16h18m13s_+15C_PSfullTest_v1-00_reference.root
+cp {rootTrackerPath} data/LocalFiles/DropBox
 
-            ## Compile POTATO express, if necessary
-            #./compile.py
+## Compile POTATO express, if necessary
+#./compile.py
 
-            ## Run POTATO express
-            {skipPOTATO_string}./PotatoExpress
+## Run POTATO express
+{skipPOTATO_string}./PotatoExpress
             """
-
+            scriptName = scriptName_base%rootTrackerPath.split("/")[-1].replace(".root", "")
             scriptPath = "%s/%s"%(outDir, scriptName)
             open(scriptPath, "w").write(script)
 
@@ -332,5 +335,19 @@ for run in runs:
                 print("Skipping POTATO Express run. Only preparing the files for it. No 'cp %s %s/...' command executed."%(xmlFile, outDir))
                 return "%s/%s"%(outDir, "fake.xml")
 
-        xmlFile = runPotatoExpress(rootTrackerFileName, skipPOTATO=skipPOTATO)
+        descriptionLine = f"""
+# resultsFile = {rootTrackerFileName} created from 
+# rootTrackerFileName = {resultsFile}
+# monitorDQMFile = {monitorDQMFile}
+#
+# iv_csv_path = {iv_csv_path}
+# runNumber = {runNumber}
+# moduleBurninName = {moduleBurninName}
+# moduleCarrierName = {moduleCarrierName}
+# connectionMapFilePath = {connectionMapFilePath}
+# module_name = {module_name}
+# test_module_test = {module_test}
+#
+"""
+        xmlFile = runPotatoExpress(rootTrackerFileName, descriptionLine, skipPOTATO=skipPOTATO)
         print("XML file created:", xmlFile)
