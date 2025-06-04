@@ -45,6 +45,7 @@ import pandas as pd
 def spikeRemoval(graph, threshold=0.1):
     '''        Remove spikes from a TGraph by checking if the difference between consecutive points exceeds a threshold.
     '''
+    first = True
     x = graph.GetX()
     y = graph.GetY()
     n = graph.GetN()
@@ -58,7 +59,9 @@ def spikeRemoval(graph, threshold=0.1):
         new_x = []
         new_y = []
         for i in range(len(y) - 1):
-            print("SpikeRemoval: ", i, " ", y[i], " ", y[i + 1], " ", abs(y[i + 1] - y[i]), " ", threshold)
+            if first: 
+                print("SpikeRemoval: ", i, " ", y[i], " ", y[i + 1], " ", abs(y[i + 1] - y[i]), " ", threshold)
+                first = False
             if abs(y[i + 1] - y[i]) < threshold:
                 new_x.append(x[i])
                 new_y.append(y[i])
