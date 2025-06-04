@@ -21,8 +21,8 @@ from potatoconverters.BurninMappings import opticalGroupToBurninSlot
 from datetime import datetime, timedelta, timezone
 
 extraTime = 3 # minutes (time)
-#IVfile = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
-IVfile = "IVdata/IV_curve_HV0.1_TEST_after_encapsulation_20250522_211105.csv"
+#iv_csv_path = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
+#iv_csv_path = "IVdata/IV_curve_HV0.1_TEST_after_encapsulation_20250522_211105.csv"
 
 sensorTempPlotName = "LpGBT_DQM_SensorTemp"
 #temperatureSensor = "Temp0" ###FIXME/CHECK: non lo uso piu', lo prendo da MonitorDQM (vedi sensorTempPlotName) 
@@ -420,7 +420,7 @@ class POTATOPisaFormatter():
         #print("Begin: ", begin, " End: ", end, "Size: ", values.size)
         return np.mean(values[begin:end])
 
-    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName):
+    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName, iv_csv_path):
         print("Calling do_burnin_format with: rootTrackerFileName: ", rootTrackerFileName, " runNumber: ", runNumber, " opticalGroupNumber: ", opticalGroupNumber, " moduleBurninName: ", moduleBurninName, " moduleCarrierName: ", moduleCarrierName)
         theHistogrammer = Histogrammer()
         self.theHistogrammer = theHistogrammer
@@ -509,7 +509,7 @@ class POTATOPisaFormatter():
 #         plots.append(  makePlotInfluxdbVoltageAndCurrent(startTime_local, stopTime_local, tmpFolder, sensors=[hv_current, hv_voltage, lv_current, lv_voltage]) )
         
 
-        self.IV_metadata, self.IV_df, self.IV_df_station = readIVcsv(IVfile)
+        self.IV_metadata, self.IV_df, self.IV_df_station = readIVcsv(iv_csv_path)
         startTime_IV_rome, startTime_IV_utc = getTimeFromRomeToUTC(self.IV_df.TIME.iloc[0], timeFormat = "%Y-%m-%d %H:%M:%S")
         stopTime_IV_rome, stopTime_IV_utc = getTimeFromRomeToUTC(self.IV_df.TIME.iloc[-1], timeFormat = "%Y-%m-%d %H:%M:%S")
 

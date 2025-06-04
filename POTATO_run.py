@@ -21,6 +21,104 @@ from moduleTest import verbose ## to be updated
 verbose = 1000
 outDir = "POTATOFiles"
 
+def createCSVFromIVScan(iv_scan, path):
+    """
+    Convert a full scan dictionary (containing both metadata and the
+    `scan["data"]` payload) into the CSV
+    """
+
+    data = iv_scan["data"]                     # shorthand
+
+    # --------- 1) gather header fields (with graceful fall-backs) ----------
+    name_label = iv_scan.get("nameLabel", "")
+    date_str   = iv_scan.get("date")
+    if not date_str:
+        # If the scan doesn't supply its own timestamp, stamp the file now
+        date_str = dt.datetime.now(tz=dt.timezone.utc) \
+                     .astimezone().strftime("%Y-%m-%d %H:%M:%S")
+
+    header_rows = [
+        ("#NameLabel", name_label),
+        ("#Date",      date_str),
+        ("#Comment",   iv_scan.get("comment", "")),
+        ("#Location",  iv_scan.get("location", "")),
+        ("#Inserter",  iv_scan.get("inserter", "")),
+        ("#RunType",   iv_scan.get("runType", "")),
+    ]
+
+    # --------- 2) station-level summary (use pre-computed averages if any) -
+    av_temp = iv_scan.get("averageTemperature")
+    if av_temp is None:
+        av_temp = mean(data["TEMP_DEGC"])
+
+    av_rh = iv_scan.get("averageHumidity")
+    if av_rh is None:
+        av_rh = mean(data["RH_PRCNT"])
+
+    station_line = (
+        iv_scan.get("station", "cleanroom"),
+        av_temp,
+        av_rh,
+    )
+
+    # --------- 3) write the CSV -------------------------------------------
+    from pathlib import Path
+    import csv
+    path = Path(path)
+    with path.open("w", newline="") as fp:
+        w = csv.writer(fp)
+
+        # metadata
+        for row in header_rows:
+            w.writerow(row)
+        w.writerow([])                                     # blank spacer
+
+        # station summary
+        w.writerow(["STATION", "AV_TEMP_DEGC", "AV_RH_PRCNT"])
+        w.writerow(station_line)
+        w.writerow([])
+
+        # per-point data block
+        w.writerow(["VOLTS", "CURRNT_NAMP", "TEMP_DEGC",
+                    "RH_PRCNT", "TIME"])
+
+        for volts, amps, temp, rh, ts in zip(
+            data["VOLTS"],
+            data["CURRNT_NAMP"],
+            data["TEMP_DEGC"],
+            data["RH_PRCNT"],
+            data["TIME"],
+        ):
+            w.writerow([volts, amps, temp, rh, ts])
+
+    return path
+
+
+
+def createIVScanCSVFile(runNumber, module_name, outDir):
+    run = getRunFromDB(runNumber)
+    session = run['runSession']
+    from databaseTools import getIVscansOfModule
+    iv_scans = getIVscansOfModule(module_name)
+    iv_scan = None
+    for iv_scan in iv_scans:
+        if iv_scan["sessionName"] == session:
+            print(iv_scan["sessionName"],iv_scan["runType"], iv_scan["IVScanId"])
+
+    if not iv_scan:
+        print("IV scans:")
+        for iv_scan in iv_scans:
+            print(iv_scan["sessionName"], iv_scan["runType"], iv_scan["IVScanId"])
+        raise Exception("No IV scan found for run %s and module %s"%(runNumber, module_name))
+
+    ## Take the last one
+    csv_path = createCSVFromIVScan(iv_scan, os.path.join(outDir, f"{iv_scan['IVScanId']}_IVScan.csv"))
+    print("IV scan CSV file created:", csv_path)
+    return csv_path
+
+
+
+
 def downloadAndExtractZipFile(remote_path, local_path, webdav_wrapper=None, skipWebdav=False):
     if verbose>2: print("downloadAndExtractZipFile")
     webdav_wrapper = None
@@ -124,8 +222,9 @@ print("Merged file created:", rootTrackerFileName)
 ## Run potatoconverter (or formatter)
 from POTATO_PisaFormatter import POTATOPisaFormatter as Formatter
 mergeTwoROOTfiles(resultsFile, monitorDQMFile, rootTrackerFileName)
+iv_csv_path = createIVScanCSVFile(runNumber, module_name, outDir)
 theFormatter = Formatter(outDir)
-theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName)
+theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path)
 
 ############### Prepare a script to run POTATO
 
@@ -158,15 +257,29 @@ def runPotatoExpress(rootTrackerFileName):
 
     from shellCommands import runCommand
     output = runCommand(scriptPath)
+    xmlFile = None
     for l in str(output.stdout).split("\\n"): 
         if ".xml"  in l:
             xmlFile = l.split(" ")[-1]
             break ## the first one is the one we want
+    if not xmlFile:
+        print("###########################################################")
+        print("POTATO Express did not produce an XML file. Output:")
+        print(output.stdout.decode('utf-8'))
+        print()
+        print("###########################################################")
+        print("Script executed:", scriptPath)
+        print("###########################################################")
+        print("Error output:")
+        print(output.stderr.decode('utf-8'))
+        print()
+        print("###########################################################")
+        raise Exception("XML file not found in the output of POTATO Express. Output: %s. There must be a crash in POTATO Express. Try to run manually %s for debugging."%(output.stdout, scriptPath))
 
     ## Copy back the xml file
-    os.system("cp %s/%s %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
-    if verbose>10: print("XML file copied from %s/%s to %s/%s"%(POTATOExpressFolder, xmlFile, outDir, xmlFile))
-    return "%s/%s"%(outDir, xmlFile)
+    os.system("cp %s %s/%s"%(xmlFile, outDir, xmlFile.split("/")[-1]))
+    if verbose>10: print("XML file copied from %s to %s/%s"%(xmlFile, outDir, xmlFile.split("/")[-1]))
+    return "%s/%s"%(outDir, xmlFile.split("/")[-1])
 
 xmlFile = runPotatoExpress(rootTrackerFileName)
 print("XML file created:", xmlFile)
