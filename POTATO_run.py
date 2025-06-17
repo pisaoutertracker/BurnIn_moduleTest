@@ -158,11 +158,36 @@ def downloadAndExtractZipFile(remote_path, local_path, webdav_wrapper=None, skip
     return extracted_dir
 
 print("+"*200)
-print("Session:", session)
+print("Session:", session) ##eg. session696
+next_session = str(session)
 session = getSessionFromDB(session)
-if verbose>10:
-    print(session)
+
+aModule = [mod for mod in session['modulesList'] if mod ][-1]
+
+
+## Get the timestamp of the first session - containing the same module - after the current session
+# This should correspond to the end of the session
 runs = session['test_runName']
+
+if len(runs)== 0:
+    raise Exception("No runs found in the session %s. Please check the session name."%session['sessionName'])
+
+timestamp_lastrun = getRunFromDB(runs[-1])['runDate']
+
+next_session = "session%d"%(int(next_session.split("session")[-1])+1)
+try:
+    while not (aModule in getSessionFromDB(next_session)['modulesList']):
+        next_session = "session%d"%(int(next_session.split("session")[-1])+1)
+    next_session_timestamp = getSessionFromDB(next_session)['timestamp']
+
+except KeyError:
+    ## If the next session is not found, we assume it is the end of the sessions, use a fake timestamp
+    print("No more sessions found after %s"%session['sessionName'])
+    next_session = None
+    ## Put a fake timestamp (it will be controlled in POTATO_PisaFormatter)
+    next_session_timestamp = "2030-01-01 01:01:01"
+
+
 for run in runs:
     print("+"*200)
     print("Run:", run)
@@ -272,7 +297,9 @@ for run in runs:
         print(f"Calling POTATO Pisa Formatter version with files {rootTrackerFileName}, {iv_csv_path}")
         print(f"using as input {resultsFile} and {monitorDQMFile}")
         print("#"*200)
-        theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath)
+        print( next_session_timestamp)
+        print( session['timestamp'])
+        theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, session['timestamp'], next_session_timestamp)
 
         ############### Prepare a script to run POTATO
 

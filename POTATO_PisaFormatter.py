@@ -20,7 +20,7 @@ except ImportError:
 from potatoconverters.BurninMappings import opticalGroupToBurninSlot
 from datetime import datetime, timedelta, timezone
 
-extraTime = 300 # minutes (time)
+extraTime = 0 # minutes (time)
 #iv_csv_path = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
 #iv_csv_path = "IVdata/IV_curve_HV0.1_TEST_after_encapsulation_20250522_211105.csv"
 
@@ -33,6 +33,8 @@ chillerSetPointName = "/julabo/full/Temp_SP1" ##can we please get rid of the 3 s
 #ambientHumiditySensor = "/fnalbox/full/Humidity"
 #
 
+# The maximum number of hours since the start of the run to query InfluxDB.
+maxNumHoursSinceStartRun_influxQuery = 48 # hours (time)
 
 verbose = 1000
 # Define the path to the main directory
@@ -437,7 +439,7 @@ class POTATOPisaFormatter():
         #print("Begin: ", begin, " End: ", end, "Size: ", values.size)
         return np.mean(values[begin:end])
 
-    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapPath):
+    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapPath, sessionTimestampStart, sessionTimestampStop):
         print("Calling do_burnin_format with: rootTrackerFileName: ", rootTrackerFileName, " runNumber: ", runNumber, " opticalGroupNumber: ", opticalGroupNumber, " moduleBurninName: ", moduleBurninName, " moduleCarrierName: ", moduleCarrierName)
         theHistogrammer = Histogrammer()
         self.theHistogrammer = theHistogrammer
@@ -481,16 +483,36 @@ class POTATOPisaFormatter():
 
         timeFromRoot_start = detectorTrackerDirectory.Get("CalibrationStartTimestamp_Detector").GetName()
         timeFromRoot_stop  = detectorTrackerDirectory.Get("CalibrationStopTimestamp_Detector").GetName()
-        
+
+        timeSession_start = sessionTimestampStart.replace("T"," ")
+        timeSession_stop  = sessionTimestampStop.replace("T"," ")
+
+       
         startTime_rome, startTime_utc = getTimeFromRomeToUTC(timeFromRoot_start, timeFormat = "%Y-%m-%d %H:%M:%S")
         stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(timeFromRoot_stop, timeFormat = "%Y-%m-%d %H:%M:%S")
+
+        startSession_rome, startSession_utc = getTimeFromRomeToUTC(timeSession_start, timeFormat = "%Y-%m-%d %H:%M:%S")
+        stopSession_rome, stopSession_utc = getTimeFromRomeToUTC(timeSession_stop, timeFormat = "%Y-%m-%d %H:%M:%S")
+
+        if stopSession_utc > startSession_utc + timedelta(hours=maxNumHoursSinceStartRun_influxQuery):
+            print("%"* 80)
+            print("WARNING: Session stop time is less than %.1f hours after start time. This may lead to missing data in InfluxDB queries." % maxNumHoursSinceStartRun_influxQuery)
+            print("Start time (UTC): ", startTime_utc, " Stop time (UTC): ", stopTime_utc)
+            stopSession_utc = startSession_utc + timedelta(hours=maxNumHoursSinceStartRun_influxQuery)
+            stopSession_rome = stopSession_utc.astimezone(tz=None)  # Convert to local time zone
+            print("Adjusted session stop time (UTC): ", stopSession_utc, " Adjusted session stop time (local): ", stopSession_rome)
+            print("%"* 80)
 
         ### For influxDB:
         time_start_utc = startTime_utc.isoformat("T").split("+")[0] 
         time_stop_utc = stopTime_utc.isoformat("T").split("+")[0] 
 
+        session_start_utc = startSession_utc.isoformat("T").split("+")[0] 
+        session_stop_utc = stopSession_utc.isoformat("T").split("+")[0]
+
         testTimeStart = datetime.strptime(timeFromRoot_start, TIME_FORMAT).timestamp()
         testTimeStop  = datetime.strptime(timeFromRoot_stop, TIME_FORMAT).timestamp()
+
 
         ## TO BE CHECKED:
         # move time from CEST to UTC
@@ -549,17 +571,17 @@ class POTATOPisaFormatter():
 #        connectionMap = getConnectionMap(rootTrackerFileName)
         connectionMap = readConnectionMap(connectionMapPath)
         hv_channel, lv_channel = getHVLVchannels(connectionMap)
-        moduleLVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Voltage", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        moduleLVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Current", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        moduleHVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Voltage", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        moduleHVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Current", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        moduleLVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Voltage", start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        moduleLVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Current", start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        moduleHVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Voltage", start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        moduleHVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{hv_channel}_Current", start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
 
         ## No extra time as we want the temperature spot, not in a range
         sensorTemperatureGraph         = getGraphFromMonitorDQM(detectorTrackerMonitorDirectory, plotName=sensorTempPlotName, board=0, opticalGroup=opticalGroupNumber)
-        ambientTemperatureGraph        = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        moduleCarrierTemperatureGraph  = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        dewPointGraph                  = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
-        chillerSetPointGraph           = self.getGraphFromInfluxDB(chillerSetPointName, start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
+        ambientTemperatureGraph        = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        moduleCarrierTemperatureGraph  = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        dewPointGraph                  = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
+        chillerSetPointGraph           = self.getGraphFromInfluxDB(chillerSetPointName, start_time_TS=session_start_utc, stop_time_TS=session_stop_utc)
 
         ambientTemperatureGraph_IV_Influx          = self.getGraphFromInfluxDB(ambientTemperatureSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
         moduleCarrierTemperatureGraph_IV_Influx    = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
@@ -602,7 +624,12 @@ class POTATOPisaFormatter():
         theHistogrammer.makeChillerSetPointTemperature(chillerSetPointGraph.GetX(), chillerSetPointGraph.GetY(), module=moduleName)
         theHistogrammer.makeChillerSetPointTemperature(chillerSetPointGraph.GetX(), chillerSetPointGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
-        moduleIVGraph           = makeGraphFromDataframe(self.IV_df, "VOLTS","CURRNT_NAMP")
+        moduleIVGraph           = makeGraphFromDataframe(self.IV_df, "VOLTS","CURRNT_NAMP") ## NanoAmps
+
+        ## Convert to microAmps
+        for i in range(moduleIVGraph.GetN()):
+            moduleIVGraph.SetPoint(i, moduleIVGraph.GetX()[i], moduleIVGraph.GetY()[i] * 1e-3)
+    
         moduleIVTimestampGraph  = makeGraphFromDataframe(self.IV_df, "VOLTS","TIME", is_datetime=True)
 
         print("IV Graph: ", moduleIVGraph.GetName(), " N: ", moduleIVGraph.GetN(), " Start: ", startTime_IV_utc, " Stop: ", stopTime_IV_utc)
