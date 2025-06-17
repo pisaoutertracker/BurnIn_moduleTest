@@ -1,0 +1,1804 @@
+29.05.2025 15:59:47: |140489373334720|I| Initialized[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mTool created[0m
+29.05.2025 15:59:47: |140489373334720|I| [32mBootstrapping TCP Server...[0m
+virtual void TCPPublishServer::acceptConnections()Wating for clients to connect
+virtual void TCPPublishServer::acceptConnections()Wating for clients to connect
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mLoading configuration for CIC from /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m Global settings CIC2[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG BEND_SEL == 1]-- set to. Mask 11011 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG N_OUTPUT_TRIGGER_LINES_SEL == 1]-- set to. Mask 10111 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mBoard sparisfication set to 1[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG CBC_SPARSIFICATION_SEL == 1]-- set to. Mask 01111 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_H is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mStripControl2 is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mENFLAGS is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mTHTRIMMING is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mDigCalibPattern_L is a CtrlReg[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mLoading configuration for CIC from /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m Global settings CIC2[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG BEND_SEL == 1]-- set to. Mask 11011 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG N_OUTPUT_TRIGGER_LINES_SEL == 1]-- set to. Mask 10111 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mBoard sparisfication set to 1[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m  Setting [ FE_CONFIG CBC_SPARSIFICATION_SEL == 1]-- set to. Mask 01111 -- old value 11101 -- new value 11101[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mD19cFWInterface Constructor[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mD19cTriggerInterface::D19cTriggerInterface Constructor[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19cTriggerInterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19cFastCommandInterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19cBackendAlignmentFWInterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19cDebugFWInterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mD19cCommandProcessorInterface::D19cCommandProcessorInterface Constructor[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mCommand Arbitrator State = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mReply Arbitrator State = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mWorker state = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mIC State = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mI2C State = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [34mFE State = [1m[33mIDLE[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mD19clpGBTSlowControlWorkerInterface::D19clpGBTSlowControlWorkerInterface Constructor[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19clpGBTSlowControlWorkerInterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mCreated D19cBERTinterface ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [32mTrying to connect to the Power Supply Server...[0m
+bool TCPClientBase::connect(int, unsigned int)Connecting Client socket to server name-127.0.0.1-serverPort: 7003
+bool TCPClientBase::connect(int, unsigned int)Connecting Client socket to server ip  -127.0.0.1-serverPort: 7003
+bool TCPClientBase::connect(int, unsigned int)[89]	Succesfully connected to server 127.0.0.1 port: 7003
+29.05.2025 15:59:47: |140489373334720|I| [32mConnected to the Power Supply Server![0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m	--> Operation completed[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mInitializing HwInterfaces for OT BeBoards..[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m	...Initializing HwInterfaces for OpticalGroups..1 optical group(s) found ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m			.. Initializing HwInterface for lpGBT[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[31mConstructor D19clpGBTInterface[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[32mUsing Serial Interface configuration mode[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m			.. Initializing HwInterface for VTRx[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mFound 2 hybrids in this group...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m		...Initializing HwInterfaces for FrontEnd Hybrids..2 hybrid(s) found ...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m				.. Initializing HwInterface(s) for PS module(s)[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[32m					.. Readout chip interface aware of the lpGBT connected to this board ... [0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34m			.. Initializing HwInterface for CIC[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[32m					.. CIC interface aware of the lpGBT connected to this board ... [0m
+29.05.2025 15:59:47: |140489373334720|I| Use default directory MonitorResults for file dump[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mOptical readout . initializing link control interface[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mOptical readout . initializing Optical interface for FE configuration[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[33mInitialized D19cL1ReadoutInterface ...0x5977d20[0m
+[0m
+********************************************************************************
+                                   [1m[31mHW SUMMARY[0m
+********************************************************************************
+[1m[34m|----BeBoard --> Id: [1m[33m0[1m[34m, BoardType: [1m[33mD19C[1m[34m, EventType: [1m[33mVR[1m[34m, Configure: [1m[33m1[1m[34m, Comment: [1m[33m[0m
+[1m[36m|       |----Board Id:      [1m[33mboard
+[1m[36m|       |----URI:           [1m[33mchtcp-2.0://localhost:10203?target=fc7ot3:50001
+[1m[36m|       |----Address Table: [1m[33mfile://settings/address_tables/uDTC_OT_address_table.xml
+[0m[1m[34m|	|	|---- NTC type: [1m[33mSensor[1m[34m, LpGBT ADC: [1m[33mADC4[1m[34m, Lookup Table: [1m[33m/home/cmsTkUser/Ph2_ACF/settings/NTCFiles/ntc_1k.csv[0m
+[1m[34m|	|	|---- NTC type: [1m[33mVTRx+[1m[34m, LpGBT ADC: [1m[33mADC6[1m[34m, Lookup Table: [1m[33m/home/cmsTkUser/Ph2_ACF/settings/NTCFiles/vtrx_ntc_1k.csv[0m
+[1m[34m|	|----OpticalGroup --> Id: [1m[33m0[1m[34m, Enable: [1m[33m1[1m[34m, FMC Id: [1m[33m12[0m
+[1m[34m|	|----lpGBT --> File: [1m[33m/home/cmsTkUser/Ph2_ACF/settings/lpGBTFiles/lpGBT_v1_PS.txt[0m
+[1m[34m|	|	|---- ADC Config. File: [1m[33m[0m
+[1m[36m|	|	|---- LpGBT Settings:[0m
+[1m[34m|       |----Hybrid --> [1m[34mId: [1m[33m0[1m[34m, Enable: [1m[33m1[1m[34m[0m
+[1m[34mI2C Master Id is 2[0m
+[1m[34minvertClock 0[0m
+[1m[34m|       |       | HybridOpticalId is 0[0m[1m[36m|  |   |----SSA2  Id :0, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :1, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :2, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :3, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :4, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :5, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :6, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :7, File: SSA2.txt[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 2[0m
+[1m[36m|  |   |----CIC2  Id8 , File: /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+[32m|	|	|	|----FrontEndType: [31mCIC2[0m
+[32m|	|	|	|---- Setting enableBend to  1
+[0m[32m|	|	|	|---- Setting enableLastLine to  1
+[0m[32m|	|	|	|---- Setting enableSparsification to  1
+[0m[1m[36m|  Parsing global hybrid settings 
+[1m[34m|       |----Hybrid --> [1m[34mId: [1m[33m1[1m[34m, Enable: [1m[33m1[1m[34m[0m
+[1m[34mI2C Master Id is 0[0m
+[1m[34minvertClock 0[0m
+[1m[34m|       |       | HybridOpticalId is 0[0m[1m[36m|  |   |----SSA2  Id :0, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :1, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :2, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :3, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :4, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :5, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :6, File: SSA2.txt[0m
+[1m[36m|  |   |----SSA2  Id :7, File: SSA2.txt[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |   |   |---- MPA2 controlled by I2CMaster 0[0m
+[1m[36m|  |   |----CIC2  Id8 , File: /home/cmsTkUser/Ph2_ACF/settings/CicFiles/CIC2_PS.txt[0m
+[32m|	|	|	|----FrontEndType: [31mCIC2[0m
+[32m|	|	|	|---- Setting enableBend to  1
+[0m[32m|	|	|	|---- Setting enableLastLine to  1
+[0m[32m|	|	|	|---- Setting enableSparsification to  1
+[0m[1m[36m|  Parsing global hybrid settings 
+********************************************************************************
+                                [1m[31mEND OF HW SUMMARY[0m
+********************************************************************************
+
+[1m[31mMonitoring[0m[32m -- [1m[36mMPA2[0m[32m:Register [1m[33mAVDD[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mMPA2[0m[32m:Register [1m[33mDVDD[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mMPA2[0m[32m:Register [1m[33mtemp[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mSSA2[0m[32m:Register [1m[33mAVDD[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mSSA2[0m[32m:Register [1m[33mDVDD[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mSSA2[0m[32m:Register [1m[33mtemp[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mVDD[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mVDDA[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mLpGBTtemp[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mSensorTemp[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mVTRxLeakageCurr[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33mVTRxTemp[0m
+[1m[31mMonitoring[0m[32m -- [1m[36mLpGBT[0m[32m:Register [1m[33m2V55[0m
+
+[1m[31mSetting[0m[32m -- [1m[36mInjectionType[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mTriggerMultiplicity[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mStartLatency[0m[32m:[1m[33m290[0m
+[1m[31mSetting[0m[32m -- [1m[36mLatencyRange[0m[32m:[1m[33m20[0m
+[1m[31mSetting[0m[32m -- [1m[36mStubAlignmentScanStart[0m[32m:[1m[33m95[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSmoduleSSAthreshold[0m[32m:[1m[33m150[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSmoduleMPAthreshold[0m[32m:[1m[33m150[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSmoduleTriggerLatency[0m[32m:[1m[33m180[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSmoduleStubWindow[0m[32m:[1m[33m32[0m
+[1m[31mSetting[0m[32m -- [1m[36mSaveRawData[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mHoleMode[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mVerificationLoop[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mMaskChannelsFromOtherGroups[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mFitSCurves[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mPlotSCurves[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mTriggerRate[0m[32m:[1m[33m10[0m
+[1m[31mSetting[0m[32m -- [1m[36mTargetVcth[0m[32m:[1m[33m120[0m
+[1m[31mSetting[0m[32m -- [1m[36mTargetOffset[0m[32m:[1m[33m80[0m
+[1m[31mSetting[0m[32m -- [1m[36mInitialVcth[0m[32m:[1m[33m120[0m
+[1m[31mSetting[0m[32m -- [1m[36mSignalScanStep[0m[32m:[1m[33m2[0m
+[1m[31mSetting[0m[32m -- [1m[36mFitSignal[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mAntennaPotentiometer[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mThresholdForOpens[0m[32m:[1m[33m10[0m
+[1m[31mSetting[0m[32m -- [1m[36mAntennaTriggerRate[0m[32m:[1m[33m50[0m
+[1m[31mSetting[0m[32m -- [1m[36mShortsPulseAmplitude[0m[32m:[1m[33m20[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSHybridDebugDuration[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mAsyncSweepTh[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mAsyncThreshold[0m[32m:[1m[33m10[0m
+[1m[31mSetting[0m[32m -- [1m[36mAsyncCalDac[0m[32m:[1m[33m30[0m
+[1m[31mSetting[0m[32m -- [1m[36mStartTHDAC[0m[32m:[1m[33m64[0m
+[1m[31mSetting[0m[32m -- [1m[36mStopTHDAC[0m[32m:[1m[33m144[0m
+[1m[31mSetting[0m[32m -- [1m[36mNMsec[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mNMpulse[0m[32m:[1m[33m3000[0m
+[1m[31mSetting[0m[32m -- [1m[36mNlvl[0m[32m:[1m[33m50[0m
+[1m[31mSetting[0m[32m -- [1m[36mVfac[0m[32m:[1m[33m0.9[0m
+[1m[31mSetting[0m[32m -- [1m[36mMrms[0m[32m:[1m[33m0.6[0m
+[1m[31mSetting[0m[32m -- [1m[36mTestPulsePotentiometer[0m[32m:[1m[33m80[0m
+[1m[31mSetting[0m[32m -- [1m[36mSyncDebug[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mNevents[0m[32m:[1m[33m1000[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_FullScanStart[0m[32m:[1m[33m220[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_Occupancy[0m[32m:[1m[33m0.5[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoise_MaskUntrimmed[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoise_UntrimmedLimit[0m[32m:[1m[33m4.95[0m
+[1m[31mSetting[0m[32m -- [1m[36mFullScan[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_MaskUntrimmed[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_PulseAmplitude[0m[32m:[1m[33m70[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoise_PulseAmplitude[0m[32m:[1m[33m70[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_PulseAmplitudePix[0m[32m:[1m[33m70[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoise_PulseAmplitudePix[0m[32m:[1m[33m70[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoise_FastCounterReadout[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_PulseAmplitudeFullScan[0m[32m:[1m[33m30[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_PulseAmplitudePixFullScan[0m[32m:[1m[33m30[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedestalEqualization_FastCounterReadout[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoisePSLowInjection_PulseAmplitude[0m[32m:[1m[33m30[0m
+[1m[31mSetting[0m[32m -- [1m[36mPedeNoisePSLowInjection_PulseAmplitudePix[0m[32m:[1m[33m30[0m
+[1m[31mSetting[0m[32m -- [1m[36mStartPhase[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mPhaseRange[0m[32m:[1m[33m7[0m
+[1m[31mSetting[0m[32m -- [1m[36mPhaseStartLatency[0m[32m:[1m[33m290[0m
+[1m[31mSetting[0m[32m -- [1m[36mPhaseLatencyRange[0m[32m:[1m[33m10[0m
+[1m[31mSetting[0m[32m -- [1m[36mAttempts[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mActiveMPAs[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mFifoDepth[0m[32m:[1m[33m8[0m
+[1m[31mSetting[0m[32m -- [1m[36mCheckForStubs[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mScanL1Latency[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mScanStubLatency[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mDistributeInjections[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mTestMode[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mTriggerSeparation[0m[32m:[1m[33m80[0m
+[1m[31mSetting[0m[32m -- [1m[36mDelayAfterInjection[0m[32m:[1m[33m100[0m
+[1m[31mSetting[0m[32m -- [1m[36mBend[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mMinPclusters[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mMaxPclusters[0m[32m:[1m[33m3[0m
+[1m[31mSetting[0m[32m -- [1m[36mMinSclusters[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mMaxSclusters[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mMaxStubs[0m[32m:[1m[33m4[0m
+[1m[31mSetting[0m[32m -- [1m[36mSLVSDrive[0m[32m:[1m[33m3[0m
+[1m[31mSetting[0m[32m -- [1m[36mMaxOffset[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mStartTHDAC[0m[32m:[1m[33m64[0m
+[1m[31mSetting[0m[32m -- [1m[36mStopTHDAC[0m[32m:[1m[33m144[0m
+[1m[31mSetting[0m[32m -- [1m[36mNMsec[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mNMpulse[0m[32m:[1m[33m3000[0m
+[1m[31mSetting[0m[32m -- [1m[36mNlvl[0m[32m:[1m[33m50[0m
+[1m[31mSetting[0m[32m -- [1m[36mVfac[0m[32m:[1m[33m0.9[0m
+[1m[31mSetting[0m[32m -- [1m[36mMrms[0m[32m:[1m[33m0.6[0m
+[1m[31mSetting[0m[32m -- [1m[36mTestPulsePotentiometer[0m[32m:[1m[33m80[0m
+[1m[31mSetting[0m[32m -- [1m[36mSyncDebug[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mPSOccupancyPulseAmplitude[0m[32m:[1m[33m200[0m
+[1m[31mSetting[0m[32m -- [1m[36mDoManualVrefTuning[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTalignBoardDataWord_BroadcastAlignSetting[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTRegisterTester_NumberOfIterations[0m[32m:[1m[33m1000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTRegisterTester_Pattern[0m[32m:[1m[33m170[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyBoardDataWord_NumberOfTestedL1Bits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyBoardDataWord_NumberOfTestedStubBits[0m[32m:[1m[33m1e+08[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyBoardDataWord_DoMatchingInFirmware[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_CICStrength[0m[32m:[1m[33m1,3,5[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_ClockPolarity[0m[32m:[1m[33m0-1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_ClockStrength[0m[32m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_LpGBTPhase[0m[32m:[1m[33m0-14[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_NumberOfL1Bits[0m[32m:[1m[33m100000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICtoLpGBTecv_NumberOfStubBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTalignLpGBTinputs_NumberOfAlignmentIterations[0m[32m:[1m[33m100[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTalignLpGBTinputs_MinAlignmentSuccessRate[0m[32m:[1m[33m0.99[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICphaseAlignment_NumberOfAlignmentIterations[0m[32m:[1m[33m100[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTCICphaseAlignment_MinLockingSuccessRate[0m[32m:[1m[33m0.9[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyCICdataWord_NumberOfTestedStubBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyCICdataWord_NumberOfTestedL1Bits[0m[32m:[1m[33m100000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyCICdataWord_DoMatchingInFirmware[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyMPASSAdataWord_NumberOfTestedStubBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyMPASSAdataWord_NumberOfTestedL1Bits[0m[32m:[1m[33m100000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTverifyMPASSAdataWord_DoMatchingInFirmware[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_NumberOfEvents[0m[32m:[1m[33m100[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_MaximumDelay[0m[32m:[1m[33m150[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_DelayStep[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_SSAtestPulseValue[0m[32m:[1m[33m0.5[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_MPAtestPulseValue[0m[32m:[1m[33m0.5[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_SSAnumberOfSigmaNoiseAwayFromPedestal[0m[32m:[1m[33m5[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionDelayOptimization_MPAnumberOfSigmaNoiseAwayFromPedestal[0m[32m:[1m[33m5[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTMeasureOccupancy_NumberOfEvents[0m[32m:[1m[33m10000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTMeasureOccupancy_SSAtestPulseValue[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTMeasureOccupancy_MPAtestPulseValue[0m[32m:[1m[33m1[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTMeasureOccupancy_ForceChannelGroup[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTMeasureOccupancy_ThresholdOffset[0m[32m:[1m[33m0[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTPScommonNoise_NumberOfEvents[0m[32m:[1m[33m10000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTPScommonNoise_ListOfSigma[0m[32m:[1m[33m0,3[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionOccupancyScan_ListOfInjectedPulses[0m[32m:[1m[33m0,0.25,0.5,1.,2.[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionOccupancyScan_NumberOfEventsWithoutInjection[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTinjectionOccupancyScan_NumberOfEventsWithInjection[0m[32m:[1m[33m1000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTalignLpGBTinputsForBypass_NumberOfTestedBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTChipToCICecv_NumberOfTestedBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTChipToCICecv_MPAshiftRegisterPattern[0m[32m:[1m[33m170[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTChipToCICecv_ListOfMPAslvsCurrents[0m[32m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTSSAtoMPAecv_NumberOfTestedStubBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTSSAtoMPAecv_NumberOfTestedL1Bits[0m[32m:[1m[33m100000[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTSSAtoMPAecv_ListOfSSAslvsCurrents[0m[32m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTSSAtoSSAecv_NumberOfTestedStubBits[0m[32m:[1m[33m1e+06[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTSSAtoSSAecv_ListOfSSAslvsCurrents[0m[32m:[1m[33m1,4,7[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTPSringOscillatorTest_NumberOfClockCycles[0m[32m:[1m[33m100[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTLpGBTEyeOpeningTest_PowerList[0m[32m:[1m[33m1-3[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTBitErrorRateTest_NumberOfBits[0m[32m:[1m[33m1e+10[0m
+[1m[31mSetting[0m[32m -- [1m[36mOTPatternCheckerHelper_NumberOfBits[0m[32m:[1m[33m1e+10[0m
+
+29.05.2025 15:59:47: |140489373334720|I| [1m[35m@@@ Configuring HW parsed from XML file @@@[0m
+
+29.05.2025 15:59:47: |140489373334720|I| [32mFound an [1m[33mOuter Tracker[0m[32m Readout-board[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mExternal clock Disabled[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mFMC1 Card: [0mOPTO_OCTA
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mFMC2 Card: [0mDIO5
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mSending a global reset to the FC7 ..... [0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[32mPowering on DIO5 at L8...[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[32mPowering on DIO5[0m
+29.05.2025 15:59:47: |140489373334720|I| [1m[34mConfiguring FC7...[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34m	CDCE Synchronization[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34m		De-Asserting Sync[0m
+29.05.2025 15:59:48: |140489373334720|I| 		Asserting Sync[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mFront-end type code from firmware register : 5[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mDD3 Readout .... [0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mD19cFWInterface::ConfigureBoard with lpGBT[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[33mConfiguring Tx/Rx polarity[0m
+29.05.2025 15:59:48: |140489373334720|I| Bit number: 0 --- Links offset: 0 --- OG Id: 0[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mFMC-L12 -- Rx Polarity = 00000000000000000000000000000001  -- Tx Polarity = 00000000000000000000000000000000[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mFMC-L8  -- Rx Polarity = 00000000000000000000000000000000  -- Tx Polarity = 00000000000000000000000000000000[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[33mConfiguring lpGBT versions[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[34mLpGBT Version = 00000000000000000000000000000001[0m
+29.05.2025 15:59:48: |140489373334720|I| [1m[35mResetting lpGBT-FPGA core on BeBoard#0[0m
+29.05.2025 15:59:49: |140489373334720|I| [1m[35mD19cLinkInterface::GeneralLinkReset Resetting lpGBT-FPGA core on BeBoard#0 [Attempt#0][0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mlpGBT Link Status...[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mlpGBT Link0 status 00000000010000000000000000000111[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT TX Ready[1m[32m	 : LOCKED[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mD19cLinkInterface:GetLinkStatus	... MGT Ready[1m[32m	 : LOCKED[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mD19cLinkInterface:GetLinkStatus	... lpGBT RX Ready[1m[32m	 : LOCKED[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[31mSending HARD RESET to ReadoutChips[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[31mSending HARD RESET to CIC[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSparsification set to 1[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting firmware register fc7_daq_cnfg.ddr3_debug.stub_enable to 0[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting firmware register fc7_daq_cnfg.physical_interface_block.cic.2s_sparsified_enable to 1[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSparsification set to 1[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting firmware register fc7_daq_cnfg.ddr3_debug.stub_enable to 0[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting firmware register fc7_daq_cnfg.physical_interface_block.cic.2s_sparsified_enable to 1[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[32mAccording to the Firmware status registers, it was compiled for: 16 hybrid(s), 1 CIC2 chip(s) per hybrid[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mEnabling FE hybrid : 0 - link Id 0[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting chips enable register on hybrid0 to 00000000000000000000000011111111[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mEnabling FE hybrid : 1 - link Id 0[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting chips enable register on hybrid1 to 00000000000000000000000011111111[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34m2 CIC(s) enabled on this BeBoard[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mSetting hybrid enable register to 00000000000000000000000000000011[0m
+
+29.05.2025 15:59:51: |140489373334720|I| [1m[35m@@@ Configuring frontend for Board Id: [1m[33m0[1m[35m @@@[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[35mInitializing OT hardware..[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mNow going to configuring lpGBTs#[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mNow going to configuring lpGBTs#0 on Board 0[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mFrontEndType	--> LpGBT...Configuring chip with Id[0] , Version[1][0m
+29.05.2025 15:59:51: |140489373334720|I| [32mLpGBT chip info: Tx Data Rate = [1m[33m5 Gbit/s[0m[32m; TxEncoding = [1m[33mFEC5[0m[32m; LpGBT Mode = [1m[33mTransceiver[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[32mlpGBT Configured [READY][0m
+29.05.2025 15:59:51: |140489373334720|I| [32mReseting I2C Masters[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mLoad calibration data and automatically tune vref (repeat if temperature changes)![0m
+29.05.2025 15:59:51: |140489373334720|I| [32mFuseID from LpGBT optical group [1m[33m0[0m[32m on Board [1m[33m0[0m[32m: 0x[1m[33mec2acd51[0m
+29.05.2025 15:59:51: |140489373334720|I| [32mLoading calibration data for LpGBT on Board [1m[33m0[0m[32m OpticalGroup [1m[33m0[0m[32m with Fuse ID 0x[1m[33mec2acd51[0m
+29.05.2025 15:59:51: |140489373334720|W| [1m[31m	--> Calibration data not available for LpGBT on Board ID [1m[33m0[1m[31m OpticalGroup ID [1m[33m0[1m[31m with Fuse ID 0x[1m[33mec2acd51[0m
+29.05.2025 15:59:51: |140489373334720|W| [1m[34m	--> Proceeding without LpGBT ADC calibrations[0m
+29.05.2025 15:59:51: |140489373334720|I| [1m[34mFrontEndType	--> VTRx...Configuring chip with Id[0][0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mSuccesful write to 14 registers on CIC[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mConfiguring an OuterTrackerPS module [0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mSystemController::ModuleStartUpPS for BeBoard#0 OpticalGroup#0[0m
+29.05.2025 15:59:52: |140489373334720|I| [32mReseting I2C Masters[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mResetting SSA[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mResetting SSA[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mConfiguring CIC0 on link 0 on hybrid 0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> CIC2...Configuring chip with Id[8][0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mSuccesful write to 93 registers on CIC[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mConfiguring CIC1 on link 0 on hybrid 1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> CIC2...Configuring chip with Id[8][0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mSuccesful write to 93 registers on CIC[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32m####################################################################################[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mSystemController::CicStartUp for OpticalGroup#0 CIC#0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mOverriding FE_ENABLE for CIC on Hybrid 0 OpticalGroup 0 BeBoard 0 to enable  MPAs 8 9 10 11 12 13 14 15 [0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[33mLaunching CIC start-up sequence..[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34m.... Starting CIC start-up ........ on hybrid 0 for CIC2.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking if CIC requires a Soft reset.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mResetting DLL in CIC0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking DLL lock in CIC0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mDLL in CIC [1m[32m LOCKED.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking CIC0 - has fast command decoder locked?[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[33mRead back value of 11000 from RO status register[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mSUCCESSFULLY [1m[34m locked fast command decoder in CIC.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mSystemController::CicStartUp for OpticalGroup#0 CIC#1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mOverriding FE_ENABLE for CIC on Hybrid 1 OpticalGroup 0 BeBoard 0 to enable  MPAs 8 9 10 11 12 13 14 15 [0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[33mLaunching CIC start-up sequence..[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34m.... Starting CIC start-up ........ on hybrid 1 for CIC2.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking if CIC requires a Soft reset.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mResetting DLL in CIC1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking DLL lock in CIC1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mDLL in CIC [1m[32m LOCKED.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking CIC1 - has fast command decoder locked?[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[33mRead back value of 11000 from RO status register[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mSUCCESSFULLY [1m[34m locked fast command decoder in CIC.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32m####################################################################################[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mChecking if a ReSync is needed for Board0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34m	... CIC0 requires a ReSync[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[35mSending a ReSync at the end of the OT-module configuration step[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[33mFAILED to clear CIC ReSync request on Board Id 0 OpticalGroup id0 Hybrid id 0 --- trying to change fast command sampling edge[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFast command block in CIC locks on falling edge.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mConfiguring fast command block in CIC to lock on rising edge.[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mConfiguring ReadoutOutChips on Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[0] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[1] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#1[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[2] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#2[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#2[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[3] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#3[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#3[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[4] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#4[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#4[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[5] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#5[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#5[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[6] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#6[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#6[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[7] oh Hybrid0[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#7[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#7[0m
+29.05.2025 15:59:52: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[8][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#8[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#8[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[9][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#9[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#9[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[10][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#10[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#10[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[11][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#11[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#11[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[12][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#12[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#12[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[13][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#13[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#13[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[14][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#14[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#14[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[15][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#15[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#15[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mConfiguring ReadoutOutChips on Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[0] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#0[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#0[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[1] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[2] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#2[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#2[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[3] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#3[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#3[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[4] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#4[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#4[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[5] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#5[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#5[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[6] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#6[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#6[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> SSA2...Configuring chip with Id[7] oh Hybrid1[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers in SSA#7[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 54 global R/W registers in SSA#7[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[8][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#8[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#8[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[9][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#9[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#9[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[10][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#10[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#10[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[11][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#11[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#11[0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[12][0m
+29.05.2025 15:59:53: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#12[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#12[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[13][0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#13[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#13[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[14][0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#14[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#14[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[34mFrontEndType	--> MPA2...Configuring chip with Id[15][0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 0 control registers inFrontEndType	--> MPA2#15[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[32mWrote 163 R/W registers inFrontEndType	--> MPA2#15[0m
+29.05.2025 15:59:54: |140489373334720|I| [1m[35mConfigured OT module[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mStarting [1m[33mmonitoring[0m[32m thread[0m
+29.05.2025 15:59:54: |140489373334720|I| Configured[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#0 Pos 132 Wafer 19 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#1 Pos 133 Wafer 19 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#2 Pos 134 Wafer 19 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#3 Pos 135 Wafer 19 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#4 Pos 32 Wafer 20 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#5 Pos 33 Wafer 20 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#6 Pos 34 Wafer 20 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#7 Pos 35 Wafer 20 Lot 8 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#8 Pos 74 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 10[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#9 Pos 11 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 11[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#10 Pos 184 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 9[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#11 Pos 117 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 10[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#12 Pos 71 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 12[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#13 Pos 13 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 10[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#14 Pos 51 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 11[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from MPA2#15 Pos 29 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 11[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#0 Pos 119 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#1 Pos 118 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#2 Pos 117 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#3 Pos 116 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:54: |140489373334720|I| [32mFuseID from SSA2#4 Pos 115 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from SSA2#5 Pos 114 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from SSA2#6 Pos 113 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from SSA2#7 Pos 112 Wafer 6 Lot 22 Status 0 Process 0 ADCRef 0[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#8 Pos 177 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 9[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#9 Pos 48 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 9[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#10 Pos 93 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 11[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#11 Pos 120 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 11[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#12 Pos 31 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 10[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#13 Pos 94 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 9[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#14 Pos 73 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 10[0m
+29.05.2025 15:59:55: |140489373334720|I| [32mFuseID from MPA2#15 Pos 49 Wafer 5 Lot 7 Status 3 Process 0 ADCRef 9[0m
+29.05.2025 15:59:55: |140489373334720|W| basic_string: construction from null is not valid
+29.05.2025 15:59:55: |140489373334720|W| void MetadataHandler::fillInitialConditions() Username not set, using dummy name
+29.05.2025 15:59:56: |140489373334720|I| [32mFuseID from LpGBT optical group [1m[33m0[0m[32m on Board [1m[33m0[0m[32m: 0x[1m[33mec2acd51[0m
+29.05.2025 15:59:56: |140489373334720|I| [1m[33mFuseID from pre-production CIC2 10020450 LOT 1 Wafer 2 RETICLE 45 DIE 0[0m
+29.05.2025 15:59:56: |140489373334720|I| [1m[33mFuseID from pre-production CIC2 10020841 LOT 1 Wafer 2 RETICLE 84 DIE 1[0m
+29.05.2025 15:59:56: |140489373334720|I| Run 500749 started[0m
+29.05.2025 15:59:56: |140488984229440|I| [32m	--> Waiting for monitoring to pause...[0m
+29.05.2025 15:59:57: |140488984229440|I| [32m	--> Waiting for monitoring to pause...[0m
+29.05.2025 15:59:58: |140488984229440|I| [32m	--> Waiting for monitoring to pause...[0m
+29.05.2025 15:59:59: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 15:59:59: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern VREFTUNE for frontend type LpGBT[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:00:00: |140488984229440|I| Starting OTVTRxLightYieldScan measurement.
+29.05.2025 16:00:00: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[33mSetting VTRx bias to 0x28[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x18[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x1c[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x20[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x24[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x28[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[33mSetting VTRx bias to 0x2c[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x18[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x1c[0m
+29.05.2025 16:00:00: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x20[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x24[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x28[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mSetting VTRx bias to 0x30[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x18[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x1c[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x20[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x24[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x28[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mSetting VTRx bias to 0x34[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x18[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x1c[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x20[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x24[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x28[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mSetting VTRx bias to 0x38[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x18[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x1c[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x20[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x24[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[35m    Setting VTRx modulation to 0x28[0m
+29.05.2025 16:00:01: |140488984229440|I| Done with OTVTRxLightYieldScan.
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:00:01: |140488984229440|I| Stopping OTVTRxLightYieldScan measurement.
+29.05.2025 16:00:01: |140488984229440|I| OTVTRxLightYieldScan stopped.
+29.05.2025 16:00:01: |140488984229440|I| Starting OTLpGBTEyeOpeningTest measurement.
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:00:01: |140488984229440|I| [1m[33mMeasuring LpGBT Eye Opening with power 0.333333[0m
+29.05.2025 16:00:29: |140488984229440|I| [1m[33mMeasuring LpGBT Eye Opening with power 0.666667[0m
+29.05.2025 16:00:56: |140488984229440|I| [1m[33mMeasuring LpGBT Eye Opening with power 1[0m
+29.05.2025 16:01:24: |140488984229440|I| Done with OTLpGBTEyeOpeningTest.
+29.05.2025 16:01:24: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:24: |140488984229440|I| Stopping OTLpGBTEyeOpeningTest measurement.
+29.05.2025 16:01:24: |140488984229440|I| OTLpGBTEyeOpeningTest stopped.
+29.05.2025 16:01:24: |140488984229440|I| Starting OTalignLpGBTinputs measurement.
+29.05.2025 16:01:24: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^EPRX\d{2}ChnCntr$ for frontend type LpGBT[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[33mForcing trigger source to internal triggers[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[33mOTalignLpGBTinputs::AlignLpGBTInputs ...[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[35mAligning CIC-lpGBT data on OpticalGroup#0[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[34mAligning lpGBT#0[0m
+29.05.2025 16:01:24: |140488984229440|I| [1m[32mGroup#0 Channel#0...		..Most frequently found phase is 10 out of 1 possibilities[0m
+29.05.2025 16:01:25: |140488984229440|I| [1m[32mGroup#0 Channel#2...		..Most frequently found phase is 11 out of 2 possibilities[0m
+29.05.2025 16:01:27: |140488984229440|I| [1m[32mGroup#1 Channel#0...		..Most frequently found phase is 5 out of 1 possibilities[0m
+29.05.2025 16:01:27: |140488984229440|I| [1m[32mGroup#1 Channel#2...		..Most frequently found phase is 4 out of 2 possibilities[0m
+29.05.2025 16:01:28: |140488984229440|I| [1m[32mGroup#2 Channel#0...		..Most frequently found phase is 4 out of 1 possibilities[0m
+29.05.2025 16:01:29: |140488984229440|I| [1m[32mGroup#2 Channel#2...		..Most frequently found phase is 4 out of 1 possibilities[0m
+29.05.2025 16:01:30: |140488984229440|I| [1m[32mGroup#3 Channel#0...		..Most frequently found phase is 10 out of 1 possibilities[0m
+29.05.2025 16:01:31: |140488984229440|I| [1m[32mGroup#3 Channel#2...		..Most frequently found phase is 10 out of 1 possibilities[0m
+29.05.2025 16:01:32: |140488984229440|I| [1m[32mGroup#4 Channel#0...		..Most frequently found phase is 11 out of 1 possibilities[0m
+29.05.2025 16:01:33: |140488984229440|I| [1m[32mGroup#4 Channel#2...		..Most frequently found phase is 5 out of 1 possibilities[0m
+29.05.2025 16:01:34: |140488984229440|I| [1m[32mGroup#5 Channel#0...		..Most frequently found phase is 10 out of 2 possibilities[0m
+29.05.2025 16:01:35: |140488984229440|I| [1m[32mGroup#5 Channel#2...		..Most frequently found phase is 10 out of 1 possibilities[0m
+29.05.2025 16:01:36: |140488984229440|I| [1m[32mGroup#6 Channel#0...		..Most frequently found phase is 10 out of 2 possibilities[0m
+29.05.2025 16:01:36: |140488984229440|I| [1m[32mGroup#6 Channel#2...		..Most frequently found phase is 10 out of 2 possibilities[0m
+29.05.2025 16:01:36: |140488984229440|I| Done with OTalignLpGBTinputs.
+29.05.2025 16:01:36: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:36: |140488984229440|I| Stopping OTalignLpGBTinputs measurement.
+29.05.2025 16:01:36: |140488984229440|I| OTalignLpGBTinputs stopped.
+29.05.2025 16:01:37: |140488984229440|I| Starting OTalignBoardDataWord measurement.
+29.05.2025 16:01:37: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:37: |140488984229440|I| [1m[33mOTalignBoardDataWord::wordAlignBEdata[0m
+29.05.2025 16:01:37: |140488984229440|I| [1m[33mOTalignBoardDataWord::boardWordAlignment for an OG [0m
+29.05.2025 16:01:37: |140488984229440|I| [1m[35mOTalignBoardDataWord::wordAlignBEdata[0m
+29.05.2025 16:01:37: |140488984229440|I| [1m[35mAligning L1 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 0
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 6
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 0 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 1
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 1 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 2
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 2 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 3
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 3 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 4
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 4 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 5
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 5 on Hybrid#0[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:0 Line: 6
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 3
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning L1 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 0
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 5
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 0 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 1
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 2
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 1 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 2
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 2
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 2 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 3
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 1
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 3 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 4
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 1
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 4 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 5
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 1
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mAligning Stub line# 5 on Hybrid#1[0m
+29.05.2025 16:01:38: |140488984229440|I| 	Hybrid:1 Line: 6
+29.05.2025 16:01:38: |140488984229440|I| 		 Done: 1, PA FSM: [1m[32mUnknown[0m, WA FSM: [1m[32mTunedWORD[0m
+29.05.2025 16:01:38: |140488984229440|I| 		 Delay: 0, Bitslip: 2
+29.05.2025 16:01:38: |140488984229440|I| Done with OTalignBoardDataWord.
+29.05.2025 16:01:38: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:38: |140488984229440|I| Stopping OTalignBoardDataWord measurement.
+29.05.2025 16:01:38: |140488984229440|I| OTalignBoardDataWord stopped.
+29.05.2025 16:01:38: |140488984229440|I| Starting OTverifyBoardDataWord measurement.
+29.05.2025 16:01:38: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:38: |140488984229440|I| [1m[33mOTverifyBoardDataWord::runIntegrityTest ... start integrity test[0m
+29.05.2025 16:01:38: |140488984229440|I| [1m[35mRunning runStubIntegrityTest[0m
+29.05.2025 16:01:40: |140488984229440|I| [1m[35mRunning runL1IntegrityTest[0m
+29.05.2025 16:01:45: |140488984229440|I| Done with OTverifyBoardDataWord.
+29.05.2025 16:01:45: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:45: |140488984229440|I| Stopping OTverifyBoardDataWord measurement.
+29.05.2025 16:01:45: |140488984229440|I| OTverifyBoardDataWord stopped.
+29.05.2025 16:01:45: |140488984229440|I| Starting OTCICphaseAlignment measurement.
+29.05.2025 16:01:45: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern PHY_PORT_CONFIG for frontend type CIC2[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^scPhaseSelectB[0-3]i[0-5]$ for frontend type CIC2[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mStarting CIC automated phase alignment procedure[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mGenerating Patterns needed for phase alignment of CIC inputs.[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mConfiguring CIC0 to use automatic phase aligner...[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mPhase aligner mode set with register PHY_PORT_CONFIG to 0xb[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mConfiguring CIC1 to use automatic phase aligner...[0m
+29.05.2025 16:01:45: |140488984229440|I| [1m[34mPhase aligner mode set with register PHY_PORT_CONFIG to 0xb[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#8[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#9[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#10[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#11[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#12[0m
+29.05.2025 16:01:45: |140488984229440|I| [32mProducing phase alignment pattern on MPA#13[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#14[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#15[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#8[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#9[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#10[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#11[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#12[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#13[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#14[0m
+29.05.2025 16:01:46: |140488984229440|I| [32mProducing phase alignment pattern on MPA#15[0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mPhase aligner on CIC0[1m[32m LOCKED [1m[34m ... storing values and switching to static phase [0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mPhase aligner on CIC1[1m[32m LOCKED [1m[34m ... storing values and switching to static phase [0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mConfiguring CIC0 to use static phase aligner...[0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mPhase aligner mode set with register PHY_PORT_CONFIG to 0x3[0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mConfiguring CIC1 to use static phase aligner...[0m
+29.05.2025 16:01:48: |140488984229440|I| [1m[34mPhase aligner mode set with register PHY_PORT_CONFIG to 0x3[0m
+29.05.2025 16:01:48: |140488984229440|I| Done with OTCICphaseAlignment.
+29.05.2025 16:01:48: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| Stopping OTCICphaseAlignment measurement.
+29.05.2025 16:01:49: |140488984229440|I| OTCICphaseAlignment stopped.
+29.05.2025 16:01:49: |140488984229440|I| Starting OTCICwordAlignment measurement.
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern EXT_WA_DELAY[0-1][0-9] for frontend type CIC2[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mStarting CIC automated word alignment procedure .... [0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#9[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#10[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#11[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#12[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#13[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#14[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#15[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated word alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#9[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#10[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#11[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#12[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#13[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#14[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing word alignment pattern on MPA#15[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 01111010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated word alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| Done with OTCICwordAlignment.
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m Trying to read events at the end of the alignment procedure[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mDone reading events[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| Stopping OTCICwordAlignment measurement.
+29.05.2025 16:01:49: |140488984229440|I| OTCICwordAlignment stopped.
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mStarting OTCICBX0Alignment measurement.[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^BX0_DELAY$ for frontend type CIC2[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^EXT_BX0_DELAY$ for frontend type CIC2[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^BX0_ALIGN_CONFIG$ for frontend type CIC2[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mStarting CIC automated BX0 alignment procedure for different retime pix values .... [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x80 bin 10000000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 0[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x80 bin 10000000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 0[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 13[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 13[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 1[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 1[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 13[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 13[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001101[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 2[0m
+29.05.2025 16:01:49: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:49: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 2[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 15[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 15[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 3[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 3[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 15[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 15[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00001111[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 4[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 4[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 5[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 5[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 6[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 6[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 19[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 19[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 0 on chip 8 with retime pix 7[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m BXO alignment pattern for hybrid 1 on chip 8 with retime pix 7[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 19[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 19[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010011[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mStarting CIC automated BX0 alignment procedure .... [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0xb0 bin 10110000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x30 bin 00110000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x70 bin 01110000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRunning automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mConfiguring BX0 alignment patterns on CIC[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern [for word alignment] on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG intially was set to 0x88 bin 10001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x88 bin 10001000 to use another chip or line[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x8 bin 00001000 to use internal delay[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG set to 0x48 bin 01001000 to start BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 0 set to 10010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 1 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 2 set to 00010010[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 3 set to 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mCalibration pattern set on readout chip on stub line 4 set to 11011000[0m
+29.05.2025 16:01:50: |140488984229440|I| [32mProducing BX0 alignment pattern on MPA#8[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35m Sending Resync ![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE0[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x70 bin 01110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x30 bin 00110000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0xb0 bin 10110000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[35mCheck automated BX0 alignment in CIC on FE1[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[32m AUTO_BXO_DONE 2 delay found 17[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0_ALIGN_CONFIG after BXO done set to 0x48 bin 01001000[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mRequesting CIC to stop automated BX0 alignment...[0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x8 bin 00001000 to stop BX0 alignment [0m
+29.05.2025 16:01:50: |140488984229440|I| [1m[34mBX0 alignment value found to be 00010001[0m
+29.05.2025 16:01:51: |140488984229440|I| [1m[34m BX0_ALIGN_CONFIG set to 0x88 bin 10001000[0m
+29.05.2025 16:01:51: |140488984229440|I| [1m[34mAutomated BX0 alignment procedure [1m[32m SUCCEEDED![0m
+29.05.2025 16:01:51: |140488984229440|I| [1m[32mDone with OTCICBX0Alignment.[0m
+29.05.2025 16:01:51: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:52: |140488984229440|I| Stopping OTCICBX0Alignment measurement.
+29.05.2025 16:01:52: |140488984229440|I| OTCICBX0Alignment stopped.
+29.05.2025 16:01:52: |140488984229440|I| Starting OTalignStubPackage measurement.
+29.05.2025 16:01:52: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:52: |140488984229440|I| [32mTrying to align CIC stub decoder in the back-end[0m
+29.05.2025 16:01:52: |140488984229440|I| Done with OTalignStubPackage.
+29.05.2025 16:01:52: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:01:52: |140488984229440|I| Stopping OTalignStubPackage measurement.
+29.05.2025 16:01:52: |140488984229440|I| OTalignStubPackage stopped.
+29.05.2025 16:01:52: |140488984229440|I| Starting OTverifyCICdataWord measurement.
+29.05.2025 16:01:52: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:01:52: |140488984229440|I| [1m[33mOTverifyCICdataWord::runIntegrityTest ... start integrity test[0m
+29.05.2025 16:01:52: |140488984229440|I| [1m[35mRunning runStubIntegrityTest[0m
+29.05.2025 16:01:52: |140488984229440|I| [1m[35m    Stub pattern 1 out of 1[0m
+29.05.2025 16:01:52: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:01:53: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:01:54: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:01:54: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:01:55: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:01:55: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:01:56: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:01:57: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:01:57: |140488984229440|I| [1m[35mRunning runL1IntegrityTest[0m
+29.05.2025 16:01:57: |140488984229440|I| [1m[35m    Optical Group 0[0m
+29.05.2025 16:01:57: |140488984229440|I| [1m[35m        Hybrid 0[0m
+29.05.2025 16:01:57: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 8[0m
+29.05.2025 16:01:58: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 9[0m
+29.05.2025 16:01:58: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 10[0m
+29.05.2025 16:01:59: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 11[0m
+29.05.2025 16:02:00: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 12[0m
+29.05.2025 16:02:01: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 13[0m
+29.05.2025 16:02:01: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 14[0m
+29.05.2025 16:02:02: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 15[0m
+29.05.2025 16:02:02: |140488984229440|I| [1m[35m        Hybrid 1[0m
+29.05.2025 16:02:02: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 8[0m
+29.05.2025 16:02:03: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 9[0m
+29.05.2025 16:02:04: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 10[0m
+29.05.2025 16:02:05: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 11[0m
+29.05.2025 16:02:05: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 12[0m
+29.05.2025 16:02:06: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 13[0m
+29.05.2025 16:02:06: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 14[0m
+29.05.2025 16:02:08: |140488984229440|I| [1m[34m            injecting clusters on MPA Id 15[0m
+29.05.2025 16:02:08: |140488984229440|I| Done with OTverifyCICdataWord.
+29.05.2025 16:02:08: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:02:11: |140488984229440|E| [1m[31mD19cOpticalInterface::Write -- Error Code : 7 -- I2C Status : TransactionSucess[0m
+29.05.2025 16:02:11: |140488984229440|E| [1m[31mChip code : 2 on Board id 0 OpticalGroup id 0 Hybrid id 0 Chip Id : 12 -- Register address 0x503f[0m
+29.05.2025 16:02:11: |140488984229440|E| [1m[31mD19cOpticalInterface::Write : Wrong value read back, written 0x7 but read back 0x4[0m
+29.05.2025 16:02:11: |140488984229440|E| [1m[31mD19cFWInterface::MultiRegisterWriteRead FAILED to write to 1939 registers.[0m
+29.05.2025 16:02:17: |140488984229440|I| Stopping OTverifyCICdataWord measurement.
+29.05.2025 16:02:17: |140488984229440|I| OTverifyCICdataWord stopped.
+29.05.2025 16:02:17: |140488984229440|I| Starting OTverifyMPASSAdataWord measurement.
+29.05.2025 16:02:17: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:02:17: |140488984229440|I| [1m[33mOTverifyCICdataWord::runIntegrityTest ... start integrity test[0m
+29.05.2025 16:02:17: |140488984229440|I| [1m[35mRunning runStubIntegrityTest[0m
+29.05.2025 16:02:18: |140488984229440|I| [1m[35m    Stub pattern 1 out of 8[0m
+29.05.2025 16:02:18: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:19: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:20: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:20: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:21: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:21: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:23: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:23: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:24: |140488984229440|I| [1m[35m    Stub pattern 2 out of 8[0m
+29.05.2025 16:02:24: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:24: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:25: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:25: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:27: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:27: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:28: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:28: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:29: |140488984229440|I| [1m[35m    Stub pattern 3 out of 8[0m
+29.05.2025 16:02:29: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:30: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:30: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:31: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:31: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:32: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:32: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:33: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:34: |140488984229440|I| [1m[35m    Stub pattern 4 out of 8[0m
+29.05.2025 16:02:34: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:34: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:35: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:35: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:36: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:37: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:38: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:38: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:39: |140488984229440|I| [1m[35m    Stub pattern 5 out of 8[0m
+29.05.2025 16:02:39: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:39: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:40: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:41: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:41: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:42: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:42: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:43: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:44: |140488984229440|I| [1m[35m    Stub pattern 6 out of 8[0m
+29.05.2025 16:02:44: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:45: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:45: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:46: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:46: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:47: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:48: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:48: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:49: |140488984229440|I| [1m[35m    Stub pattern 7 out of 8[0m
+29.05.2025 16:02:49: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:49: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:50: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:51: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:52: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:52: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:53: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:53: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:54: |140488984229440|I| [1m[35m    Stub pattern 8 out of 8[0m
+29.05.2025 16:02:54: |140488984229440|I| [1m[34m        Injecting stubs on MPA 8 for all hybrids[0m
+29.05.2025 16:02:55: |140488984229440|I| [1m[34m        Injecting stubs on MPA 9 for all hybrids[0m
+29.05.2025 16:02:55: |140488984229440|I| [1m[34m        Injecting stubs on MPA 10 for all hybrids[0m
+29.05.2025 16:02:56: |140488984229440|I| [1m[34m        Injecting stubs on MPA 11 for all hybrids[0m
+29.05.2025 16:02:56: |140488984229440|I| [1m[34m        Injecting stubs on MPA 12 for all hybrids[0m
+29.05.2025 16:02:57: |140488984229440|I| [1m[34m        Injecting stubs on MPA 13 for all hybrids[0m
+29.05.2025 16:02:57: |140488984229440|I| [1m[34m        Injecting stubs on MPA 14 for all hybrids[0m
+29.05.2025 16:02:59: |140488984229440|I| [1m[34m        Injecting stubs on MPA 15 for all hybrids[0m
+29.05.2025 16:02:59: |140488984229440|I| [1m[35mRunning runL1IntegrityTest[0m
+29.05.2025 16:02:59: |140488984229440|I| [1m[35m    Optical Group 0[0m
+29.05.2025 16:02:59: |140488984229440|I| [1m[35m        Hybrid 0[0m
+29.05.2025 16:02:59: |140488984229440|I| [1m[34m            injecting clusters on SSA 0[0m
+29.05.2025 16:03:00: |140488984229440|I| [1m[34m            injecting clusters on SSA 1[0m
+29.05.2025 16:03:01: |140488984229440|I| [1m[34m            injecting clusters on SSA 2[0m
+29.05.2025 16:03:03: |140488984229440|I| [1m[34m            injecting clusters on SSA 3[0m
+29.05.2025 16:03:03: |140488984229440|I| [1m[34m            injecting clusters on SSA 4[0m
+29.05.2025 16:03:04: |140488984229440|I| [1m[34m            injecting clusters on SSA 5[0m
+29.05.2025 16:03:05: |140488984229440|I| [1m[34m            injecting clusters on SSA 6[0m
+29.05.2025 16:03:06: |140488984229440|I| [1m[34m            injecting clusters on SSA 7[0m
+29.05.2025 16:03:07: |140488984229440|I| [1m[35m        Hybrid 1[0m
+29.05.2025 16:03:07: |140488984229440|I| [1m[34m            injecting clusters on SSA 0[0m
+29.05.2025 16:03:08: |140488984229440|I| [1m[34m            injecting clusters on SSA 1[0m
+29.05.2025 16:03:09: |140488984229440|I| [1m[34m            injecting clusters on SSA 2[0m
+29.05.2025 16:03:10: |140488984229440|I| [1m[34m            injecting clusters on SSA 3[0m
+29.05.2025 16:03:11: |140488984229440|I| [1m[34m            injecting clusters on SSA 4[0m
+29.05.2025 16:03:12: |140488984229440|I| [1m[34m            injecting clusters on SSA 5[0m
+29.05.2025 16:03:13: |140488984229440|I| [1m[34m            injecting clusters on SSA 6[0m
+29.05.2025 16:03:14: |140488984229440|I| [1m[34m            injecting clusters on SSA 7[0m
+29.05.2025 16:03:15: |140488984229440|I| Done with OTverifyMPASSAdataWord.
+29.05.2025 16:03:15: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:03:24: |140488984229440|I| Stopping OTverifyMPASSAdataWord measurement.
+29.05.2025 16:03:24: |140488984229440|I| OTverifyMPASSAdataWord stopped.
+29.05.2025 16:03:24: |140488984229440|I| Starting OTPSringOscillatorTest measurement.
+29.05.2025 16:03:24: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:03:25: |140488984229440|I| Done with OTPSringOscillatorTest.
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:03:25: |140488984229440|I| Stopping OTPSringOscillatorTest measurement.
+29.05.2025 16:03:25: |140488984229440|I| OTPSringOscillatorTest stopped.
+29.05.2025 16:03:25: |140488984229440|I| Starting Pedestal Equalization
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^Channel\d{3}$ for frontend type CBC3[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^TrimDAC_C\d+_R\d+$ for frontend type MPA2[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^THTRIMMING_S\d+$ for frontend type SSA2[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[34mPedestalEqualization with SSAs+MPAs[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[34mPedestalEqualization::Initialise Occupancy at pedestal is 0.5 target offset is 15[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m1[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m1[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m1[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m0[0m
+29.05.2025 16:03:25: |140488984229440|W| [32mObject Id already present: [1m[33m1[0m
+29.05.2025 16:03:25: |140488984229440|I| [1m[33mInitialized D19cPSCounterFWInterface ...0x7fc6180e1600[0m
+29.05.2025 16:03:25: |140488984229440|I| Parsed settings:
+29.05.2025 16:03:25: |140488984229440|I| 	Nevents = 1000
+29.05.2025 16:03:25: |140488984229440|I| 	TestPulseAmplitude = 70
+29.05.2025 16:03:25: |140488984229440|I|   Target Vcth determined algorithmically for Chip
+29.05.2025 16:03:25: |140488984229440|I|   Target Offset = 0xf
+29.05.2025 16:03:25: |140488984229440|I| [1m[34mnormalization will be set to 1[0m
+29.05.2025 16:03:26: |140488984229440|I| [34mEnabled test pulse. [0m
+29.05.2025 16:03:26: |140488984229440|I| [1m[34mSetting threshold trim registers to mid-range value...0xf[0m
+29.05.2025 16:03:26: |140488984229440|I| [1m[34mFinding threshold at which to equalize offsets - searching for threshold where <Occupancy>/Chip is 0.5[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 0 = 85[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 1 = 86[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 2 = 84[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 3 = 84[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 4 = 88[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 5 = 83[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 6 = 83[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 7 = 82[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 8 = 210[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 9 = 205[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 10 = 216[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 11 = 209[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 12 = 211[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 13 = 202[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 14 = 204[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 15 = 207[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 0 = 86[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 1 = 86[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 2 = 85[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 3 = 86[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 4 = 86[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 5 = 84[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 6 = 81[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 7 = 84[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 8 = 213[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 9 = 207[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 10 = 211[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 11 = 209[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 12 = 206[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 13 = 210[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 14 = 208[0m
+29.05.2025 16:03:29: |140488984229440|I| [32mVCth value for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 15 = 204[0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mMean VCth value of all strip chips is 84 - using as TargetVcth value for all strip chips![0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mMean VCth value of all pixel chips is 208 - using as TargetVcth value for all pixel chips![0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mnormalization will be set to 1[0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mFinding offsets...[0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mMean VCth value of all strip chips is 84 - using as TargetVcth value for all strip chips![0m
+29.05.2025 16:03:29: |140488984229440|I| [1m[34mMean VCth value of all pixel chips is 208 - using as TargetVcth value for all pixel chips![0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip0 is : 13.6167 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip1 is : 12.2083 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip2 is : 15.4833 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip3 is : 14.675 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip4 is : 8.74167 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip5 is : 17.075 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip6 is : 17.8667 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip7 is : 18.9167 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip8 is : 14.2234 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip9 is : 15.488 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip10 is : 12.713 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip11 is : 14.6615 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip12 is : 13.9521 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip13 is : 16.0573 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip14 is : 15.6969 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip15 is : 14.9396 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip0 is : 11.825 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip1 is : 13.0083 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip2 is : 13.7667 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip3 is : 11.725 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip4 is : 12.275 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip5 is : 15.1833 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip6 is : 20.2167 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip7 is : 15.0417 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip8 is : 13.7198 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip9 is : 15.012 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip10 is : 14.1208 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip11 is : 14.3245 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip12 is : 15.0844 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip13 is : 14.3625 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip14 is : 14.7724 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[31mMean offset on Chip15 is : 15.7167 Vcth units.[0m
+29.05.2025 16:04:02: |140488984229440|I| Done with Pedestal Equalization
+29.05.2025 16:04:02: |140488984229440|I| [1m[33mInitialized D19cL1ReadoutInterface ...0x7fc61852a990[0m
+29.05.2025 16:04:02: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:04:10: |140488984229440|I| Stopping Pedestal Equalization.
+29.05.2025 16:04:10: |140488984229440|I| Pedestal Equalization stopped.
+29.05.2025 16:04:10: |140488984229440|I| Starting noise measurement
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::takeSnapshot() taking snapshot of the current HW configuration[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^VCth\d$ for frontend type CBC3[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^MaskChannel-\d{3}-to-\d{3}$ for frontend type CBC3[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^ThDAC\d$ for frontend type MPA2[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^ENFLAGS_C\d+_R\d+$ for frontend type MPA2[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^Bias_THDAC$ for frontend type SSA2[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::freeFrontEndRegister(FrontEndType, std::string) Freeing registers matching pattern ^ENFLAG_S\d+$ for frontend type SSA2[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mNoise measured on BeBoard#0 with a trigger rate of 400kHz.[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[34mPedeNoise with SSAs+MPAs[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[35m Strip injection pulse height = 70[0m
+29.05.2025 16:04:10: |140488984229440|I| [1m[35m Pixel injection pulse height = 70[0m
+29.05.2025 16:04:10: |140488984229440|I| Parsed settings:
+29.05.2025 16:04:10: |140488984229440|I|  Nevents = 1000
+29.05.2025 16:04:10: |140488984229440|I| [1m[33mInitialized D19cPSCounterFWInterface ...0x7fc618583f50[0m
+29.05.2025 16:04:12: |140488984229440|I| [1m[34msweepSCurves[0m
+29.05.2025 16:04:13: |140488984229440|I| [1m[33mEnabled test pulse. [0m
+29.05.2025 16:04:16: |140488984229440|I| [1m[34mFound Pedestals on Strip ASICs to be around 83.875[0m
+29.05.2025 16:04:16: |140488984229440|I| [1m[35mFound Pedestals on Pixel ASICs to be around 206[0m
+29.05.2025 16:04:16: |140488984229440|I| [34mSweep of Strip S-curves will start at an average threshold of 83[0m
+29.05.2025 16:04:16: |140488984229440|I| [35mSweep of Pixel S-curves will start at an average threshold of 206[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[34mStrip Threshold =  83 -- Occupancy = 0.57 -- Distance from target = 43.00	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[35mPixel Threshold =  206 -- Occupancy = 0.49 -- Distance from target = 50.68	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[34mStrip Threshold =  82 -- Occupancy = 0.66 -- Distance from target = 34.36	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[35mPixel Threshold =  205 -- Occupancy = 0.63 -- Distance from target = 36.97	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[34mStrip Threshold =  81 -- Occupancy = 0.73 -- Distance from target = 26.72	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:17: |140488984229440|I| [1m[35mPixel Threshold =  204 -- Occupancy = 0.75 -- Distance from target = 24.51	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[34mStrip Threshold =  80 -- Occupancy = 0.80 -- Distance from target = 19.82	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[35mPixel Threshold =  203 -- Occupancy = 0.85 -- Distance from target = 14.75	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[34mStrip Threshold =  79 -- Occupancy = 0.86 -- Distance from target = 14.24	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[35mPixel Threshold =  202 -- Occupancy = 0.92 -- Distance from target = 8.11	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[34mStrip Threshold =  78 -- Occupancy = 0.90 -- Distance from target = 9.90	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[35mPixel Threshold =  201 -- Occupancy = 0.96 -- Distance from target = 3.97	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[34mStrip Threshold =  77 -- Occupancy = 0.94 -- Distance from target = 6.43	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:18: |140488984229440|I| [1m[35mPixel Threshold =  200 -- Occupancy = 0.98 -- Distance from target = 1.78	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[34mStrip Threshold =  76 -- Occupancy = 0.96 -- Distance from target = 4.21	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[35mPixel Threshold =  199 -- Occupancy = 0.99 -- Distance from target = 0.72	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[34mStrip Threshold =  75 -- Occupancy = 0.97 -- Distance from target = 2.55	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[35mPixel Threshold =  198 -- Occupancy = 1.00 -- Distance from target = 0.29	..Incrementing limit found counter  -- current value is 1[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[34mStrip Threshold =  74 -- Occupancy = 0.99 -- Distance from target = 1.42	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[35mPixel Threshold =  197 -- Occupancy = 1.00 -- Distance from target = 0.12	..Incrementing limit found counter  -- current value is 2[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[34mStrip Threshold =  73 -- Occupancy = 0.99 -- Distance from target = 0.85	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[35mPixel Threshold =  196 -- Occupancy = 1.00 -- Distance from target = 0.06	..Incrementing limit found counter  -- current value is 3[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[34mStrip Threshold =  72 -- Occupancy = 1.00 -- Distance from target = 0.43	..Incrementing limit found counter  -- current value is 1[0m
+29.05.2025 16:04:19: |140488984229440|I| [1m[35mPixel Threshold =  195 -- Occupancy = 1.00 -- Distance from target = 0.03	..Incrementing limit found counter  -- current value is 4[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[34mStrip Threshold =  71 -- Occupancy = 1.00 -- Distance from target = 0.27	..Incrementing limit found counter  -- current value is 2[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[35mPixel Threshold =  194 -- Occupancy = 1.00 -- Distance from target = 0.02	..Incrementing limit found counter  -- current value is 5[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[34mStrip Threshold =  70 -- Occupancy = 1.00 -- Distance from target = 0.12	..Incrementing limit found counter  -- current value is 3[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[35mPixel Threshold =  193 -- Occupancy = 1.00 -- Distance from target = 0.02	..Incrementing limit found counter  -- current value is 6[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[34mStrip Threshold =  69 -- Occupancy = 1.00 -- Distance from target = 0.07	..Incrementing limit found counter  -- current value is 4[0m
+29.05.2025 16:04:20: |140488984229440|I| [1m[35mPixel Threshold =  192 -- Occupancy = 1.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 7[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[34mStrip Threshold =  68 -- Occupancy = 1.00 -- Distance from target = 0.03	..Incrementing limit found counter  -- current value is 5[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[35mPixel Threshold =  191 -- Occupancy = 1.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 8[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[34mStrip Threshold =  67 -- Occupancy = 1.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 6[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[35mPixel Threshold =  190 -- Occupancy = 1.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 9[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[34mStrip Threshold =  66 -- Occupancy = 1.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 7[0m
+29.05.2025 16:04:21: |140488984229440|I| [1m[35mPixel Threshold =  189 -- Occupancy = 1.00 -- Distance from target = 0.00	..Incrementing limit found counter  -- current value is 10[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[34mStrip Threshold =  65 -- Occupancy = 1.00 -- Distance from target = 0.00	..Incrementing limit found counter  -- current value is 8[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[35mPixel Threshold =  189 -- Occupancy = 1.00 -- Distance from target = 0.00	..Incrementing limit found counter  -- current value is 11[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[34mStrip Threshold =  64 -- Occupancy = 1.00 -- Distance from target = 0.00	..Incrementing limit found counter  -- current value is 9[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[35mPixel Threshold =  189 -- Occupancy = 1.00 -- Distance from target = 0.00	..Incrementing limit found counter  -- current value is 12[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[33mSwitching sign during auto scan ..[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[34mStrip Threshold =  82 -- Occupancy = 1.00 -- Distance from target = 100.00	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[35mPixel Threshold =  205 -- Occupancy = 1.00 -- Distance from target = 100.00	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[34mStrip Threshold =  83 -- Occupancy = 0.57 -- Distance from target = 56.90	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[35mPixel Threshold =  206 -- Occupancy = 0.49 -- Distance from target = 49.31	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[34mStrip Threshold =  84 -- Occupancy = 0.48 -- Distance from target = 47.64	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:22: |140488984229440|I| [1m[35mPixel Threshold =  207 -- Occupancy = 0.36 -- Distance from target = 35.62	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[34mStrip Threshold =  85 -- Occupancy = 0.38 -- Distance from target = 38.47	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[35mPixel Threshold =  208 -- Occupancy = 0.23 -- Distance from target = 23.48	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[34mStrip Threshold =  86 -- Occupancy = 0.30 -- Distance from target = 30.42	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[35mPixel Threshold =  209 -- Occupancy = 0.14 -- Distance from target = 14.20	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[34mStrip Threshold =  87 -- Occupancy = 0.23 -- Distance from target = 23.18	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:23: |140488984229440|I| [1m[35mPixel Threshold =  210 -- Occupancy = 0.08 -- Distance from target = 7.84	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[34mStrip Threshold =  88 -- Occupancy = 0.18 -- Distance from target = 17.67	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[35mPixel Threshold =  211 -- Occupancy = 0.04 -- Distance from target = 3.98	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[34mStrip Threshold =  89 -- Occupancy = 0.13 -- Distance from target = 12.53	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[35mPixel Threshold =  212 -- Occupancy = 0.02 -- Distance from target = 1.92	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[34mStrip Threshold =  90 -- Occupancy = 0.09 -- Distance from target = 8.73	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[35mPixel Threshold =  213 -- Occupancy = 0.01 -- Distance from target = 0.90	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[34mStrip Threshold =  91 -- Occupancy = 0.06 -- Distance from target = 6.08	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:24: |140488984229440|I| [1m[35mPixel Threshold =  214 -- Occupancy = 0.00 -- Distance from target = 0.43	..Incrementing limit found counter  -- current value is 1[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[34mStrip Threshold =  92 -- Occupancy = 0.04 -- Distance from target = 4.00	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[35mPixel Threshold =  215 -- Occupancy = 0.00 -- Distance from target = 0.25	..Incrementing limit found counter  -- current value is 2[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[34mStrip Threshold =  93 -- Occupancy = 0.03 -- Distance from target = 2.58	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[35mPixel Threshold =  216 -- Occupancy = 0.00 -- Distance from target = 0.16	..Incrementing limit found counter  -- current value is 3[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[34mStrip Threshold =  94 -- Occupancy = 0.02 -- Distance from target = 1.58	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:25: |140488984229440|I| [1m[35mPixel Threshold =  217 -- Occupancy = 0.00 -- Distance from target = 0.12	..Incrementing limit found counter  -- current value is 4[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[34mStrip Threshold =  95 -- Occupancy = 0.01 -- Distance from target = 1.11	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[35mPixel Threshold =  218 -- Occupancy = 0.00 -- Distance from target = 0.10	..Incrementing limit found counter  -- current value is 5[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[34mStrip Threshold =  96 -- Occupancy = 0.01 -- Distance from target = 0.76	..Incrementing limit found counter  -- current value is 0[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[35mPixel Threshold =  219 -- Occupancy = 0.00 -- Distance from target = 0.08	..Incrementing limit found counter  -- current value is 6[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[34mStrip Threshold =  97 -- Occupancy = 0.00 -- Distance from target = 0.45	..Incrementing limit found counter  -- current value is 1[0m
+29.05.2025 16:04:26: |140488984229440|I| [1m[35mPixel Threshold =  220 -- Occupancy = 0.00 -- Distance from target = 0.07	..Incrementing limit found counter  -- current value is 7[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  98 -- Occupancy = 0.00 -- Distance from target = 0.28	..Incrementing limit found counter  -- current value is 2[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  221 -- Occupancy = 0.00 -- Distance from target = 0.06	..Incrementing limit found counter  -- current value is 8[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  99 -- Occupancy = 0.00 -- Distance from target = 0.14	..Incrementing limit found counter  -- current value is 3[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  222 -- Occupancy = 0.00 -- Distance from target = 0.05	..Incrementing limit found counter  -- current value is 9[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  100 -- Occupancy = 0.00 -- Distance from target = 0.09	..Incrementing limit found counter  -- current value is 4[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.04	..Incrementing limit found counter  -- current value is 10[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  101 -- Occupancy = 0.00 -- Distance from target = 0.05	..Incrementing limit found counter  -- current value is 5[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.05	..Incrementing limit found counter  -- current value is 11[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  102 -- Occupancy = 0.00 -- Distance from target = 0.03	..Incrementing limit found counter  -- current value is 6[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.04	..Incrementing limit found counter  -- current value is 12[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[34mStrip Threshold =  103 -- Occupancy = 0.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 7[0m
+29.05.2025 16:04:27: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.04	..Incrementing limit found counter  -- current value is 13[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mStrip Threshold =  104 -- Occupancy = 0.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 8[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.05	..Incrementing limit found counter  -- current value is 14[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mStrip Threshold =  105 -- Occupancy = 0.00 -- Distance from target = 0.01	..Incrementing limit found counter  -- current value is 9[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[35mPixel Threshold =  223 -- Occupancy = 0.00 -- Distance from target = 0.05	..Incrementing limit found counter  -- current value is 15[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[33mSwitching sign during auto scan ..[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mFinished sweeping SCurves...[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mextractPedeNoise[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mnormalization will be set to 1[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving noise for Board 0 Optical Group 0 Hybrid 0 ReadoutChip 10 Channel row 15 col 97, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving threshold for Board 0 Optical Group 0 Hybrid 0 ReadoutChip 10 Channel row 15 col 97, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving noise for Board 0 Optical Group 0 Hybrid 0 ReadoutChip 10 Channel row 15 col 114, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving threshold for Board 0 Optical Group 0 Hybrid 0 ReadoutChip 10 Channel row 15 col 114, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving noise for Board 0 Optical Group 0 Hybrid 1 ReadoutChip 11 Channel row 7 col 76, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving threshold for Board 0 Optical Group 0 Hybrid 1 ReadoutChip 11 Channel row 7 col 76, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving noise for Board 0 Optical Group 0 Hybrid 1 ReadoutChip 13 Channel row 13 col 109, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|W| [1m[33mProblem in deriving threshold for Board 0 Optical Group 0 Hybrid 1 ReadoutChip 13 Channel row 13 col 109, forcing it to 0.[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mproducePedeNoisePlots[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[34mDone[0m
+29.05.2025 16:04:28: |140488984229440|I| Done with noise
+29.05.2025 16:04:28: |140488984229440|I| [1m[33mInitialized D19cL1ReadoutInterface ...0x7fc61c10c490[0m
+29.05.2025 16:04:28: |140488984229440|I| [1m[33mvoid Ph2_System::RegisterHelper::restoreSnapshot() restoring snapshot of the HW configuration[0m
+29.05.2025 16:04:29: |140488984229440|I| Stopping noise measurement
+Warning in <Fit>: Fit data is empty 
+Warning in <Fit>: Fit data is empty 
+Warning in <Fit>: Fit data is empty 
+Warning in <Fit>: Fit data is empty 
+29.05.2025 16:04:32: |140488984229440|I| Noise measurement stopped.
+int main(int, char**)Supervisor Sending Stop!!!
+29.05.2025 16:04:32: |140489373334720|I| [1m[34mReading all the read-only registers to update output files[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading all readable registers for BeBoard 0[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 LpGBT[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 CIC[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 0[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 1[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 2[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 3[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 4[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 5[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 6[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 7[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 8[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 9[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 10[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 11[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 12[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 13[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 14[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 0 Chip 15[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 CIC[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 0[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 1[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 2[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 3[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 4[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 5[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 6[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 7[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 8[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 9[0m
+29.05.2025 16:04:32: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 10[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 11[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 12[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 13[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 14[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mReading read-only registers for BeBoard 0 OpticalGroup 0 Hybrid 1 Chip 15[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[32mXML file /home/cmsTkUser/Ph2_ACF/Results/Run_500749/BE0_Config.xml created successfully.[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[34mConfigfiles for all Chips written to /home/cmsTkUser/Ph2_ACF/Results/Run_500749/[0m
+29.05.2025 16:04:33: |140489373334720|I| [1m[33mNew configuration file saved: /home/cmsTkUser/Ph2_ACF/Results/Run_500749/Configuration.xml[0m
+29.05.2025 16:04:37: |140489373334720|I| [32mClosing result file: [1m[33mResults/Run_500749/Results.root[0m
+29.05.2025 16:04:38: |140489373334720|I| Run 500749 stopped[0m
+29.05.2025 16:04:38: |140489373334720|I| [1m[31mDestroying memory objects[0m
+29.05.2025 16:04:38: |140489373334720|I| [1m[31mDestroying HttpServer[0m
+29.05.2025 16:04:38: |140489373334720|I| [1m[31mHttpServer Destroyed[0m
+29.05.2025 16:04:38: |140489373334720|I| [1m[31mMemory objects destroyed[0m
+29.05.2025 16:04:38: |140489373334720|I| [1m[31m>>> Destroying interfaces <<<[0m
+29.05.2025 16:04:39: |140489373334720|I| [32m	--> Waiting for monitoring to be completed...[0m
+29.05.2025 16:04:40: |140489373334720|I| [1m[31m>>> Destroying monitoring <<<[0m
+29.05.2025 16:04:40: |140489373334720|I| [32mClosing monitor result file: [1m[33mMonitorResults/MonitorDQM_2025-05-29_15-59-47.root[0m
+29.05.2025 16:04:40: |140489373334720|I| [32mTrying to shutdown Calibration DQM Server...[0m
+virtual TCPSocket::~TCPSocket()Clean socket close!
+29.05.2025 16:04:40: |140489373334720|I| [1m[34m	--> Operation completed[0m
+29.05.2025 16:04:40: |140489373334720|I| [32mTrying to shutdown Monitor DQM Server...[0m
+virtual TCPSocket::~TCPSocket()Clean socket close!
+29.05.2025 16:04:40: |140489373334720|I| [1m[34m	--> Operation completed[0m
+virtual TCPClientBase::~TCPClientBase()Closing TCPSocket #17
+virtual TCPClientBase::~TCPClientBase()TCPSocket #-1 closed.
+29.05.2025 16:04:40: |140489373334720|I| [1m[31m>>> Interfaces  destroyed <<<[0m
+29.05.2025 16:04:40: |140489373334720|I| Halted[0m
+Total execution time:  finished at: Thu May 29 16:04:40 2025
+	elapsed time: 293.01 seconds

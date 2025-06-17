@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HwDescription>
+	<BeBoard Id="0" boardType="D19C" eventType="VR" linkReset="1" boardReset="1" configure="1">
+		<connection id="board" uri="chtcp-2.0://localhost:10203?target=fc7ot3:50001" address_table="file://settings/address_tables/uDTC_OT_address_table.xml" />
+		<configuration file_name="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/BE0_Config.xml" />
+		<CDCE configure="0" clockRate="320" />
+		<OpticalGroup Id="0" enable="1" FMCId="L12" reset="1">
+			<NTCProperties type="Sensor" ADC="ADC4" lookUpTable="/home/cmsTkUser/Ph2_ACF/settings/NTCFiles/ntc_1k.csv" />
+			<NTCProperties type="VTRx+" ADC="ADC6" lookUpTable="/home/cmsTkUser/Ph2_ACF/settings/NTCFiles/vtrx_ntc_1k.csv" />
+			<lpGBT_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+			<lpGBT Id="0" version="1" optical="1" configFile="BE0_OG0_lpGBT0.txt" />
+			<VTRx_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+			<VTRx Id="0" configFile="BE0_OG0_VTRx0.txt" />
+			<Hybrid Id="0" enable="1" reset="1">
+				<CIC2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<CIC2 Id="8" enable="1" configFile="BE0_OG0_FE0_CIC.txt" />
+				<MPA2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<SSA2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<SSA2 Id="0" enable="1" configFile="BE0_OG0_FE0_Chip0SSA.txt" noise="3.852640" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="1" enable="1" configFile="BE0_OG0_FE0_Chip1SSA.txt" noise="3.738322" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="2" enable="1" configFile="BE0_OG0_FE0_Chip2SSA.txt" noise="3.800560" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="3" enable="1" configFile="BE0_OG0_FE0_Chip3SSA.txt" noise="3.857880" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="4" enable="1" configFile="BE0_OG0_FE0_Chip4SSA.txt" noise="3.721872" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="5" enable="1" configFile="BE0_OG0_FE0_Chip5SSA.txt" noise="3.661561" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="6" enable="1" configFile="BE0_OG0_FE0_Chip6SSA.txt" noise="3.644003" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="7" enable="1" configFile="BE0_OG0_FE0_Chip7SSA.txt" noise="3.686481" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="8" enable="1" configFile="BE0_OG0_FE0_Chip8MPA.txt" noise="2.487462" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="9" enable="1" configFile="BE0_OG0_FE0_Chip9MPA.txt" noise="2.348868" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="10" enable="1" configFile="BE0_OG0_FE0_Chip10MPA.txt" noise="2.477561" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="11" enable="1" configFile="BE0_OG0_FE0_Chip11MPA.txt" noise="2.381497" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="12" enable="1" configFile="BE0_OG0_FE0_Chip12MPA.txt" noise="2.401141" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="13" enable="1" configFile="BE0_OG0_FE0_Chip13MPA.txt" noise="2.257032" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="14" enable="1" configFile="BE0_OG0_FE0_Chip14MPA.txt" noise="2.229230" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="15" enable="1" configFile="BE0_OG0_FE0_Chip15MPA.txt" noise="2.272369" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<LpGBTphaseForCICbypass>
+					<LpGBTphaseForCICbypassPhyPort0 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort1 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort2 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort3 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort4 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort5 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort6 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort7 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort8 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort9 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort10 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort11 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+				</LpGBTphaseForCICbypass>
+			</Hybrid>
+			<Hybrid Id="1" enable="1" reset="1">
+				<CIC2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<CIC2 Id="8" enable="1" configFile="BE0_OG0_FE1_CIC.txt" />
+				<MPA2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<SSA2_Files path="/home/cmsTkUser/Ph2_ACF/Results/Run_500749/" />
+				<SSA2 Id="0" enable="1" configFile="BE0_OG0_FE1_Chip0SSA.txt" noise="3.901593" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="1" enable="1" configFile="BE0_OG0_FE1_Chip1SSA.txt" noise="4.000396" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="2" enable="1" configFile="BE0_OG0_FE1_Chip2SSA.txt" noise="4.115355" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="3" enable="1" configFile="BE0_OG0_FE1_Chip3SSA.txt" noise="4.197021" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="4" enable="1" configFile="BE0_OG0_FE1_Chip4SSA.txt" noise="4.319488" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="5" enable="1" configFile="BE0_OG0_FE1_Chip5SSA.txt" noise="4.470212" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="6" enable="1" configFile="BE0_OG0_FE1_Chip6SSA.txt" noise="4.725336" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<SSA2 Id="7" enable="1" configFile="BE0_OG0_FE1_Chip7SSA.txt" noise="5.005951" pedestal="8.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="8" enable="1" configFile="BE0_OG0_FE1_Chip8MPA.txt" noise="2.226666" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="9" enable="1" configFile="BE0_OG0_FE1_Chip9MPA.txt" noise="2.171367" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="10" enable="1" configFile="BE0_OG0_FE1_Chip10MPA.txt" noise="2.241842" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="11" enable="1" configFile="BE0_OG0_FE1_Chip11MPA.txt" noise="2.273838" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="12" enable="1" configFile="BE0_OG0_FE1_Chip12MPA.txt" noise="2.276307" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="13" enable="1" configFile="BE0_OG0_FE1_Chip13MPA.txt" noise="2.306836" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="14" enable="1" configFile="BE0_OG0_FE1_Chip14MPA.txt" noise="2.356949" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<MPA2 Id="15" enable="1" configFile="BE0_OG0_FE1_Chip15MPA.txt" noise="2.302920" pedestal="75.000000" ADCslope="0.000200" ADCoffset="0.000000" TemperatureSlope="-0.001030" TemperatureOffset="0.154000" />
+				<LpGBTphaseForCICbypass>
+					<LpGBTphaseForCICbypassPhyPort0 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort1 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort2 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort3 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort4 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort5 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort6 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort7 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort8 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort9 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort10 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+					<LpGBTphaseForCICbypassPhyPort11 LpGBTphaseForCICbypassPhyPort0="8" LpGBTphaseForCICbypassPhyPort1="8" LpGBTphaseForCICbypassPhyPort2="8" LpGBTphaseForCICbypassPhyPort3="8" />
+				</LpGBTphaseForCICbypass>
+			</Hybrid>
+		</OpticalGroup>
+	</BeBoard>
+	<Settings>
+		<Setting name="ActiveMPAs">1</Setting>
+		<Setting name="AntennaPotentiometer">0</Setting>
+		<Setting name="AntennaTriggerRate">50</Setting>
+		<Setting name="AsyncCalDac">30</Setting>
+		<Setting name="AsyncSweepTh">0</Setting>
+		<Setting name="AsyncThreshold">10</Setting>
+		<Setting name="Attempts">1</Setting>
+		<Setting name="Bend">0</Setting>
+		<Setting name="CheckForStubs">1</Setting>
+		<Setting name="DelayAfterInjection">100</Setting>
+		<Setting name="DistributeInjections">0</Setting>
+		<Setting name="DoManualVrefTuning">0</Setting>
+		<Setting name="FifoDepth">8</Setting>
+		<Setting name="FitSCurves">1</Setting>
+		<Setting name="FitSignal">0</Setting>
+		<Setting name="FullScan">0</Setting>
+		<Setting name="HoleMode">0</Setting>
+		<Setting name="InitialVcth">120</Setting>
+		<Setting name="InjectionType">1</Setting>
+		<Setting name="LatencyRange">20</Setting>
+		<Setting name="MaskChannelsFromOtherGroups">0</Setting>
+		<Setting name="MaxOffset">0</Setting>
+		<Setting name="MaxPclusters">3</Setting>
+		<Setting name="MaxSclusters">1</Setting>
+		<Setting name="MaxStubs">4</Setting>
+		<Setting name="MinPclusters">1</Setting>
+		<Setting name="MinSclusters">1</Setting>
+		<Setting name="Mrms">0.6</Setting>
+		<Setting name="NMpulse">3000</Setting>
+		<Setting name="NMsec">0</Setting>
+		<Setting name="Nevents">1000</Setting>
+		<Setting name="Nlvl">50</Setting>
+		<Setting name="OTBitErrorRateTest_NumberOfBits">-2147483648</Setting>
+		<Setting name="OTCICphaseAlignment_MinLockingSuccessRate">0.9</Setting>
+		<Setting name="OTCICphaseAlignment_NumberOfAlignmentIterations">100</Setting>
+		<Setting name="OTCICtoLpGBTecv_CICStrength">1,3,5</Setting>
+		<Setting name="OTCICtoLpGBTecv_ClockPolarity">0-1</Setting>
+		<Setting name="OTCICtoLpGBTecv_ClockStrength">1,4,7</Setting>
+		<Setting name="OTCICtoLpGBTecv_LpGBTPhase">0-14</Setting>
+		<Setting name="OTCICtoLpGBTecv_NumberOfL1Bits">100000</Setting>
+		<Setting name="OTCICtoLpGBTecv_NumberOfStubBits">1000000</Setting>
+		<Setting name="OTChipToCICecv_ListOfMPAslvsCurrents">1,4,7</Setting>
+		<Setting name="OTChipToCICecv_MPAshiftRegisterPattern">170</Setting>
+		<Setting name="OTChipToCICecv_NumberOfTestedBits">1000000</Setting>
+		<Setting name="OTLpGBTEyeOpeningTest_PowerList">1-3</Setting>
+		<Setting name="OTMeasureOccupancy_ForceChannelGroup">0</Setting>
+		<Setting name="OTMeasureOccupancy_MPAtestPulseValue">1</Setting>
+		<Setting name="OTMeasureOccupancy_NumberOfEvents">10000</Setting>
+		<Setting name="OTMeasureOccupancy_SSAtestPulseValue">1</Setting>
+		<Setting name="OTMeasureOccupancy_ThresholdOffset">0</Setting>
+		<Setting name="OTPScommonNoise_ListOfSigma">0,3</Setting>
+		<Setting name="OTPScommonNoise_NumberOfEvents">10000</Setting>
+		<Setting name="OTPSringOscillatorTest_NumberOfClockCycles">100</Setting>
+		<Setting name="OTPatternCheckerHelper_NumberOfBits">-2147483648</Setting>
+		<Setting name="OTRegisterTester_NumberOfIterations">1000</Setting>
+		<Setting name="OTRegisterTester_Pattern">170</Setting>
+		<Setting name="OTSSAtoMPAecv_ListOfSSAslvsCurrents">1,4,7</Setting>
+		<Setting name="OTSSAtoMPAecv_NumberOfTestedL1Bits">100000</Setting>
+		<Setting name="OTSSAtoMPAecv_NumberOfTestedStubBits">1000000</Setting>
+		<Setting name="OTSSAtoSSAecv_ListOfSSAslvsCurrents">1,4,7</Setting>
+		<Setting name="OTSSAtoSSAecv_NumberOfTestedStubBits">1000000</Setting>
+		<Setting name="OTalignBoardDataWord_BroadcastAlignSetting">0</Setting>
+		<Setting name="OTalignLpGBTinputsForBypass_NumberOfTestedBits">1000000</Setting>
+		<Setting name="OTalignLpGBTinputs_MinAlignmentSuccessRate">0.99</Setting>
+		<Setting name="OTalignLpGBTinputs_NumberOfAlignmentIterations">100</Setting>
+		<Setting name="OTinjectionDelayOptimization_DelayStep">1</Setting>
+		<Setting name="OTinjectionDelayOptimization_MPAnumberOfSigmaNoiseAwayFromPedestal">5</Setting>
+		<Setting name="OTinjectionDelayOptimization_MPAtestPulseValue">0.5</Setting>
+		<Setting name="OTinjectionDelayOptimization_MaximumDelay">150</Setting>
+		<Setting name="OTinjectionDelayOptimization_NumberOfEvents">100</Setting>
+		<Setting name="OTinjectionDelayOptimization_SSAnumberOfSigmaNoiseAwayFromPedestal">5</Setting>
+		<Setting name="OTinjectionDelayOptimization_SSAtestPulseValue">0.5</Setting>
+		<Setting name="OTinjectionOccupancyScan_ListOfInjectedPulses">0,0.25,0.5,1.,2.</Setting>
+		<Setting name="OTinjectionOccupancyScan_NumberOfEventsWithInjection">1000</Setting>
+		<Setting name="OTinjectionOccupancyScan_NumberOfEventsWithoutInjection">1000000</Setting>
+		<Setting name="OTverifyBoardDataWord_DoMatchingInFirmware">1</Setting>
+		<Setting name="OTverifyBoardDataWord_NumberOfTestedL1Bits">1000000</Setting>
+		<Setting name="OTverifyBoardDataWord_NumberOfTestedStubBits">100000000</Setting>
+		<Setting name="OTverifyCICdataWord_DoMatchingInFirmware">1</Setting>
+		<Setting name="OTverifyCICdataWord_NumberOfTestedL1Bits">100000</Setting>
+		<Setting name="OTverifyCICdataWord_NumberOfTestedStubBits">1000000</Setting>
+		<Setting name="OTverifyMPASSAdataWord_DoMatchingInFirmware">1</Setting>
+		<Setting name="OTverifyMPASSAdataWord_NumberOfTestedL1Bits">100000</Setting>
+		<Setting name="OTverifyMPASSAdataWord_NumberOfTestedStubBits">1000000</Setting>
+		<Setting name="PSHybridDebugDuration">1</Setting>
+		<Setting name="PSOccupancyPulseAmplitude">200</Setting>
+		<Setting name="PSmoduleMPAthreshold">150</Setting>
+		<Setting name="PSmoduleSSAthreshold">150</Setting>
+		<Setting name="PSmoduleStubWindow">32</Setting>
+		<Setting name="PSmoduleTriggerLatency">180</Setting>
+		<Setting name="PedeNoisePSLowInjection_PulseAmplitude">30</Setting>
+		<Setting name="PedeNoisePSLowInjection_PulseAmplitudePix">30</Setting>
+		<Setting name="PedeNoise_FastCounterReadout">1</Setting>
+		<Setting name="PedeNoise_MaskUntrimmed">0</Setting>
+		<Setting name="PedeNoise_PulseAmplitude">70</Setting>
+		<Setting name="PedeNoise_PulseAmplitudePix">70</Setting>
+		<Setting name="PedeNoise_UntrimmedLimit">4.95</Setting>
+		<Setting name="PedestalEqualization_FastCounterReadout">1</Setting>
+		<Setting name="PedestalEqualization_FullScanStart">220</Setting>
+		<Setting name="PedestalEqualization_MaskUntrimmed">0</Setting>
+		<Setting name="PedestalEqualization_Occupancy">0.5</Setting>
+		<Setting name="PedestalEqualization_PulseAmplitude">70</Setting>
+		<Setting name="PedestalEqualization_PulseAmplitudeFullScan">30</Setting>
+		<Setting name="PedestalEqualization_PulseAmplitudePix">70</Setting>
+		<Setting name="PedestalEqualization_PulseAmplitudePixFullScan">30</Setting>
+		<Setting name="PhaseLatencyRange">10</Setting>
+		<Setting name="PhaseRange">7</Setting>
+		<Setting name="PhaseStartLatency">290</Setting>
+		<Setting name="PlotSCurves">1</Setting>
+		<Setting name="SLVSDrive">3</Setting>
+		<Setting name="SaveRawData">1</Setting>
+		<Setting name="ScanL1Latency">0</Setting>
+		<Setting name="ScanStubLatency">0</Setting>
+		<Setting name="ShortsPulseAmplitude">20</Setting>
+		<Setting name="SignalScanStep">2</Setting>
+		<Setting name="StartLatency">290</Setting>
+		<Setting name="StartPhase">0</Setting>
+		<Setting name="StartTHDAC">64</Setting>
+		<Setting name="StopTHDAC">144</Setting>
+		<Setting name="StubAlignmentScanStart">95</Setting>
+		<Setting name="SyncDebug">0</Setting>
+		<Setting name="TargetOffset">80</Setting>
+		<Setting name="TargetVcth">120</Setting>
+		<Setting name="TestMode">0</Setting>
+		<Setting name="TestPulsePotentiometer">80</Setting>
+		<Setting name="ThresholdForOpens">10</Setting>
+		<Setting name="TriggerMultiplicity">0</Setting>
+		<Setting name="TriggerRate">10</Setting>
+		<Setting name="TriggerSeparation">80</Setting>
+		<Setting name="VerificationLoop">1</Setting>
+		<Setting name="Vfac">0.9</Setting>
+	</Settings>
+	<MonitoringSettings>
+		<Monitoring type="PS" enable="1">
+			<MonitoringSleepTime>1000</MonitoringSleepTime>
+			<MonitoringElement device="LpGBT" register="VDD" enable="1" />
+			<MonitoringElement device="LpGBT" register="VDDA" enable="1" />
+			<MonitoringElement device="LpGBT" register="LpGBTtemp" enable="1" />
+			<MonitoringElement device="LpGBT" register="SensorTemp" enable="1" />
+			<MonitoringElement device="LpGBT" register="VTRxLeakageCurr" enable="1" />
+			<MonitoringElement device="LpGBT" register="VTRxTemp" enable="1" />
+			<MonitoringElement device="LpGBT" register="2V55" enable="1" />
+			<MonitoringElement device="MPA2" register="AVDD" enable="1" />
+			<MonitoringElement device="MPA2" register="DVDD" enable="1" />
+			<MonitoringElement device="MPA2" register="temp" enable="1" />
+			<MonitoringElement device="SSA2" register="AVDD" enable="1" />
+			<MonitoringElement device="SSA2" register="DVDD" enable="1" />
+			<MonitoringElement device="SSA2" register="temp" enable="1" />
+		</Monitoring>
+	</MonitoringSettings>
+	<CommunicationSettings>
+		<DQM ip="127.0.0.1" port="6003" enableConnection="1" />
+		<MonitorDQM ip="127.0.0.1" port="8003" enableConnection="1" />
+		<PowerSupplyClient ip="127.0.0.1" port="7003" enableConnection="1" />
+	</CommunicationSettings>
+</HwDescription>

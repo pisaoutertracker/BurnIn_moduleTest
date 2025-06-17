@@ -20,7 +20,7 @@ except ImportError:
 from potatoconverters.BurninMappings import opticalGroupToBurninSlot
 from datetime import datetime, timedelta, timezone
 
-extraTime = 3 # minutes (time)
+extraTime = 300 # minutes (time)
 #iv_csv_path = "Run_500087_output_lahes/IV_curve_HV005_PS_40_05_IPG-00002_before_encapsulation_changed.csv"
 #iv_csv_path = "IVdata/IV_curve_HV0.1_TEST_after_encapsulation_20250522_211105.csv"
 
@@ -50,28 +50,30 @@ def spikeRemoval(graph, threshold=0.1):
     y = graph.GetY()
     n = graph.GetN()
     toDo = True
-    new_x = x
-    new_y = y
+    new_x = list(x)
+    new_y = list(y)
     while toDo:
         toDo = False
-        x = new_x
-        y = new_y
+        x = list(new_x)
+        y = list(new_y)
         new_x = []
         new_y = []
         for i in range(len(y) - 1):
-            if first: 
+            if first or True: 
                 print("SpikeRemoval: ", i, " ", y[i], " ", y[i + 1], " ", abs(y[i + 1] - y[i]), " ", threshold)
                 first = False
             if abs(y[i + 1] - y[i]) < threshold:
                 new_x.append(x[i])
                 new_y.append(y[i])
             else:
+                print("REMOVED SPIKE: ", i, " ", y[i], " ", y[i + 1], " ", abs(y[i + 1] - y[i]), " ", threshold)
                 toDo = True
         # Add the last point
         new_x.append(x[-1])
         new_y.append(y[-1])
+    print(x, y)
     from array import array
-    return ROOT.TGraph(len(new_x), array('f', new_x), array('f', new_y))
+    return ROOT.TGraph(len(new_x), array('d', new_x), array('d', new_y))
 
 def makeGraphFromDataframe(df, x_col, y_col, is_datetime=False):
     """
@@ -177,6 +179,7 @@ def getGraphFromMonitorDQM(trackerMonitorDirectory, plotName="LpGBT_DQM_SensorTe
     print("getGraphFromMonitorDQM: X-min: ", moduleCanvas.GetXaxis().GetXmin())
     return moduleCanvas
 
+'''
 def getConnectionMap(rootTrackerFileName):
     import glob
     print(rootTrackerFileName)
@@ -202,6 +205,17 @@ def getConnectionMap(rootTrackerFileName):
         print("###########################################################")
         print()
         connectionMap = {}
+    return connectionMap
+'''
+    
+def readConnectionMap(connectionMapFileName):
+    import glob
+    print(connectionMapFileName)
+    with open(connectionMapFileName) as json_file:
+        print("ConnectionMap file: ", connectionMapFileName)
+        txt = str(json_file.read())
+        if verbose>1000: print("ConnectionMap: ", txt)
+        connectionMap = eval(txt)
     return connectionMap
 
 def getHVLVchannels(connectionMap):
@@ -423,7 +437,7 @@ class POTATOPisaFormatter():
         #print("Begin: ", begin, " End: ", end, "Size: ", values.size)
         return np.mean(values[begin:end])
 
-    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName, iv_csv_path):
+    def do_burnin_format(self, rootTrackerFileName, runNumber, opticalGroupNumber, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapPath):
         print("Calling do_burnin_format with: rootTrackerFileName: ", rootTrackerFileName, " runNumber: ", runNumber, " opticalGroupNumber: ", opticalGroupNumber, " moduleBurninName: ", moduleBurninName, " moduleCarrierName: ", moduleCarrierName)
         theHistogrammer = Histogrammer()
         self.theHistogrammer = theHistogrammer
@@ -532,7 +546,8 @@ class POTATOPisaFormatter():
         print("IV metadata: ", self.IV_metadata)
         print("IV df: ", self.IV_df)
 
-        connectionMap = getConnectionMap(rootTrackerFileName)
+#        connectionMap = getConnectionMap(rootTrackerFileName)
+        connectionMap = readConnectionMap(connectionMapPath)
         hv_channel, lv_channel = getHVLVchannels(connectionMap)
         moduleLVVoltageGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Voltage", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
         moduleLVCurrentGraph = self.getGraphFromInfluxDB(f"caen_{lv_channel}_Current", start_time_TS=time_start_utc, stop_time_TS=time_stop_utc)
@@ -734,7 +749,7 @@ class POTATOPisaFormatter():
         TObjString(str(humidityGraph.Eval(testTimeStop))).Write("RH at stop of Module Test (%)")
 
         ## Remove spikes larger than 5 degrees from the sensorTemperatureGraph
-        sensorTemperatureGraph = spikeRemoval(sensorTemperatureGraph, threshold=2)
+        sensorTemperatureGraph = spikeRemoval(sensorTemperatureGraph, threshold=999)
 
         print("Sensor T at start of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
@@ -742,9 +757,15 @@ class POTATOPisaFormatter():
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStop))).Write("Sensor T at stop of Module Test (C)")
 
         c1 = ROOT.TCanvas("c1", "Sensor Temperature Graph", 800, 600)
-        sensorTemperatureGraph.Draw("")
+        sensorTemperatureGraph.Draw("AL*")
         c1.SaveAs("SensorTemperatureGraph.root")
         c1.SaveAs("SensorTemperatureGraph.png")
+
+        #print(moduleIVTimestampGraph.GetY())
+        moduleCarrierTemperatureGraph_IV_Influx.Draw("AL*")
+        c1.SaveAs("moduleCarrierTemperatureGraph_IV_Influx.root")
+        c1.SaveAs("moduleCarrierTemperatureGraph_IV_Influx.png")
+
         ## print x-axis range of sensorTemperatureGraph
         print("Time test start: ", testTimeStart, " Time test stop: ", testTimeStop)
         print("X-min of Sensor T Graph: ", sensorTemperatureGraph.GetXaxis().GetXmin())

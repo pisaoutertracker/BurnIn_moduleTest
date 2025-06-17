@@ -7,6 +7,7 @@ import os
 from POTATO_PisaFormatter import POTATOPisaFormatter as Formatter
 
 from POTATO_mergeFile import mergeTwoROOTfiles
+from ROOT import TFile
 
 
 if __name__ == "__main__":
@@ -30,8 +31,10 @@ if __name__ == "__main__":
     # wget https://cernbox.cern.ch/remote.php/dav/public-files/zcvWnJKEk7YgSBh//Run_500087/output_lahes.zip
     # unzip output_lahes.zip -d Run_500087_output_lahes
 
-    resultsFile = "Run_500087_output_lahes/Results.root"
-    monitorDQMFile = "Run_500087_output_lahes/MonitorDQM_2025-04-04_11-34-05.root"
+    resultsFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/Results.root"
+    monitorDQMFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/MonitorDQM.root"
+    ## This is the IV scan CSV file, it should be created by createIVScanCSVFile(runNumber, module_name, outDir) in POTATO_run.py
+    iv_csv_path = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/HV0.6_PS_26_IPG-10014_after_encapsulation_2025-05-29 15:52:01_IVScan.csv"
 
     outDir = "POTATOFiles"
     theFormatter = Formatter(outDir)
@@ -42,7 +45,7 @@ if __name__ == "__main__":
     print("Merged file created:", rootTrackerFileName)
 
     ## copy the connectionMap file to the same folder as the ROOT file
-    connectionMapFile = "connectionMap_PS_26_IBA-10003.json"
+    connectionMapFile = "connectionMap_PS_26_IPG-10014.json"
     connectionMapFilePath = os.path.join(os.path.dirname(resultsFile), connectionMapFile)
     if os.path.exists(connectionMapFilePath):
         os.system("cp " + connectionMapFilePath + " " + outDir)
@@ -54,8 +57,15 @@ if __name__ == "__main__":
     moduleCarrierName = "01" ## used to read sensor OW01 was "ModuleCarrier4Left"
     opticalGroup = '0'
 
+    ## Get the timestamps from the ROOT file (it should be taken from the session db)
+    file = TFile.Open(rootTrackerFileName)
+    timestamp_startRun = str(file.Get("Detector/CalibrationStartTimestamp_Detector").GetString())
+    timestamp_stopRun = str(file.Get("Detector/CalibrationStopTimestamp_Detector").GetString())
+    file.Close()
+    
+    print("Timestamp:", timestamp_startRun, timestamp_stopRun)
     ### Important: PISA Formatter requires the connectionMap file to be in the same folder as the ROOT file (eg. connectionMap_PS_26_IBA-10003.json)
-    theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName)
+    theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, timestamp_startRun.replace(" ", "T"), timestamp_stopRun.replace(" ", "T"))
 
     print()
     print("PISA Formatter done")
