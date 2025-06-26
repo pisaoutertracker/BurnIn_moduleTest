@@ -31,8 +31,10 @@ if __name__ == "__main__":
     # wget https://cernbox.cern.ch/remote.php/dav/public-files/zcvWnJKEk7YgSBh//Run_500087/output_lahes.zip
     # unzip output_lahes.zip -d Run_500087_output_lahes
 
-    resultsFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/Results.root"
-    monitorDQMFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/MonitorDQM.root"
+    resultsFile = "POTATOFiles/example/Run_500832_testMultipleModule/Results.root"
+    monitorDQMFile = "POTATOFiles/example/Run_500832_testMultipleModule/MonitorDQM_2025-06-26_15-08-25.root"
+    #resultsFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/Results.root"
+    #monitorDQMFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/MonitorDQM.root"
     ## This is the IV scan CSV file, it should be created by createIVScanCSVFile(runNumber, module_name, outDir) in POTATO_run.py
     iv_csv_path = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/HV0.6_PS_26_IPG-10014_after_encapsulation_2025-05-29 15:52:01_IVScan.csv"
 
@@ -52,10 +54,11 @@ if __name__ == "__main__":
     else:
         print("Connection map file not found:", connectionMapFilePath)
 
-    runNumber = "Run_500087"
+    runNumber = "Run_500832"
     moduleBurninName = "Module4L"
     moduleCarrierName = "01" ## used to read sensor OW01 was "ModuleCarrier4Left"
-    opticalGroup = '0'
+    opticalGroups = ['0', '1', '2']
+#    opticalGroups = ['1']
 
     ## Get the timestamps from the ROOT file (it should be taken from the session db)
     file = TFile.Open(rootTrackerFileName)
@@ -65,11 +68,15 @@ if __name__ == "__main__":
     
     print("Timestamp:", timestamp_startRun, timestamp_stopRun)
     ### Important: PISA Formatter requires the connectionMap file to be in the same folder as the ROOT file (eg. connectionMap_PS_26_IBA-10003.json)
-    theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, timestamp_startRun.replace(" ", "T"), timestamp_stopRun.replace(" ", "T"))
+    for opticalGroup in opticalGroups:
+        rootTrackerFileName_opticalGroup = outDir + "/" + "ResultsWithMonitorDQM_" + opticalGroup + ".root"
+        os.system("cp " + rootTrackerFileName + " " + rootTrackerFileName_opticalGroup)
+        print("Processing optical group:", opticalGroup, "Output file:", rootTrackerFileName_opticalGroup)
+        theFormatter.do_burnin_format(rootTrackerFileName_opticalGroup, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, timestamp_startRun.replace(" ", "T"), timestamp_stopRun.replace(" ", "T"))
 
-    print()
-    print("PISA Formatter done")
-    print("Output file:", rootTrackerFileName)
-    print()
-    ### Now looping on all output files to add monitoring infos
+        print()
+        print("PISA Formatter done")
+        print("Output file:", rootTrackerFileName_opticalGroup)
+        print()
+        ### Now looping on all output files to add monitoring infos
 
