@@ -7,7 +7,8 @@
 
 #FIRMWARE="ps8m5gcic2l12octal8dio5tluv301.bin" ## downloaded from https://udtc-ot-firmware.web.cern.ch/?dir=v3-01/ps_8m_5g_cic2_l12octa_l8dio5_tlu
 FIRMWARE="ps8m10gcic2l12octal8dio5tluv300.bin" ## downloaded from https://udtc-ot-firmware.web.cern.ch/?dir=v3-01/ps_8m_10g_cic2_l12octa_l8dio5_tlu
-IMAGE="gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v6-02"
+FIRMWARE="ps6m10gcic2l12octal8dio5v303.bin"
+IMAGE="gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v6-10"
 WORKDIR="/home/cmsTkUser/Ph2_ACF"
 TESTDIR="/home/thermal/BurnIn_moduleTest"
 VOLUME_MOUNTS="-v $PWD/Results:$WORKDIR/Results/:z \
