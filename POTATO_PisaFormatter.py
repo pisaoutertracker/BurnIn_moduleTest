@@ -94,13 +94,13 @@ def makeGraphFromDataframe(df, x_col, y_col, is_datetime=False):
     print(df[x_col].values)
     print(df[y_col].values)
 
-    x = arr.array('f', df[x_col].values)
+    x = arr.array('d', df[x_col].values)
     print(type(df[y_col].values[0]))
     if is_datetime:
         # Convert datetime to timestamp
         df[y_col] = pd.to_datetime(df[y_col])
         df[y_col] = df[y_col].astype(np.int64) // 10**9  # Convert to seconds since epoch 
-    y = arr.array('f', df[y_col].values)
+    y = arr.array('d', df[y_col].values)
     graph = ROOT.TGraph(len(x), x, y)
     print("Y: ", y)
     return graph
@@ -256,7 +256,7 @@ class POTATOPisaFormatter():
             values.append(graph.Eval(timestamp))
             if timestamp < min(graph.GetX()) or timestamp > max(graph.GetX()):
                 print("################################")
-                print(f"WARNING: Reading value outside graph range: {graph.GetName()} {timestamp} {min(graph.GetX())} {max(graph.GetX())}")
+                print(f"WARNING: Reading value outside graph range: {graph.GetName()} {timestamp} Range({min(graph.GetX())}, {max(graph.GetX())}). Extrapolated value: {graph.Eval(timestamp)}")
                 print("################################")
         if len(values) == 0:
             print("################################")
@@ -321,6 +321,7 @@ class POTATOPisaFormatter():
         for table in tables:
             if verbose>3: print(table)
             for record in table.records:
+                if verbose>500: print("Record: ", record.get_time(), " Value: ", record.get_value(), record.get_time().timestamp(), float(record.get_time().timestamp()))
                 times.append(record.get_time().timestamp())
                 values.append(record.get_value())
         import array as arr
@@ -333,7 +334,7 @@ class POTATOPisaFormatter():
             print("List of all sensors:")
             printAllSensors()
             print("########################################")
-        graph = ROOT.TGraph(len(times), arr.array('f',times), arr.array('f',values))
+        graph = ROOT.TGraph(len(times), arr.array('d',times), arr.array('d',values))
         graph.SetName(sensorName)
         print("Graph name: ", graph.GetName(), " N: ", graph.GetN(), " Start: ", start_time, " Stop: ", stop_time)
         return graph
@@ -658,9 +659,15 @@ class POTATOPisaFormatter():
         #humidityDuringIV = np.array(self.getGraphValuesByTimestamp(humidityHistoryGraph_IV_Influx, moduleIVTimestampGraph.GetY()))
         #theHistogrammer.makeIVEnvironment("Humidity"   , voltages, humidityDuringIV, moduleName)
 
+        ## Remove spikes larger than 0.5 degrees from the sensorTemperatureGraph
+        sensorTemperatureGraph = spikeRemoval(sensorTemperatureGraph, threshold=0.5)
+
         print("--------------------------------------------------------------------")
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
-        sensorTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(sensorTemperatureGraph, moduleIVTimestampGraph.GetY()))
+        values = moduleIVTimestampGraph.GetY()
+        values = [val for val in values]  # Adjusting the values to match the sensor temperature range
+#        sensorTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(sensorTemperatureGraph, moduleIVTimestampGraph.GetY()))
+        sensorTemperatureDuringIV = np.array(self.getGraphValuesByTimestamp(sensorTemperatureGraph, values))
         theHistogrammer.makeIVEnvironment("SENSOR_Temperature", voltages, sensorTemperatureDuringIV, moduleName)
         print("KNOWN ISSUE... we don't have the sensor temperature during IV")
         print("--------------------------------------------------------------------")
@@ -775,9 +782,6 @@ class POTATOPisaFormatter():
         print("RH at end of Module Test: ", str(humidityGraph.Eval(testTimeStop)))
         TObjString(str(humidityGraph.Eval(testTimeStop))).Write("RH at stop of Module Test (%)")
 
-        ## Remove spikes larger than 5 degrees from the sensorTemperatureGraph
-        sensorTemperatureGraph = spikeRemoval(sensorTemperatureGraph, threshold=999)
-
         print("Sensor T at start of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStart)))
         TObjString(str(sensorTemperatureGraph.Eval(testTimeStart))).Write("Sensor T at start of Module Test (C)")
         print("Sensor T at end of Module Test: ", str(sensorTemperatureGraph.Eval(testTimeStop)))
@@ -787,6 +791,14 @@ class POTATOPisaFormatter():
         sensorTemperatureGraph.Draw("AL*")
         c1.SaveAs("SensorTemperatureGraph.root")
         c1.SaveAs("SensorTemperatureGraph.png")
+
+        sensorTemperatureGraphIV = sensorTemperatureGraph.Clone("SensorTemperatureGraphIV")
+        for i in range(len(sensorTemperatureDuringIV)):
+            sensorTemperatureGraphIV.SetPoint(len(sensorTemperatureGraphIV.GetX()), values[i], sensorTemperatureDuringIV[i])
+
+        sensorTemperatureGraphIV.Draw("AL*")
+        c1.SaveAs("sensorTemperatureGraphIV.root")
+        c1.SaveAs("sensorTemperatureGraphIV.png")
 
         #print(moduleIVTimestampGraph.GetY())
         moduleCarrierTemperatureGraph_IV_Influx.Draw("AL*")
