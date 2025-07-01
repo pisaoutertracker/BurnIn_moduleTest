@@ -332,7 +332,7 @@ plotsToBeRenamed = { ##old name --> new name
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
-version = "2025-04-09b"
+version = "2025-04-29"
 
 #allVariables = ["NoiseDistribution"]
 
@@ -1398,7 +1398,6 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     xmlConfig = run["runConfiguration"] ## take configuration from db instead of python file
 
     ## Get Connection map , see https://cmstkita.web.cern.ch/Pisa/TBPS/navigator_eos.php/Run_206/output_dggbl.zip/connectionMap_PS_26_IBA-10006.json
-    moduleName = run['moduleTestName'][0].split("__")[0]
     connectionMapFileName = extracted_dir+"/connectionMap_%s.json"%moduleName
     if os.path.exists(connectionMapFileName):
         with open(connectionMapFileName) as json_file:
