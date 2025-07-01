@@ -147,10 +147,11 @@ if __name__ == '__main__':
     if args.useExistingXmlFile:
         from tools import parse_module_settings
         print("As you are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
-        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels))
+        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels, modules))
         board, slots, hybrids, strips, pixels  = parse_module_settings(args.useExistingXmlFile)
+        modules = ["auto" for s in slots]
         opticalGroups = [int(s) for s in slots]
-        print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
+        print("The new values are: %s, %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels, modules))
     
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
