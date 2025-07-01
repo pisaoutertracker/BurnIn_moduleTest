@@ -260,6 +260,18 @@ def getRunFromDB(testID):
         print("Failed to update the module. Status code:", response.status_code)
     return evalMod(response.content.decode())
 
+### read a module from DB, given the moduleName
+
+def getIVscansOfModule(moduleName=1234):
+    if verbose>0: print("Calling getIVscansOfModule()", moduleName)
+    api_url = "http://%s:%d/iv_scans/%s"%(ip, port, moduleName)
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose>1: print("IV scan read successfully")
+    else:
+        print("Failed to update the module. Status code:", response.status_code)
+    return evalMod(response.content.decode().replace("null","[]"))
+
 ### update the "tests" parameter of module in DB using updatedTestList 
 
 def addTestToModuleDB(updatedTestList, moduleName):
@@ -539,6 +551,10 @@ if __name__ == '__main__':
     allModules = getListOfModulesFromDB()
     for mod in allModules:
         print(mod["moduleName"])
+    iv_scans = getIVscansOfModule("PS_26_IPG-10014")
+    print("IV scans for PS_26_05-IPG_001021:")
+    for scan in iv_scans:
+        print(scan["sessionName"],scan["runType"], scan["IVScanId"])
     connectionMap = getConnectionMap("PS_26_05-IPG_001021")
     print(connectionMap)
     saveMapToFile(connectionMap, "connectionMap.json")
