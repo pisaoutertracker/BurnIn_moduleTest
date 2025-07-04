@@ -144,7 +144,7 @@ if __name__ == '__main__':
     if args.slotBI != "-1":
         if args.slot != "-1":
             raise Exception("You cannot use both --slot and --slotBI at the same time. Please use only one of them.")
-        if args.board == "-1":
+        if args.board != "-1":
             raise Exception("You cannot use both --board and --slotBI at the same time. Please use only one of them.")
         if len(slotsBI)!=len(modules):
             raise Exception("--slotsBI and --modules must have the same number of objects. Check %s and %s."%(slotsBI,modules))
