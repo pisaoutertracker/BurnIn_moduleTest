@@ -544,10 +544,63 @@ def updateNewModule(moduleName, id_):
 #    if len(modules)==0:
 #        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
     
+### Get the optical group and board from the slotBI
 
+def getOpticaGroupAndBoardFromSlot(slotsBI):
+    """
+    Get the optical group and board from the slotBI.
+    slotBI is a number between 0 and 8 (slot in the burn-in).
+    """
+    optical_group = []
+    fc7 = None
+    for slotBI in slotsBI:
+#        print("slotBI", slotBI)
+        if verbose>0: print("Calling getOpticaGroupAndBoardFromSlot()", slot)
+        api_url = "http://%s:%d/snapshot"%(ip, port)
+        crate = "B%s"%slotBI
+        snapshot_data = {
+            "cable": crate,
+            "side": "crateSide"
+        }
+        response = requests.post(api_url, json=snapshot_data)
+        
+        if response.status_code == 200:
+            if verbose>1: print("Module read successfully")
+        else:
+            print("Failed to update the module. Status code:", response.status_code)
+            raise Exception("Error in calling getOpticaGroupAndBoardFromSlot() for slot %s. Crate %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(slotBI, crate))
+        out = evalMod(response.content.decode())
+        og = None
+#        print(out)
+        for el in out.values():
+#            print(el)
+            if "connections" in el and len(el["connections"])>0:
+                last = el["connections"][-1]
+#                print(last)
+                if "cable" in last and last["cable"][:5]== "FC7OT":
+                    og = last["det_port"][0].split("OG")[-1]  # Return the optical group number, e.g., "10" from "OG10"
+                    if not fc7:
+                        fc7 = last["cable"]
+                    else:
+                        if fc7 != last["cable"]:
+                            raise Exception("Error: Found different FC7 for burnin in slots %s. %s and %s. You cannot run simultaneously on two different FC7s."%(slotBI, fc7, last["cable"]))
+                        else:
+                            pass ## Everything is ok, we found the same FC7 for all slots.
+                    if verbose>600: print("Optical group %s and board %s found for slot %s"%(optical_group, fc7, slotBI))
+                    break
+        if og is not None:
+            optical_group.append(og)
+        if fc7 is None or og is None:
+            raise Exception("Error: Could not find any FC7OT connected to slot %s (crate %s). See http://pccmslab1.pi.infn.it:5000/static/connections.html "%(slotBI, crate))
+#        print(fc7, og)
+    return fc7, optical_group
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    filename = "ModuleTest_settings.xml"
+    splitBI_string = "1,2"
+    print("Test getOpticaGroupAndBoardFromSlot('%s'):"%splitBI_string, getOpticaGroupAndBoardFromSlot(splitBI_string.split(",")))
+    print()
     allModules = getListOfModulesFromDB()
     for mod in allModules:
         print(mod["moduleName"])
@@ -590,4 +643,3 @@ if __name__ == '__main__':
     test = getTestFromDB(testID)
     print("\n #####     Check Test %s on MongoDB    ##### \n"%testID)
     pprint(test)
-

@@ -42,6 +42,7 @@ if __name__ == '__main__':
     required.add_argument('-m', '--message', type=str, default='-1', help='Messagge used to create a new session. It requires "|" to separate between the author and the message ', required=False)
     required.add_argument('--module', type=str,  help='Optical group number (eg. PS_26_05-IBA_00102). "auto" will select the expected module according to the connection database.', required=True)
     required.add_argument('--slot', type=str, default='-1', help='Module name (eg. 0,1,2).', required=False)
+    required.add_argument('--slotBI', type=str, default='-1', help='Module name (eg. 0,1,2).', required=False)
     required.add_argument('--board', type=str, default='-1', help='Board name (eg. fc7ot2).', required=False)
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
     required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
@@ -70,14 +71,14 @@ if __name__ == '__main__':
     
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
     args = parser.parse_args()
-    if not args.useExistingModuleTest and not args.useExistingXmlFile:
+    if not args.useExistingModuleTest and not args.useExistingXmlFile and args.slotBI == "-1":
         if args.slot == "-1":
             raise Exception("Please provide a slot number. Eg. --slot 0")
         if args.board == "-1":
             raise Exception("Please provide a board name. Eg. --board fc7ot2")
     if not args.useExistingModuleTest:
         if args.module == "-1":
-            raise Exception("Please provide a module name. Eg. --module PS_26_05-IBA_00102")
+            raise Exception("Please provide a module name. Eg. --module PS_26_05-IBA_00102 or auto")
     if args.session == "-1" and args.message == "-1" and args.command!="readOnlyID":
         raise Exception("Please provide either a session name (eg. --session session1) or a message (eg. -m 'Mickey Mouse|Test of the burnin controller with the new firmware').")
     if args.message != "-1" and not "|" in args.message:
@@ -107,6 +108,7 @@ if __name__ == '__main__':
     print("Session: %s"%args.session)
     print("Module: %s"%args.module)
     print("Slot: %s"%args.slot)
+    print("SlotBI: %s"%args.slotBI)
     print("Board: %s"%args.board)
     print("EdgeSelect: %s"%args.edgeSelect)
     print("Firmware: %s"%args.firmware)
@@ -133,10 +135,26 @@ if __name__ == '__main__':
     print("++++++++++++++++++ Preliminary checks ++++++++++++++++++")
     board = args.board
     lpGBTfile = args.lpGBT
-    slots = args.slot.split(",")
+    opticalGroups = args.slot.split(",") ### --slot to be renamed to --opticalGroups
+    slotsBI = args.slotBI.split(",")  ### --slotBI might be renamed to --slot
     modules = args.module.split(",")
-    if len(slots)!=len(modules):
-        raise Exception("--slots and --modules must have the same number of objects. Check %s and %s."%(slots,modules))
+    if args.slot != "-1":
+        if len(opticalGroups)!=len(modules):
+            raise Exception("--slots and --modules must have the same number of objects. Check %s and %s."%(opticalGroups,modules))
+    if args.slotBI != "-1":
+        if args.slot != "-1":
+            raise Exception("You cannot use both --slot and --slotBI at the same time. Please use only one of them.")
+        if args.board == "-1":
+            raise Exception("You cannot use both --board and --slotBI at the same time. Please use only one of them.")
+        if len(slotsBI)!=len(modules):
+            raise Exception("--slotsBI and --modules must have the same number of objects. Check %s and %s."%(slotsBI,modules))
+        if len(slotsBI) != len(set(slotsBI)):
+            raise Exception("You cannot have the same slot in --slotsBI. Check %s."%(slotsBI))
+        from databaseTools import getOpticaGroupAndBoardFromSlot
+        print("Using --slotBI %s to get optical groups and board name:"%slotsBI)
+        board, opticalGroups = getOpticaGroupAndBoardFromSlot(slotsBI)
+        print("Optical Groups: %s, Board: %s found."%(opticalGroups, board))
+
     edgeSelect = args.edgeSelect
     hybrids = [int(h) for h in args.hybrid.split(",") if h != ""]
     pixels = [int(h) for h in args.pixel.split(",") if h != ""]
@@ -146,12 +164,13 @@ if __name__ == '__main__':
     
     if args.useExistingXmlFile:
         from tools import parse_module_settings
-        print("As you are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
-        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels, modules))
-        board, slots, hybrids, strips, pixels  = parse_module_settings(args.useExistingXmlFile)
-        modules = ["auto" for s in slots]
-        opticalGroups = [int(s) for s in slots]
-        print("The new values are: %s, %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels, modules))
+        print("As you are using an existing module test, I will overwrite the board, opticalGroups, hybrids, strips, pixels with the one from the existing module test.")
+        print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels, modules))
+        board, opticalGroups, hybrids, strips, pixels  = parse_module_settings(args.useExistingXmlFile)
+        modules = ["auto" for s in opticalGroups]
+        print("S")
+        opticalGroups = [int(s) for s in opticalGroups]
+        print("The new values are: %s, %s, %s, %s, %s, %s."%(board, opticalGroups, hybrids, strips, pixels, modules))
     
     readOnlyID = (args.command=="readOnlyID")
     commandOption = args.command
@@ -171,7 +190,7 @@ if __name__ == '__main__':
 
     
     ## This will be replaced by a function that check which optical group are conntected to a specific slot
-    opticalGroups = [int(s) for s in slots]
+    opticalGroups = [int(s) for s in opticalGroups]
 
 #    print("firmware",firmware)
 #    verbose = args.verbose
@@ -201,11 +220,11 @@ if __name__ == '__main__':
             from makeXml import makeConfigFromROOTfile, getInfosFromXmlPyConfig
             print("%s not found. Creating it from ROOT file."%xmlPyConfigPath)
             xmlConfig = makeConfigFromROOTfile("Results/"+folder+"/Results.root")
-            print("As you are using an existing module test, I will overwrite the board, slots, hybrids, strips, pixels with the one from the existing module test.")
-            print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, slots, hybrids, strips, pixels))
-            board, slots, hybrids, strips, pixels  = getInfosFromXmlPyConfig(xmlConfig)
-            opticalGroups = [int(s) for s in slots]
-            print("The new values are: %s, %s, %s, %s, %s."%(board, slots, hybrids, strips, pixels))
+            print("As you are using an existing module test, I will overwrite the board, opticalGroups, hybrids, strips, pixels with the one from the existing module test.")
+            print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels))
+            board, opticalGroups, hybrids, strips, pixels  = getInfosFromXmlPyConfig(xmlConfig)
+            opticalGroups = [int(s) for s in opticalGroups]
+            print("The new values are: %s, %s, %s, %s, %s."%(board, opticalGroups, hybrids, strips, pixels))
             if verbose>1: print(xmlConfig)      
         xmlFile = "Results/%s/%s"%(folder,xmlOutput)
         if os.path.exists(xmlFile):
@@ -231,11 +250,11 @@ if __name__ == '__main__':
 
     if verbose>10:
         print(board)
-        print(slots)
-    #### check if the expected modules match the modules declared in the database for the slots ####
+        print(opticalGroups)
+    #### check if the expected modules match the modules declared in the database for the opticalGroups ####
     print("++++++++++++++++++ Check if expected modules matches the modules from DB ++++++++++++++++++")
     from databaseTools import checkIfExpectedModulesMatchModulesInDB
-    checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args)
+    checkIfExpectedModulesMatchModulesInDB(board, opticalGroups, modules, args)
 
     ###########################################################
     #################### START OF THE TEST ####################
@@ -356,7 +375,7 @@ if __name__ == '__main__':
                         raise Exception("I cannot work with unknown modules.")
 
         if error:
-            message = "The modules declared in --modules (%s) do not correspond to the module found in --slots (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board))
+            message = "The modules declared in --modules (%s) do not correspond to the module found in --opticalGroups (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board))
             print(message)
             if not args.skipModuleCheck: raise Exception(message) 
         if readOnlyID:
