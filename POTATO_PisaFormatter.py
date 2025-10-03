@@ -709,7 +709,13 @@ class POTATOPisaFormatter():
         TObjString(moduleName).Write("Module_ID")
         TObjString("Unknown").Write("Operator")
         TObjString("Unknown").Write("Result_Folder")
-        TObjString("mod_final").Write("Run_Type")
+        
+        # Set Run_Type based on carrier temperature at test start
+        if(moduleCarrierTemperatureGraph.Eval(testTimeStart) > -15):
+            ROOT.TObjString("mod_burnin_warm").Write("Run_Type")
+        else:
+            ROOT.TObjString("mod_burnin_cold").Write("Run_Type")
+        
         print("Module_Slot: ", opticalGroupToBurninSlot[opticalGroupNumber])
         TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
         
