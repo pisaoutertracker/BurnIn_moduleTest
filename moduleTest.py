@@ -68,8 +68,11 @@ if __name__ == '__main__':
     parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
     parser.add_argument('--tempSensor', type=str, default="Temp0", nargs='?', const=True, help='Select which temperature sensor will be displayed in the analysis page.')
 
-    
+    print()
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
+    print()
+    print("Example: python3 moduleTest.py --module auto --slotBI 3 -c readOnlyID  --session session1 --runFpgaConfig --g10")
+    print()
     args = parser.parse_args()
     if not args.useExistingModuleTest and not args.useExistingXmlFile and args.slotBI == "-1":
         if args.slot == "-1":
@@ -186,6 +189,7 @@ if __name__ == '__main__':
     elif args.g10:
         firmware = firmware_10G
     else:
+        if args.runFpgaConfig: args.g5 = True
         firmware = firmware_5G
 
     
