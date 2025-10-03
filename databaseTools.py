@@ -6,7 +6,84 @@ def evalMod(string):
     string = string.replace("true","True").replace("false","False").replace("null","None")
     return eval(string)
 
-#verbose = -1
+def handle_api_error(function_name, error_description, response, debug_curl_command=None, additional_info=None):
+    """
+    Generic error handler for API requests
+    
+    Args:
+        function_name: Name of the function that failed
+        error_description: Description of what failed
+        response: The HTTP response object
+        debug_curl_command: Optional curl command for debugging
+        additional_info: Optional additional debug information
+    """
+    print()
+    print(f"ERROR [{function_name}]: {error_description}. Status code:", response.status_code)
+    print()
+    if debug_curl_command:
+        print("You can check this using:")
+        print(debug_curl_command)
+    print("Response:", response.status_code)
+    print("Response:", response.content.decode())
+    if additional_info:
+        print()
+        print("Debug info:")
+        for info in additional_info:
+            print(info)
+    print()
+
+def make_get_request(function_name, api_url, entity_type, entity_id=None):
+    """
+    Make a GET request with standardized error handling
+    
+    Args:
+        function_name: Name of the calling function
+        api_url: The API URL to call
+        entity_type: Type of entity (e.g., "module", "test", "session")
+        entity_id: Optional ID of the specific entity
+    
+    Returns:
+        Parsed response data or None if error
+    """
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        if verbose > 1:
+            print(f"{entity_type.capitalize()} read successfully")
+        return evalMod(response.content.decode().replace("null", "[]"))
+    else:
+        error_desc = f"Failed to get {entity_type}"
+        if entity_id:
+            error_desc += f" {entity_id}"
+        
+        curl_cmd = f"curl -X GET -H 'Content-Type: application/json' '{api_url}'"
+        handle_api_error(function_name, error_desc, response, curl_cmd)
+        return None
+
+def make_post_request(function_name, api_url, json_data, entity_type, success_code=201):
+    """
+    Make a POST request with standardized error handling
+    
+    Args:
+        function_name: Name of the calling function
+        api_url: The API URL to call
+        json_data: JSON data to send
+        entity_type: Type of entity being created
+        success_code: Expected success status code (default 201)
+    
+    Returns:
+        Response object
+    """
+    response = requests.post(api_url, json=json_data)
+    if response.status_code == success_code:
+        if verbose > 1:
+            print(f"{entity_type.capitalize()} created successfully")
+    else:
+        error_desc = f"Failed to create {entity_type}"
+        curl_cmd = f"curl -X POST -H 'Content-Type: application/json' '{api_url}'"
+        handle_api_error(function_name, error_desc, response, curl_cmd)
+    return response
+
+verbose = 100
 ### upload the test result to the "tests" DB
 
 ## (obsolete) ##
@@ -25,7 +102,14 @@ def uploadTestToDB(testID, testResult = {}):
     if response.status_code == 201:
         if verbose>1: print("Test %s created successfully"%testID)
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [uploadTestToDB]: Failed to create test {testID}. Status code:", response.status_code)
+        print()
+        print("You can check if the test exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/tests/{testID}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
 
 ### upload the new Run to the "module_test" and "test_run" DB 
 
@@ -49,7 +133,15 @@ def uploadRunToDB(newRun = {}):
     if response.status_code == 201:
         if verbose>1: print("Run uploaded successfully")
     else:
-        print("Failed to update the run. Status code:", response.status_code)
+        print()
+        print(f"ERROR [uploadRunToDB]: Failed to upload run. Status code:", response.status_code)
+        print()
+        print("You can check if the run endpoint exists using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/addRun'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
+        print("Debug info:")
         print("response = requests.post(api_url, json=newRun)")
         print(api_url)
         print(newRun)
@@ -66,12 +158,64 @@ def uploadRunToDB(newRun = {}):
 def getTestFromDB(testID):
     if verbose>0: print("Calling getTestFromDB()", testID)
     api_url = "http://%s:%d/tests/%s"%(ip, port, testID)
-    response = requests.get(api_url)
-    if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
-    else:
-        print("Failed to update the module. Status code:", response.status_code)
-    return evalMod(response.content.decode())
+    result = make_get_request("getTestFromDB", api_url, "test", testID)
+    return result if result is not None else evalMod("{}")
+
+### read the list of sessions
+
+def getListOfSessionsFromDB():
+    if verbose>0: print("Calling getListOfSessionsFromDB()")
+    api_url = "http://%s:%d/sessions"%(ip, port)
+    result = make_get_request("getListOfSessionsFromDB", api_url, "sessions list")
+    return result if result is not None else []
+
+### read the list of modules
+
+def getListOfModulesFromDB():
+    if verbose>0: print("Calling getListOfModulesFromDB()")
+    api_url = "http://%s:%d/modules"%(ip, port)
+    result = make_get_request("getListOfModulesFromDB", api_url, "modules list")
+    return result if result is not None else []
+
+### read the test modules analysis
+
+def getListOfAnalysisFromDB():
+    if verbose>0: print("Calling getListOfAnalysisFromDB()")
+    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+    result = make_get_request("getListOfAnalysisFromDB", api_url, "analysis list")
+    return result if result is not None else []
+
+### read the module test result from DB
+
+def getSessionFromDB(testID):
+    if verbose>0: print("Calling getSessionFromDB()", testID)
+    api_url = "http://%s:%d/sessions/%s"%(ip, port, testID)
+    result = make_get_request("getSessionFromDB", api_url, "session", testID)
+    return result if result is not None else evalMod("{}")
+
+### read the module test result from DB
+
+def getModuleTestFromDB(testID):
+    if verbose>0: print("Calling getModuleTestFromDB()", testID)
+    api_url = "http://%s:%d/module_test/%s"%(ip, port, testID)
+    result = make_get_request("getModuleTestFromDB", api_url, "module test", testID)
+    return result if result is not None else evalMod("{}")
+
+### get run from DB
+
+def getRunFromDB(testID):
+    if verbose>0: print("Calling getRunFromDB()", testID)
+    api_url = "http://%s:%d/test_run/%s"%(ip, port, testID)
+    result = make_get_request("getRunFromDB", api_url, "run", testID)
+    return result if result is not None else evalMod("{}")
+
+### read a module from DB, given the moduleName
+
+def getModuleFromDB(moduleName=1234):
+    if verbose>0: print("Calling getModuleFromDB()", moduleName)
+    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    result = make_get_request("getModuleFromDB", api_url, "module", moduleName)
+    return result if result is not None else evalMod("{}")
 
 ### read the fiber connections of slot X
 
@@ -88,7 +232,15 @@ def getFiberLink(slot):
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getFiberLink]: Failed to get fiber link for {slot}. Status code:", response.status_code)
+        print()
+        print("Check if module %s exists in the database: http://pccmslab1.pi.infn.it:5000/static/connections.html "%slot)
+        print("You can check if the module exists in the database using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{slot}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     out = evalMod(response.content.decode())
     fc7 = None
     optical = None
@@ -123,7 +275,14 @@ def getConnectionMap(moduleName):
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getConnectionMap]: Failed to get connection map for {moduleName}. Status code:", response.status_code)
+        print()
+        print("You can check if the module exists in the database using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{moduleName}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     out = evalMod(response.content.decode())
     return out
 
@@ -149,7 +308,14 @@ def getModuleConnectedToFC7(fc7, og):
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getModuleConnectedToFC7]: Failed to get module connected to {fc7} {og}. Status code:", response.status_code)
+        print()
+        print("You can check if the FC7 exists in the database using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     out = evalMod(response.content.decode())
     
     moduleName = None
@@ -167,7 +333,9 @@ def getModuleConnectedToFC7(fc7, og):
             #it might be a new module to be added into the database
             #raise Exception("Error in Calling getModuleConnectedToFC7()",fc7, og)
     if moduleName == None:
-        print("Error: Could not find module connected to FC7 %s and optical group %s"%(fc7, og))
+        print()
+        print("ERROR [getModuleConnectedToFC7]: Could not find module connected to FC7 %s and optical group %s"%(fc7, og))
+        print()
     return moduleName
 
 ### check from DB if the module is 5G or 10G, looking at module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_BANDWIDTH"]
@@ -196,7 +364,14 @@ def getListOfSessionsFromDB():
     if response.status_code == 200:
         if verbose>1: print("Session read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getListOfSessionsFromDB]: Failed to get list of sessions. Status code:", response.status_code)
+        print()
+        print("You can check if the sessions endpoint exists using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 ### read the list of modules
@@ -208,7 +383,14 @@ def getListOfModulesFromDB():
     if response.status_code == 200:
         if verbose>1: print("Session read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getListOfModulesFromDB]: Failed to get list of modules. Status code:", response.status_code)
+        print()
+        print("You can check if the modules endpoint exists using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 
@@ -221,7 +403,14 @@ def getListOfAnalysisFromDB():
     if response.status_code == 200:
         if verbose>1: print("Session read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getListOfAnalysisFromDB]: Failed to get list of analysis. Status code:", response.status_code)
+        print()
+        print("You can check if the analysis endpoint exists using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test_analysis'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 ### read the module test result from DB
@@ -233,7 +422,14 @@ def getSessionFromDB(testID):
     if response.status_code == 200:
         if verbose>1: print("Session read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getSessionFromDB]: Failed to get session {testID}. Status code:", response.status_code)
+        print()
+        print("You can check if the session exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions/{testID}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 ### read the module test result from DB
@@ -245,7 +441,14 @@ def getModuleTestFromDB(testID):
     if response.status_code == 200:
         if verbose>1: print("Module test read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getModuleTestFromDB]: Failed to get module test {testID}. Status code:", response.status_code)
+        print()
+        print("You can check if the module test exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test/{testID}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 ### get run from DB
@@ -257,7 +460,14 @@ def getRunFromDB(testID):
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getRunFromDB]: Failed to get run {testID}. Status code:", response.status_code)
+        print()
+        print("You can check if the run exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/test_run/{testID}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode())
 
 ### read a module from DB, given the moduleName
@@ -269,7 +479,13 @@ def getIVscansOfModule(moduleName=1234):
     if response.status_code == 200:
         if verbose>1: print("IV scan read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getIVscansOfModule]: Failed to read IV scans for module {moduleName}. Status code:", response.status_code)
+        print("You can check if the module exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode().replace("null","[]"))
 
 ### update the "tests" parameter of module in DB using updatedTestList 
@@ -283,7 +499,14 @@ def addTestToModuleDB(updatedTestList, moduleName):
     if response.status_code == 200:
         if verbose>1: print("Module updated successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [addTestToModuleDB]: Failed to update module {moduleName}. Status code:", response.status_code)
+        print()
+        print("You can check if the module exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
 
 def createAnalysis(json):
     if verbose>0: print("Calling createAnalysis()")
@@ -296,7 +519,14 @@ def createAnalysis(json):
     if response.status_code == 201:
         if verbose>1: print("Single module test analysis added successfully")
     else:
-        print("Failed to add the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [createAnalysis]: Failed to create analysis. Status code:", response.status_code)
+        print()
+        print("You can check if the analysis endpoint exists using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test_analysis'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return response.status_code
 
 def appendAnalysisToModule(analysisName):
@@ -312,7 +542,14 @@ def appendAnalysisToModule(analysisName):
     if response.status_code == 200:
         if verbose>1: print("Analysis appended to existing module successfully")
     else:
-        print("Failed to add the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [appendAnalysisToModule]: Failed to append analysis {analysisName}. Status code:", response.status_code)
+        print()
+        print("You can check if the analysis endpoint exists using:")
+        print(f"curl -X GET 'http://{ip}:{port}/addAnalysis?moduleTestAnalysisName={analysisName}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return response.status_code
 
 ## check if the expected modules match the modules declared in the database for the slots
@@ -383,7 +620,14 @@ def createSession(message, moduleList):
     if response.status_code == 201:
         if verbose>1: print("Session added successfully")
     else:
-        print("Failed to add the session. Status code:", response.status_code)
+        print()
+        print(f"ERROR [createSession]: Failed to create session. Status code:", response.status_code)
+        print()
+        print("You can check if the session endpoint exists using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     try:
         sessionName = eval(response.content.decode())["sessionName"]
     except:
@@ -429,7 +673,14 @@ def getModuleFromDB(moduleName=1234):
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
     else:
-        print("Failed to update the module. Status code:", response.status_code)
+        print()
+        print(f"ERROR [getModuleFromDB]: Failed to get module {moduleName}. Status code:", response.status_code)
+        print()
+        print("You can check if the module exists in the database using:")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
     return evalMod(response.content.decode().replace("null","[]"))
 
 ### create the maps hwTomoduleName and hwToMongoID to convert the hardware lpGBT ID to module ID and mongo ID.
@@ -499,7 +750,15 @@ def addNewModule(moduleName, id_):
     if response.status_code == 201:
         if verbose>1: print("Module %s uploaded successfully (hwId=%d)"%(moduleName, id_))
     else:
-        print("Failed to update the run. Status code:", response.status_code)
+        print()
+        print(f"ERROR [addNewModule]: Failed to add new module {moduleName}. Status code:", response.status_code)
+        print()
+        print("You can check if the module endpoint exists using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/modules'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
+        print("Debug info:")
         print("response = requests.post(api_url, json=newRun)")
         print(api_url)
     
@@ -555,7 +814,7 @@ def getOpticaGroupAndBoardFromSlot(slotsBI):
     fc7 = None
     for slotBI in slotsBI:
 #        print("slotBI", slotBI)
-        if verbose>0: print("Calling getOpticaGroupAndBoardFromSlot()", slot)
+        if verbose>0: print("Calling getOpticaGroupAndBoardFromSlot()", slotBI)
         api_url = "http://%s:%d/snapshot"%(ip, port)
         crate = "B%s"%slotBI
         snapshot_data = {
@@ -567,7 +826,14 @@ def getOpticaGroupAndBoardFromSlot(slotsBI):
         if response.status_code == 200:
             if verbose>1: print("Module read successfully")
         else:
-            print("Failed to update the module. Status code:", response.status_code)
+            print()
+            print(f"ERROR [getOpticaGroupAndBoardFromSlot]: Failed to get optical group for slot {slotBI}. Status code:", response.status_code)
+            print()
+            print("You can check if the crate exists in the database using:")
+            print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{crate}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
+            print("Response:", response.status_code)
+            print("Response:", response.content.decode())
+            print()
             raise Exception("Error in calling getOpticaGroupAndBoardFromSlot() for slot %s. Crate %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(slotBI, crate))
         out = evalMod(response.content.decode())
         og = None
@@ -604,22 +870,22 @@ if __name__ == '__main__':
     allModules = getListOfModulesFromDB()
     for mod in allModules:
         print(mod["moduleName"])
-    iv_scans = getIVscansOfModule("PS_26_IPG-10014")
+    iv_scans = getIVscansOfModule("PS_26_IPG-10010")
     print("IV scans for PS_26_05-IPG_001021:")
     for scan in iv_scans:
         print(scan["sessionName"],scan["runType"], scan["IVScanId"])
-    connectionMap = getConnectionMap("PS_26_05-IPG_001021")
+    connectionMap = getConnectionMap("PS_26_IPG-10010")
     print(connectionMap)
     saveMapToFile(connectionMap, "connectionMap.json")
     r = getRunFromDB("run303")
     print(r)
-    moduleName = "PS_26_IPG-10005"
+    moduleName = "PS_26_IPG-10010"
     testID = "T2023_11_08_17_57_54_302065"
     #testID = "T52"
     hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
 
-    print("getFiberLink", 'PS_26_05-IPG_00102')
-    pprint(getFiberLink('PS_26_05-IPG_00102'))
+    print("getFiberLink", 'PS_26_IPG-10010')
+    pprint(getFiberLink('PS_26_IPG-10010'))
 
     print("getModuleConnectedToFC7:", "FC7OT2", "OG10")
     pprint(getModuleConnectedToFC7("FC7OT2", "OG10"))
