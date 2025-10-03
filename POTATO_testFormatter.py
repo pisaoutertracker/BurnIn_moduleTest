@@ -31,12 +31,38 @@ if __name__ == "__main__":
     # wget https://cernbox.cern.ch/remote.php/dav/public-files/zcvWnJKEk7YgSBh//Run_500087/output_lahes.zip
     # unzip output_lahes.zip -d Run_500087_output_lahes
 
-    resultsFile = "POTATOFiles/example/Run_500832_testMultipleModule/Results.root"
-    monitorDQMFile = "POTATOFiles/example/Run_500832_testMultipleModule/MonitorDQM_2025-06-26_15-08-25.root"
-    #resultsFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/Results.root"
-    #monitorDQMFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/Run_500749_output_btdhg/MonitorDQM.root"
+    # downloadAndExtractZipFile - START - remote_path: Run_500825/output_luyhs.zip local_path: /tmp/Run_500825_output_luyhs.zip skipWebdav: False webdav_wrapper: None
+    inputDir = "/tmp/POTATO_PisaFormatterExample"
+    if not os.path.exists(inputDir):
+        os.makedirs(inputDir)
+    runNumber = "run500749"
+    module_name = "PS_26_IPG-10014"
+
+    ### Download example file if not present
+    if not os.path.exists(inputDir+".zip"):
+        from POTATO_run import downloadAndExtractZipFile
+        print()
+        fname = "Run_500749/output_btdhg.zip" ## see https://cmstkita.web.cern.ch/Pisa/TBPS/localdb.html for Run_500749
+        print(f"Downloading example file... {fname}")
+        downloadAndExtractZipFile(fname, inputDir+".zip", skipWebdav=False, webdav_wrapper=None)
+        print("Download done")
+        print()
+
+    ## Create the example IV scan CSV file if not present
+    if not os.path.exists(inputDir+"/"+"/HV0.6_PS_26_IPG-10014_after_encapsulation_2025-05-29 15:52:01_IVScan.csv"):
+        from POTATO_run import createIVScanCSVFile
+        print()
+        print("Creating IV scan CSV file...")
+        createIVScanCSVFile(runNumber, module_name, inputDir)
+        print(f"IV scan CSV file created in {inputDir} for module {module_name} and run {runNumber}")
+        print()
+
+    resultsFile = inputDir+"/"+"Results.root"
+    monitorDQMFile = inputDir+"/"+"MonitorDQM.root"
+    #resultsFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/POTATO_PisaFormatterExample/Results.root"
+    #monitorDQMFile = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/POTATO_PisaFormatterExample/MonitorDQM.root"
     ## This is the IV scan CSV file, it should be created by createIVScanCSVFile(runNumber, module_name, outDir) in POTATO_run.py
-    iv_csv_path = "/home/thermal/BurnIn_moduleTest/POTATOFiles/example/HV0.6_PS_26_IPG-10014_after_encapsulation_2025-05-29 15:52:01_IVScan.csv"
+    iv_csv_path = inputDir+"/"+"/HV0.6_PS_26_IPG-10014_after_encapsulation_2025-05-29 15:52:01_IVScan.csv"
 
     outDir = "POTATOFiles"
     theFormatter = Formatter(outDir)
@@ -57,8 +83,8 @@ if __name__ == "__main__":
     runNumber = "Run_500832"
     moduleBurninName = "Module4L"
     moduleCarrierName = "01" ## used to read sensor OW01 was "ModuleCarrier4Left"
-    opticalGroups = ['0', '1', '2']
-#    opticalGroups = ['1']
+#    opticalGroups = ['0', '1', '2']
+    opticalGroups = ['0']
 
     ## Get the timestamps from the ROOT file (it should be taken from the session db)
     file = TFile.Open(rootTrackerFileName)
