@@ -93,14 +93,27 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
         command = "fpgaconfig %s "%(options)
         output = runCommand(command)
     else:
+
+        ## Drop all -v options of Docker except the one used to link /etc/hosts
+        podmanCommandMinimal = ""
+        for word in podmanCommand.split("-"):
+            if word.startswith("v") and not "hosts" in word and not "$PWD:$PWD" in word:
+                continue
+            else:
+                podmanCommandMinimal += "-"+word
+
+        podmanCommandMinimal = podmanCommandMinimal[1:] # remove initial -
+        print("podmanCommandMinimal:", podmanCommandMinimal)
         command = "%s && fpgaconfig %s"%(prefixCommand, options)
-        output = runCommand(podmanCommand%(ph2ACFversion,command))
+        output = runCommand(podmanCommandMinimal%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
         print()
         print("|"+error+"|")
         raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
     if verbose>1: print(output)
+    return output
+
 
 ### Make testID from current date and time
 
