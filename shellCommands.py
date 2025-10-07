@@ -1,3 +1,4 @@
+import os
 import subprocess
 from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
@@ -78,7 +79,8 @@ def fpgaconfig(xmlFile, firmware, ph2ACFversion=lastPh2ACFversion):
         command = "fpgaconfig -c %s -i %s"%(xmlFile, firmware)
         output = runCommand(command)
     else:
-        command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand, xmlFile, firmware)
+        ## 
+        command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand + "&& cd $PH2ACF_BASE_DIR", xmlFile, firmware)
         output = runCommand(podmanCommand%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
@@ -97,14 +99,20 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
         ## Drop all -v options of Docker except the one used to link /etc/hosts
         podmanCommandMinimal = ""
         for word in podmanCommand.split("-"):
-            if word.startswith("v") and not "hosts" in word and not "$PWD:$PWD" in word:
-                continue
+            ## Remove all volume bindings except for /etc/hosts
+            if word.startswith("v"):
+                if "/etc/hosts" in word:
+                    podmanCommandMinimal += "-"+word
+                    ## Add also the binding for the xml file directly to the Ph2_ACF folder
+                    podmanCommandMinimal += " -v $PWD/ModuleTest_settings_for_fpgaconfigPisa.xml:/home/cmsTkUser/Ph2_ACF/ModuleTest_settings_for_fpgaconfigPisa.xml:z "
+                else:
+                    continue
             else:
                 podmanCommandMinimal += "-"+word
 
         podmanCommandMinimal = podmanCommandMinimal[1:] # remove initial -
-        print("podmanCommandMinimal:", podmanCommandMinimal)
-        command = "%s && fpgaconfig %s"%(prefixCommand, options)
+        import os
+        command = "%s && fpgaconfig %s"%(prefixCommand.replace(os.getcwd(), "/home/cmsTkUser/Ph2_ACF/"), options)
         output = runCommand(podmanCommandMinimal%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
