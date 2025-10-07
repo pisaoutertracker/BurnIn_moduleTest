@@ -87,6 +87,21 @@ def fpgaconfig(xmlFile, firmware, ph2ACFversion=lastPh2ACFversion):
         raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
     if verbose>1: print(output)
 
+def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
+    if verbose>0: print("Calling fpgaconfigNew()", options)
+    if ph2ACFversion=="local":
+        command = "fpgaconfig %s "%(options)
+        output = runCommand(command)
+    else:
+        command = "%s && fpgaconfig %s"%(prefixCommand, options)
+        output = runCommand(podmanCommand%(ph2ACFversion,command))
+    error = output.stderr.decode()
+    if error:
+        print()
+        print("|"+error+"|")
+        raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
+    if verbose>1: print(output)
+
 ### Make testID from current date and time
 
 from datetime import datetime
