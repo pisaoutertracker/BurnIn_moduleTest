@@ -73,21 +73,21 @@ def copyXml(ph2ACFversion=lastPh2ACFversion):
 
 ### Launch FPGA config (to be used after FC7 reset)
 
-def fpgaconfig(xmlFile, firmware, ph2ACFversion=lastPh2ACFversion):
-    if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
-    if ph2ACFversion=="local":
-        command = "fpgaconfig -c %s -i %s"%(xmlFile, firmware)
-        output = runCommand(command)
-    else:
-        ## 
-        command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand + "&& cd $PH2ACF_BASE_DIR", xmlFile, firmware)
-        output = runCommand(podmanCommand%(ph2ACFversion,command))
-    error = output.stderr.decode()
-    if error:
-        print()
-        print("|"+error+"|")
-        raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
-    if verbose>1: print(output)
+# def fpgaconfig(xmlFile, firmware, ph2ACFversion=lastPh2ACFversion):
+#     if verbose>0: print("Calling fpgaconfig()", xmlFile, firmware)
+#     if ph2ACFversion=="local":
+#         command = "fpgaconfig -c %s -i %s"%(xmlFile, firmware)
+#         output = runCommand(command)
+#     else:
+#         ## 
+#         command = "%s && fpgaconfig -c %s -i %s"%(prefixCommand + "&& cd $PH2ACF_BASE_DIR", xmlFile, firmware)
+#         output = runCommand(podmanCommand%(ph2ACFversion,command))
+#     error = output.stderr.decode()
+#     if error:
+#         print()
+#         print("|"+error+"|")
+#         raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
+#     if verbose>1: print(output)
 
 def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
     if verbose>0: print("Calling fpgaconfigNew()", options)
@@ -122,6 +122,30 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
     if verbose>1: print(output)
     return output
 
+### Call fpgaconfigPisa (to be used after FC7 reset)
+def fpgaconfigPisa(board, firmware):
+    if verbose>0: print("Calling fpgaconfigPisa()", options)
+    command = f"fpgaconfigPisa {board} -i {firmware}"
+
+    ## Run command locally
+    output = runCommand(command)
+    error = output.stderr.decode()
+
+    if error:
+        print()
+        print("|"+error+"|")
+        raise Exception("Generic Error running fpgaconfigPisa. Check the error above. Command: %s"%output.args)
+    if verbose>1: print(output)
+    success = False
+    for l in output.stdout.decode().split("\n"):
+        if "fpgaconfigPisa]Firmware" in l and "successfully uploaded to board" in l:
+            success = True
+            break
+    if not success:
+        print()
+        print("|"+output.stdout.decode()+"|")
+        raise Exception("fpgaconfigPisa did not complete successfully. Check the output above. Command: %s"%output.args)
+    return output
 
 ### Make testID from current date and time
 
@@ -235,6 +259,11 @@ if __name__ == '__main__':
     print()
     
 #    fpgaconfig(xmlFile, firmware)
+    board = "fc7ot3"
+    print("\nCalling fpgaconfigPisa(%s, %s)"%(board, firmware))
+    fpgaconfigPisa(board, firmware)
+    print()
+
     print()
     testID, date = runModuleTest(xmlFile, useExistingModuleTest)
     print("\ntestID-2:")

@@ -11,7 +11,7 @@ defaultCommand="PSquickTest"
 ##xmlTemplate="PS_Module_template.xml"
 xmlTemplate="PS_Module_v2p1.xml"
 firmware_5G="ps8m5gcic2l12octal8dio5v303" #"ps8m5gcic2l12octal8dio5tluv300" ##5 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_5g_cic2_l12octa_l8dio5_tlu
-firmware_10G="ps6m10gcic2l12octal8dio5v303" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
+firmware_10G="ps6m10gcic2l12octal8dio5vMR105" #ps6m10gcic2l12octal8dio5v303" ##10 GBps - https://udtc-ot-firmware.web.cern.ch/?dir=v3-00/ps_8m_10g_cic2_l12octa_l8dio5_tlu
 runFpgaConfig = False ## it will run automatically if necessary
 ## command used to launch commands through Docker (podman)
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     
     from pprint import pprint
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule, checkAndFixRunNumbersDat
-    from shellCommands import fpgaconfig, runModuleTest, burnIn_readSensors 
+    from shellCommands import fpgaconfigPisa, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
     from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
@@ -265,18 +265,18 @@ if __name__ == '__main__':
     ###########################################################
     ### launch fpga_config
     print("#### Launch the test ###")
-    if args.runFpgaConfig or args.g10 or args.g5: fpgaconfig(xmlFile, firmware, ph2ACFversion)
+    if args.runFpgaConfig or args.g10 or args.g5: fpgaconfigPisa( board, firmware) 
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
     out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
-    if out == "Run fpgaconfig":
+    if out == "Run fpgaconfigNew":
         print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
         if args.vetoFpgaConfig:
             raise Exception("You forgot to run fpgaconfig. Please run it before running the module test. Eg. remove --vetoFpgaConfig flag or use --runFpgaConfig flag or run fpgaconfig manually.")
         else:
             print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
-        fpgaconfig(xmlFile, firmware, ph2ACFversion)
+        fpgaconfigPisa( board, firmware) 
         out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
         if out == "Run fpgaconfig":
             raise Exception("fpgaconfig failed. Please check the error above.")
