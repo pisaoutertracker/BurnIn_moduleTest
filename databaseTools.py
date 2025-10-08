@@ -803,6 +803,29 @@ def updateNewModule(moduleName, id_):
 #    if len(modules)==0:
 #        raise Exception("\n'modules' database is empty. Please check: \ncurl -X GET -H 'Content-Type: application/json' 'http://192.168.0.45:5000/modules'")
     
+
+### Update firmaware version in a FC7OT board
+# curl -X PUT -H "Content-Type: application/json" -d '{"firmware": "abcd", "firmware_timestamp" : "12349032123" }' 'cmslabserver:5000/cables/FC7OT7' 
+
+def updateFirmwareVersionInFC7OT(board, firmware, firmware_timestamp):
+    board = board.upper()
+    if verbose>0: print("Calling updateFirmwareVersionInFC7OT(%s, %s, %s)"%(board, firmware, firmware_timestamp))
+    # URL of the API endpoint for updating a module
+    api_url = "http://%s:%d/cables/%s"%(ip, port, board)
+    response = requests.get(api_url)
+    cableJson = evalMod(response.content.decode().replace("null","[]"))
+    if response.status_code == 200:
+        if verbose>0: print("Board %s found in database"%board)
+        #print("Cable json:", cableJson)
+        newFirmwareInfo = {"firmware": firmware, "firmware_timestamp": firmware_timestamp}
+        response = requests.put(api_url, json=newFirmwareInfo)
+        if verbose>0: print("Updated firmware version of board %s to %s (%s)"%(board, firmware, firmware_timestamp))
+        ## print response text
+        return response
+    else:
+        print("ERROR: Could not find board %s in the database."%board)
+        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
+
 ### Get the optical group and board from the slotBI
 
 def getOpticaGroupAndBoardFromSlot(slotsBI):
@@ -863,6 +886,8 @@ def getOpticaGroupAndBoardFromSlot(slotsBI):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00")
+    1/0
     filename = "ModuleTest_settings.xml"
     splitBI_string = "1,2"
     print("Test getOpticaGroupAndBoardFromSlot('%s'):"%splitBI_string, getOpticaGroupAndBoardFromSlot(splitBI_string.split(",")))
