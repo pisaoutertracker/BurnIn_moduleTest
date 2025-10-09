@@ -19,7 +19,7 @@ outDir = "POTATOFiles"
 
 if __name__ == "__main__":
     print()
-    print("python3  POTATO_run.py session706\n")
+    print("python3  POTATO_run.py session747\n")
     print()
 
     import argparse

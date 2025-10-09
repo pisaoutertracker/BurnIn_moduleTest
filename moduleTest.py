@@ -56,8 +56,8 @@ if __name__ == '__main__':
     parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed. Default: %s'%lastPh2ACFversion)
     parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
-    parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Install 10g firmware (%s).'%firmware_10G)
-    parser.add_argument('--g5', type=bool, nargs='?', const=True, help='Install 5g firmware (%s).'%firmware_5G)
+    parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Force install 10g firmware (%s).'%firmware_10G)
+    parser.add_argument('--g5', type=bool, nargs='?', const=True, help='Force install 5g firmware (%s).'%firmware_5G)
     parser.add_argument('--runFpgaConfig', type=bool, nargs='?', const=True, help='Force run runFpgaConfig.')
     parser.add_argument('--vetoFpgaConfig', type=bool, nargs='?', const=True, help='Veto on runFpgaConfig (useful for runCalibrationPisa).')
     parser.add_argument('--skipUploadResults', type=bool, nargs='?', const=True, default=False, help='Skip running updateTestResults at the end of the test.')
@@ -136,6 +136,7 @@ if __name__ == '__main__':
     print("connectionMapFileName: %s"%connectionMapFileName)
     print()
     print("++++++++++++++++++ Preliminary checks ++++++++++++++++++")
+    print()
     board = args.board
     lpGBTfile = args.lpGBT
     opticalGroups = args.slot.split(",") ### --slot to be renamed to --opticalGroups
@@ -158,6 +159,7 @@ if __name__ == '__main__':
         board, opticalGroups = getOpticaGroupAndBoardFromSlot(slotsBI)
         print("Optical Groups: %s, Board: %s found."%(opticalGroups, board))
 
+   
     edgeSelect = args.edgeSelect
     hybrids = [int(h) for h in args.hybrid.split(",") if h != ""]
     pixels = [int(h) for h in args.pixel.split(",") if h != ""]
@@ -181,7 +183,7 @@ if __name__ == '__main__':
         hybrids = [hybrids[0]]
         pixels = []
         strips = [0]
-    
+        
     if args.firmware and args.g10:
         raise Exception("You cannot use --firmware and --10g option at the same time.")
     elif args.firmware:
@@ -203,14 +205,16 @@ if __name__ == '__main__':
     from tools import getROOTfile, getIDsFromROOT, getNoisePerChip, getResultsPerModule, checkAndFixRunNumbersDat
     from shellCommands import fpgaconfigPisa, runModuleTest, burnIn_readSensors 
     from makeXml import makeXml, makeNoiseMap, readXmlConfig, makeXmlPyConfig
-    from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule
+    from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule, getFirmwareVersionInFC7OT
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
     ### make a symbolic link from ~/RunNumber.dat to local folder
     checkAndFixRunNumbersDat(target_dir=thermalHome) ### check if the RunNumbers.dat is in the right place. This file must be binded in podman!
 
     ### read xml config file and create XML
+    print()
     print("++++++++++++++++++ Creation of the XML file++++++++++++++++++")
+    print()
     import shutil
     if args.useExistingModuleTest:
         matches = [folder for folder in os.listdir("Results") if args.useExistingModuleTest in folder ]
@@ -255,17 +259,94 @@ if __name__ == '__main__':
     if verbose>10:
         print(board)
         print(opticalGroups)
+
+    ###########################################################
+    #################### PRELIMINARY CHECKS ####################
+    ###########################################################
+
     #### check if the expected modules match the modules declared in the database for the opticalGroups ####
-    print("++++++++++++++++++ Check if expected modules matches the modules from DB ++++++++++++++++++")
-    from databaseTools import checkIfExpectedModulesMatchModulesInDB
-    checkIfExpectedModulesMatchModulesInDB(board, opticalGroups, modules, args)
+    print()
+    print("++++++++++++++++++ Check if expected modules matches the modules from DB, resolve 'auto' for modules, check 10G/5G, ++++++++++++++++++")
+    print()
+    # from databaseTools import checkIfExpectedModulesMatchModulesInDB
+    # checkIfExpectedModulesMatchModulesInDB(board, opticalGroups, modules, args)
+    from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
+    moduleBandwidth = None
+    firmware_to_be_used = None
+    for i, slot in enumerate(opticalGroups):
+        error = None
+        moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
+        if modules[i] == "auto":  
+            modules[i] = moduleFromDB
+            print("    You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
+        moduleFromCLI = modules[i]
+        print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
+        moduleBandwidth_new = getModuleBandwidthFromDB(moduleFromCLI)
+        if moduleBandwidth != None and moduleBandwidth_new != moduleBandwidth:
+            raise Exception("You are testing modules with different bandwidth (%s and %s). This is not allowed (different firmware required in FC7)."%(moduleBandwidth, moduleBandwidth_new))
+        moduleBandwidth = moduleBandwidth_new
+        if moduleBandwidth == "10Gbps": firmware_to_be_used = firmware_10G
+        elif moduleBandwidth == "5Gbps": firmware_to_be_used = firmware_5G
+        else: raise Exception("Module %s has unknown bandwidth %s in the database. Please fix the database."%(moduleFromCLI, moduleBandwidth))
+        if verbose>1: print("Expected module %s. According to Pisa db is %s. Requires firmware %s."%(moduleFromCLI, moduleBandwidth, firmware_to_be_used))
+        if moduleBandwidth == "5Gbps" and args.g10:
+            raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
+        elif moduleBandwidth == "10Gbps" and args.g5:
+            raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
+        if moduleFromDB == None:
+            from databaseTools import getFiberLink
+            fc7, og = getFiberLink(moduleFromCLI)
+            if fc7 == None:
+                print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
+                if args.addNewModule:
+                    print("It is ok, as you are going to add new modules to the database.")
+                else: 
+                    error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
+                    print(error)
+            else:
+                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
+                print(error)
+        else:
+            if moduleFromDB != moduleFromCLI:
+                error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
+                print(error)
+            else:
+                print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+        if error: 
+            if args.ignoreConnection:
+                print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
+                print("WARNING: %s"%error)
+            else:
+                raise Exception(error+" You can skip this error using --ignoreConnection flag.")
+
+    ##################################
+    ### INSTALL FIRMWARE IF NEEDED ###
+    ##################################
+    ### check the firmware version in the FC7 from the database
+    print()
+    firmware_installed, firmware_timestamp = getFirmwareVersionInFC7OT(board)
+    if verbose>-1: 
+        from datetime import datetime
+        print("Firmware installed in board %s: %s (%s)"%(board, firmware_installed, str(datetime.fromtimestamp(firmware_timestamp))))
+
+    if firmware_to_be_used:
+        print("-"*80)
+        if firmware_to_be_used == firmware_installed: 
+            print("Firmware %s is already installed in board %s. I will use it. No needs to install it again."%(firmware_to_be_used, board))
+        else:
+            print("Firmware %s is not installed in board %s (it has %s). I will install it using fpgaconfigPisa."%(firmware_to_be_used, board, firmware_installed))
+            firmware = firmware_to_be_used
+            fpgaconfigPisa( board, firmware_to_be_used)
+        print("-"*80)
+    else: raise Exception("Cannot define which firmware to use.")
 
     ###########################################################
     #################### START OF THE TEST ####################
     ###########################################################
     ### launch fpga_config
+    print()
     print("#### Launch the test ###")
-    if args.runFpgaConfig or args.g10 or args.g5: fpgaconfigPisa( board, firmware) 
+    if args.runFpgaConfig or args.g10 or args.g5: fpgaconfigPisa( board, firmware) ## Note: this should be not necessary, as it will be launched automatically if necessary in runModuleTest. It might still be useful for testing.
     
     ### launch ot_module_test (if useExistingModuleTest is defined, read the existing test instead of launching a new one)
     print("args.useExistingModuleTest",args.useExistingModuleTest)
@@ -276,7 +357,7 @@ if __name__ == '__main__':
             raise Exception("You forgot to run fpgaconfig. Please run it before running the module test. Eg. remove --vetoFpgaConfig flag or use --runFpgaConfig flag or run fpgaconfig manually.")
         else:
             print("\n\nWARNING: You forgot to run fpgaconfig. I'm launching it now.\n")
-        fpgaconfigPisa( board, firmware) 
+        fpgaconfigPisa( board, firmware)  ## Note: this should be not necessary, as it will be launched automatically if necessary in runModuleTest. It might still be useful for testing.
         out = runModuleTest(xmlFile, args.useExistingModuleTest, ph2ACFversion, commandOption) # 
         if out == "Run fpgaconfig":
             raise Exception("fpgaconfig failed. Please check the error above.")

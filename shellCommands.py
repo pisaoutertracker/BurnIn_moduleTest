@@ -212,7 +212,7 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         print(error)
         if "lpGBT TX Ready\x1b[1m\x1b[31m\t : FAILED" in output.stdout.decode():
             print("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n Please check that you have installed the firmware (fpgaconfig). Command: %s"%output.args)
-            return "Run fpgaconfig"
+            return "Run fpgaconfigPisa"
         else:
             raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected.  \n It might be due to a wrong version of the firmware installed in the FC7. \n Command: %s"%output.args)
 #    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:

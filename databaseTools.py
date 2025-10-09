@@ -1,4 +1,6 @@
 from moduleTest import verbose, ip, port, lpGBTids
+#verbose = 100
+
 from pprint import pprint
 import requests
 
@@ -83,7 +85,6 @@ def make_post_request(function_name, api_url, json_data, entity_type, success_co
         handle_api_error(function_name, error_desc, response, curl_cmd)
     return response
 
-verbose = 100
 ### upload the test result to the "tests" DB
 
 ## (obsolete) ##
@@ -552,49 +553,49 @@ def appendAnalysisToModule(analysisName):
         print()
     return response.status_code
 
-## check if the expected modules match the modules declared in the database for the slots
-def checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args):
-    from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
-    for i, slot in enumerate(slots):
-        error = None
-        moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
-        if modules[i] == "auto":  
-            modules[i] = moduleFromDB
-            print("You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
-        moduleFromCLI = modules[i]
-        print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
-        moduleBandwidth = getModuleBandwidthFromDB(moduleFromCLI)
-        print("Expected module %s. According to Pisa db is %s"%(moduleFromCLI, moduleBandwidth))
-        if moduleBandwidth == "5Gbps" and args.g10:
-            raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
-        elif moduleBandwidth == "10Gbps" and args.g5:
-            raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
-        if moduleFromDB == None:
-            from databaseTools import getFiberLink
-            fc7, og = getFiberLink(moduleFromCLI)
-            if fc7 == None:
-                print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
-                if args.addNewModule:
-                    print("It is ok, as you are going to add new modules to the database.")
-                else: 
-                    error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
-                    print(error)
-            else:
-                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
-                print(error)
-        else:
-            if moduleFromDB != moduleFromCLI:
-                error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
-                print(error)
-            else:
-                print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error: 
-            if args.ignoreConnection:
-                print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
-                print("WARNING: %s"%error)
-            else:
-                raise Exception(error+" You can skip this error using --ignoreConnection flag.")
-    return
+# ## check if the expected modules match the modules declared in the database for the slots
+# def checkIfExpectedModulesMatchModulesInDB(board, slots, modules, args):
+#     from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
+#     for i, slot in enumerate(slots):
+#         error = None
+#         moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
+#         if modules[i] == "auto":  
+#             modules[i] = moduleFromDB
+#             print("You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
+#         moduleFromCLI = modules[i]
+#         print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
+#         moduleBandwidth = getModuleBandwidthFromDB(moduleFromCLI)
+#         print("Expected module %s. According to Pisa db is %s"%(moduleFromCLI, moduleBandwidth))
+#         if moduleBandwidth == "5Gbps" and args.g10:
+#             raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
+#         elif moduleBandwidth == "10Gbps" and args.g5:
+#             raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
+#         if moduleFromDB == None:
+#             from databaseTools import getFiberLink
+#             fc7, og = getFiberLink(moduleFromCLI)
+#             if fc7 == None:
+#                 print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
+#                 if args.addNewModule:
+#                     print("It is ok, as you are going to add new modules to the database.")
+#                 else: 
+#                     error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
+#                     print(error)
+#             else:
+#                 error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
+#                 print(error)
+#         else:
+#             if moduleFromDB != moduleFromCLI:
+#                 error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
+#                 print(error)
+#             else:
+#                 print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+#         if error: 
+#             if args.ignoreConnection:
+#                 print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
+#                 print("WARNING: %s"%error)
+#             else:
+#                 raise Exception(error+" You can skip this error using --ignoreConnection flag.")
+#     return
 
 def createSession(message, moduleList):
     from datetime import datetime
@@ -826,6 +827,28 @@ def updateFirmwareVersionInFC7OT(board, firmware, firmware_timestamp):
         print("ERROR: Could not find board %s in the database."%board)
         raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
 
+### Get firmware version in a FC7OT board
+def getFirmwareVersionInFC7OT(board):
+    board = board.upper()
+    if verbose>0: print("Calling getFirmwareVersionInFC7OT(%s)"%(board))
+    # URL of the API endpoint for updating a module
+    api_url = "http://%s:%d/cables/%s"%(ip, port, board)
+    response = requests.get(api_url)
+    cableJson = evalMod(response.content.decode().replace("null","[]"))
+    if response.status_code == 200:
+        if verbose>0: print("Board %s found in database"%board)
+        #print("Cable json:", cableJson)
+        if "firmware" in cableJson and "firmware_timestamp" in cableJson:
+            return cableJson["firmware"], cableJson["firmware_timestamp"]
+        else:
+            print("ERROR: Could not find firmware information in board %s in the database."%board)
+            print("It might be the first time you use this board, so I will return None, None.")
+            #raise Exception("Board %s does not have firmware information. Please update it using:\ncurl -X PUT -H 'Content-Type: application/json' -d '{\"firmware\": \"abcd\", \"firmware_timestamp\" : \"12349032123\" }' 'http://%s:%d/cables/%s'"%(board, ip, port, board))
+            return None, None
+    else:
+        print("ERROR: Could not find board %s in the database."%board)
+        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
+
 ### Get the optical group and board from the slotBI
 
 def getOpticaGroupAndBoardFromSlot(slotsBI):
@@ -886,7 +909,9 @@ def getOpticaGroupAndBoardFromSlot(slotsBI):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
-    updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00")
+    print("Testing databaseTools.py")
+    print("getFirmwareVersionInFC7OT('FC7OT2'):", getFirmwareVersionInFC7OT("FC7OT2"))
+    print("updateFirmwareVersionInFC7OT('FC7OT2', 'v5.0-20221', '2024-11-08 18:00:00'):", updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00"))
     1/0
     filename = "ModuleTest_settings.xml"
     splitBI_string = "1,2"
