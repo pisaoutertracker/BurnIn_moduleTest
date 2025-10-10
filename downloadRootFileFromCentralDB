@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo ""
+echo "Example: python3 downloadRootFileFromCentralDB"
+echo ""
+
 ### Unset all variables that may interfere with curl
 unset QUERY
 unset COOKIE_HDR
