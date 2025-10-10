@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo ""
-echo "Example: python3 downloadRootFileFromCentralDB"
+echo "Example: downloadRootFileFromCentralDB PS_40_FNL-10059_2025-10-08_09h32m32s_+26C_PSquickTest_v6-18.root"
 echo ""
 
 ### Unset all variables that may interfere with curl
