@@ -341,7 +341,7 @@ if __name__ == '__main__':
     else: raise Exception("Cannot define which firmware to use.")
 
     if "quad" in firmware.lower():
-        raise Exception("You are trying to use a module firmware 'quad' (%s). This means that the optical group numbering is completely messed up. See https://mattermost.web.cern.ch/cms-exp/pl/proeggigf3rhjxecfdcm6rpppr . Once you fixed the optical group numbering, remove this exception manually!"%firmware)
+        raise Exception("WARNING: You are trying to use a module firmware 'quad' (%s). This means that the optical group numbering is completely messed up. See https://mattermost.web.cern.ch/cms-exp/pl/fthqcio7k3n83rinqppuwb15ay and https://mattermost.web.cern.ch/cms-exp/pl/proeggigf3rhjxecfdcm6rpppr . Once you fixed the optical group numbering, remove this exception manually!"%firmware)
         
 
     ###########################################################
