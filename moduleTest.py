@@ -327,7 +327,7 @@ if __name__ == '__main__':
     firmware_installed, firmware_timestamp = getFirmwareVersionInFC7OT(board)
     if verbose>-1: 
         from datetime import datetime
-        print("Firmware installed in board %s: %s (%s)"%(board, firmware_installed, str(datetime.fromtimestamp(firmware_timestamp))))
+        print("Firmware installed in board %s: %s (%s)"%(board, firmware_installed, str(datetime.fromtimestamp(float(firmware_timestamp)))))
 
     if firmware_to_be_used:
         print("-"*80)
@@ -339,6 +339,10 @@ if __name__ == '__main__':
             fpgaconfigPisa( board, firmware_to_be_used)
         print("-"*80)
     else: raise Exception("Cannot define which firmware to use.")
+
+    if "quad" in firmware.lower():
+        raise Exception("You are trying to use a module firmware 'quad' (%s). This means that the optical group numbering is completely messed up. See https://mattermost.web.cern.ch/cms-exp/pl/proeggigf3rhjxecfdcm6rpppr . Once you fixed the optical group numbering, remove this exception manually!"%firmware)
+        
 
     ###########################################################
     #################### START OF THE TEST ####################
