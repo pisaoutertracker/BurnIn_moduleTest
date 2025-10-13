@@ -6,13 +6,15 @@ config = {
             "ip" : "fc7ot3:50001",
             "opticalGroups" : {
                 "0" : {
-                    "lpGBT" : "lpGBT_v1.txt",
+                    "lpGBT" : "lpGBT_v1_PS.txt",
                     "hybrids" : {
                         "0" : {
+                            "edgeSelect" : 1,
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
                             "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
                         },
                         "1" : {
+                            "edgeSelect" : 0,
                             "strips" : [0, 1, 2, 3, 4, 5, 6, 7],
                             "pixels" : [8, 9, 10, 11, 12, 13, 14, 15],
                         },
