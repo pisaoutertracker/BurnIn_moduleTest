@@ -6,7 +6,6 @@ import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 
-version = "v1-01"
 scriptName_base = "POTATO_run_%s.sh"
 POTATOExpressFolder = "/home/thermal/potato/Express/"
 
@@ -264,7 +263,6 @@ if __name__ == "__main__":
         formatted_temp = format(int(temp), "+d")
         formatted_date = dateTime_rome.strftime("%Y-%m-%d_%Hh%Mm%Ss")
         runType = run['runType']
-        tag = version
 
         for module_test in run['moduleTestName']:
             if len(run['moduleTestName']) > 1:
@@ -313,7 +311,13 @@ if __name__ == "__main__":
             connectionMapFilePath = connectionMapFilePath_new
             del connectionMapFile ##obsolete variable
 
+            ## Get the Ph2ACF tag from the ROOT file
+            from tools import getPh2ACFtag
+            tag = getPh2ACFtag(resultsFile)
+
+            ## File name convention: see https://gitlab.cern.ch/otsdaq/potatoconverters/-/tree/master#potato-root-file-description
             rootTrackerFileName = outDir + "/" + f"{module_name}_{formatted_date}_{formatted_temp}C_{runType}_{tag}.root"
+            print("rootTrackerFileName:", rootTrackerFileName)
 
             ## Merge Results and MonitorDQM files
             from POTATO_mergeFile import mergeTwoROOTfiles

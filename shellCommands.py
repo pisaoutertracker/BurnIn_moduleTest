@@ -2,6 +2,7 @@ import os
 import subprocess
 from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
 
+#verbose = 1000
 ### Launch a command from shell
 
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash', showInPrompt=True):
@@ -52,6 +53,24 @@ def burnIn_setTemperature(temperature):
     if verbose>1: print(output)
 
 ### Copy settings/PS_Module_v2p1.xml locally (note: settings is in Docker, unless --localPh2ACF is used)
+
+def getGitTagFromHash(gitHash):
+    # git describe --tags --exact-match 804c5ba815fb334f6e2756dbb96215835bc5006b
+    if verbose>0: print("Calling getGitTagFromHash()")
+    listOfTags = runCommand("git ls-remote --tags ssh://git@gitlab.cern.ch:7999/cms_tk_ph2/Ph2_ACF.git" , showInPrompt=False if verbose<10 else True).stdout.decode().strip().split("\n")
+    for tag in listOfTags:
+        commit, tag = tag.split("\t")
+        if commit == gitHash[:len(commit)]:
+            if verbose>10: print("Git hash %s corresponds to tag %s"%(gitHash, tag))
+            return tag.replace("refs/tags/","").replace("^{}","")
+    print()
+    print("ERROR [getGitTagFromHash]: Git hash %s not found in gitlab.cern.ch/cms_tk_ph2/Ph2_ACF.git"%gitHash)
+    print("Available tags are:")
+    for tag in listOfTags:
+        print(tag)
+    print("The git commit hash will be used instead of the tag.")
+    print()
+    return gitHash
 
 def copyXml(ph2ACFversion=lastPh2ACFversion):
     if verbose>0: print("Calling copyXml()")
@@ -243,6 +262,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
 
 if __name__ == '__main__':
 #    verbose = -1
+    print(getGitTagFromHash("804c5ba815fb334f6e2756dbb96215835bc5006b"))
+
     runCommand('podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z  --net host  --entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:ph2_acf_v6-00 -c "\cp  /usr/share/zoneinfo/Europe/Rome /etc/localtime && cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd /home/thermal/BurnIn_moduleTest && runCalibration --help"')
     
     xmlFile = "ModuleTest_settings.xml"

@@ -312,7 +312,36 @@ def checkAndFixRunNumbersDat(file="RunNumbers.dat", target_dir="~"):
     except OSError as e:
         print(f"Error: {e}")
 
+
+## Get Ph2ACF tag from ROOT file
+def getPh2ACFtag(resultsFileName):
+    from ROOT import TFile
+    resultsFile = TFile(resultsFileName)
+    hash = str(resultsFile.Get("Detector/GitCommitHash_Detector"))
+    if not hash:
+        print()
+        print("ERROR [getPh2ACFtag]: Missing Detector/GitCommitHash_Detector in %s. Setting tag to 'unknown'"%resultsFileName)
+        print()
+        print()
+        print("resultsFile.Print():")
+        resultsFile.Print()
+        print()
+        print('resultsFile.Get("Detector")')
+        resultsFile.Get("Detector").Print()
+        print()
+        print()
+        print('resultsFile.Get("Detector/GitCommitHash_Detector")')
+        resultsFile.Get("Detector/GitCommitHash_Detector").Print()
+        print()
+        return "Detector/GitCommitHash_Detector NOT FOUND"
+
+    from shellCommands import getGitTagFromHash
+    tag = getGitTagFromHash(hash)
+    return tag
+
+
 if __name__ == '__main__':
+    print("getPh2ACFtag('Results.root'):", getPh2ACFtag('Results.root'))
     filename = "ModuleTest_settings.xml"
     board, slots, hybrids, strips, pixels = parse_module_settings(filename)
 #    print("Slot:", slot)
