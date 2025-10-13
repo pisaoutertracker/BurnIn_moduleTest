@@ -958,8 +958,12 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("CalibrationStopTimestamp_Detector [local time]: ") + stopTime
     body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0])
     gitHash = str(rootFile.Get("Detector/GitCommitHash_Detector"))
+    from shellCommands import getGitTagFromHash
+    gitTag = getGitTagFromHash(gitHash)
     linkGit = "https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/tree/%s"%gitHash
-    body += grayText("GitCommitHash: <a href= %s> %s </a>"%(linkGit, gitHash)) + "<br>" +"\n"
+    linkGitTag = "https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/tags/%s"%gitTag
+    body += grayText(f"Ph2ACF Tag: <a href= {linkGitTag}> {gitTag}  </a>") + "<br>" +"\n"
+    body += grayText(f"GitCommitHash: <a href= {linkGit}> {gitHash}  </a>") + "<br>" +"\n"
     body += grayText("HostName: ") + str(rootFile.Get("Detector/HostName_Detector")) + "<br>" +"\n"
     body += grayText("Username: ") + str(rootFile.Get("Detector/Username_Detector")) + "<br>" +"\n"
 #    body += grayText("InitialDetectorConfiguration: ") + str(rootFile.Get("Detector/InitialDetectorConfiguration_Detector")) + "<br>" +"\n"
@@ -1524,6 +1528,9 @@ def printAllSensors(org="pisaoutertracker"):
 
 if __name__ == '__main__':
     import argparse
+    print()
+    print("Example: python3  updateTestResult.py PS_26_IPG-10010__run500934 ")
+    print()
     #makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
     print(getTemperatureAt("2025-02-24T12:32:38", sensorName="Temp0"))
     #makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38","2025-02-24T13:32:38", "/tmp/influxdb/")
