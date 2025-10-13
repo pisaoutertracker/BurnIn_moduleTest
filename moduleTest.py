@@ -2,7 +2,7 @@
 
 ### Default values 
 verbose = 0
-lastPh2ACFversion = "ph2_acf_v6-10"
+lastPh2ACFversion = "ph2_acf_v6-18"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
 port=5000
@@ -47,13 +47,13 @@ if __name__ == '__main__':
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
     required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
     required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
-    required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
+    required.add_argument('--lpGBT', type=str, default='default', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
     
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
     parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing).  ')
     parser.add_argument('-c','--command', type=str, default=defaultCommand, nargs='?', const='', help='Specify which command will be passed to runCalibration -c (calibrationandpedenoise, configureonly, PSquickTest, PSfullTest, readOnlyID). Default: %s'%defaultCommand)
 #    parser.add_argument('--verbose', type=int, nargs='?', const=10000, default=-1, help='Verbose settings.')
-    parser.add_argument('--edgeSelect', type=str, default='None', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
+    parser.add_argument('--edgeSelect', type=str, default='default', help='Select edgeSelect parameter (Default taken from PS_Module_template.xml).')
     parser.add_argument('--version', type=str, default=lastPh2ACFversion, nargs='?', const=True, help='Select the Ph2ACF version used in Docker. Use "local" to select the Ph2ACF locally installed. Default: %s'%lastPh2ACFversion)
     parser.add_argument('--addNewModule', type=bool, default=False, nargs='?', const=True, help='Add new module to the database without asking y/n.')
     parser.add_argument('--g10', type=bool, nargs='?', const=True, help='Force install 10g firmware (%s).'%firmware_10G)
