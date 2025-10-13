@@ -47,7 +47,7 @@ if __name__ == '__main__':
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
     required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
     required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
-    required.add_argument('--lpGBT', type=str, default='default', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
+    required.add_argument('--lpGBT', type=str, default='lpGBT_v1_PS.txt', help='lpGBT file (default=lpGBT_v1_PS.txt).', required=False)
     
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
     parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing).  ')
