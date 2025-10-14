@@ -211,8 +211,10 @@ def makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile='de
         config["boards"][0]["opticalGroups"]["X"]["hybrids"][h] = dict(config["boards"][0]["opticalGroups"]["X"]["hybrids"]["X"])
 
     if edgeSelect=='default': ## hardcoded to reproduce https://gitlab.cern.ch/cms_tk_ph2/Ph2_ACF/-/blob/Dev/settings/PS_Module_v2p1.xml?ref_type=heads (edgeSelect=0 for hybrid 1, edgeSelect=1 for hybrid 0) 
-        config["boards"][0]["opticalGroups"]["X"]["hybrids"][0]["edgeSelect"] = 1
-        config["boards"][0]["opticalGroups"]["X"]["hybrids"][1]["edgeSelect"] = 0
+        if 0 in hybrids:
+            config["boards"][0]["opticalGroups"]["X"]["hybrids"][0]["edgeSelect"] = 1
+        if 1 in hybrids:
+            config["boards"][0]["opticalGroups"]["X"]["hybrids"][1]["edgeSelect"] = 0
 
 
 
