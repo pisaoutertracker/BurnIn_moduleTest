@@ -332,6 +332,7 @@ plotsToBeRenamed = { ##old name --> new name
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
 useOnlyMergedPlots = True
+version = "2025-10-14"
 version = "2025-04-29"
 
 #allVariables = ["NoiseDistribution"]
@@ -873,7 +874,7 @@ def addPlotSection(title, plots, width):
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -952,11 +953,11 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime, timeFormat = "%Y-%m-%d %H:%M:%S")
     body += "<br>" +"\n"
     body += grayText("CalibrationStartTimestamp [local time]: ") + startTime
-    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime_utc.isoformat("T").split("+")[0])
+    body += ". " + grayText(f"Temperature ({tempSensor}):") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime_utc.isoformat("T").split("+")[0])
     stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
     stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime, timeFormat = "%Y-%m-%d %H:%M:%S")
     body += grayText("CalibrationStopTimestamp_Detector [local time]: ") + stopTime
-    body += ". " + grayText("Temperature:") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0])
+    body += ". " + grayText(f"Temperature ({tempSensor}):") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0])
     gitHash = str(rootFile.Get("Detector/GitCommitHash_Detector"))
     from shellCommands import getGitTagFromHash
     gitTag = getGitTagFromHash(gitHash)
@@ -1002,6 +1003,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     board_id = boardToId[str(test['board'])]
     optical_id = str(test['opticalGroupName'])
     body += grayText("Board: ") + str(test['board']) + grayText(". BoardId: ") + board_id + grayText(". OpticalGroup: ")  + optical_id + "<br>" +"\n"
+    body += grayText("Burn-in slot: ") + str(slotBI) + "<br>" +"\n"
     body += "<br>" + "\n"
 #    body += grayText("NameId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_NameId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
@@ -1032,19 +1034,19 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     webpage.close
     return fName
 
-def  uploadToWebDav(folder, files):
-    if verbose>2: print(folder, files)
-    newfiles = {}
-    for file in files:
-        fileName = file.split("/")[-1]
-        target = "%s/%s"%(folder, fileName)
-        print("Uploading %s %s"%(file, target))
-        if webdav_website: 
-            newfile = webdav_website.write_file(file, target)
-            newfiles[file] = newfile
-        else:
-            newfiles[file] = file
-    return newfiles
+# def  uploadToWebDav(folder, files):
+#     if verbose>2: print(folder, files)
+#     newfiles = {}
+#     for file in files:
+#         fileName = file.split("/")[-1]
+#         target = "%s/%s"%(folder, fileName)
+#         print("Uploading %s %s"%(file, target))
+#         if webdav_website: 
+#             newfile = webdav_website.write_file(file, target)
+#             newfiles[file] = newfile
+#         else:
+#             newfiles[file] = file
+#     return newfiles
 
 def getTimeFromUTCToRome(time_str, timeFormat="%Y-%m-%dT%H:%M:%S"):
     from datetime import datetime
@@ -1328,7 +1330,7 @@ def getConnectionMap(run, xmlConfig, folder):
 '''
 
 
-def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
+def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     if verbose>2:
         print("Calling updateTestResult")
         print("module_test:", module_test)
@@ -1411,6 +1413,14 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
     else:
         print("WARNING: connectionMap not found in ",connectionMapFileName)
         connectionMap = {}
+
+    ### Get slotBI from connection map
+    from databaseTools import getSlotBIFromModuleConnectionMap
+    slotBI = getSlotBIFromModuleConnectionMap(connectionMap)
+    if tempSensor == "auto":
+        tempSensor = "OW0%s"%(slotBI+1)
+        print("Auto tempSensor:", tempSensor)
+
     ### Add plot with voltage and currents
     hv_channel = -1
     lv_channel = -1
@@ -1452,7 +1462,7 @@ def updateTestResult(module_test, tempSensor="Temp0", skipWebdav = False):
 ##        print(webdav_website.list_files(nfolder))
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor)
     zipFile = "results" 
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -1529,7 +1539,7 @@ def printAllSensors(org="pisaoutertracker"):
 if __name__ == '__main__':
     import argparse
     print()
-    print("Example: python3  updateTestResult.py PS_26_IPG-10010__run500934 ")
+    print("Example: python3  updateTestResult.py PS_26_IPG-10010__run500939 ")
     print()
     #makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
     print(getTemperatureAt("2025-02-24T12:32:38", sensorName="Temp0"))
@@ -1540,4 +1550,4 @@ if __name__ == '__main__':
     parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
 #    parser.add_argument('--tempSensor', type=str, const=True, default="-1", help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
-    updateTestResult(module_test = args.module_test , tempSensor="Temp0", skipWebdav = args.skipWebdav)
+    updateTestResult(module_test = args.module_test , tempSensor="auto", skipWebdav = args.skipWebdav)
