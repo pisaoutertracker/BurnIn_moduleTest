@@ -222,27 +222,10 @@ def getModuleFromDB(moduleName=1234):
 
 def getFiberLink(slot):
     if verbose>0: print("Calling getFiberLink()", slot)
-    api_url = "http://%s:%d/snapshot"%(ip, port)
+    out = getConnectionMap(slot)
+    if out is None:
+        return None, None
     
-    snapshot_data = {
-        "cable": slot,
-        "side": "crateSide"
-    }
-    response = requests.post(api_url, json=snapshot_data)
-    
-    if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
-    else:
-        print()
-        print(f"ERROR [getFiberLink]: Failed to get fiber link for {slot}. Status code:", response.status_code)
-        print()
-        print("Check if module %s exists in the database: http://pccmslab1.pi.infn.it:5000/static/connections.html "%slot)
-        print("You can check if the module exists in the database using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{slot}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
-        print("Response:", response.status_code)
-        print("Response:", response.content.decode())
-        print()
-    out = evalMod(response.content.decode())
     fc7 = None
     optical = None
     for link in out:
@@ -275,17 +258,19 @@ def getConnectionMap(moduleName):
     
     if response.status_code == 200:
         if verbose>1: print("Module read successfully")
+        out = evalMod(response.content.decode())
+        return out
     else:
         print()
         print(f"ERROR [getConnectionMap]: Failed to get connection map for {moduleName}. Status code:", response.status_code)
         print()
+        print("Check if module %s exists in the database: http://pccmslab1.pi.infn.it:5000/static/connections.html "%moduleName)
         print("You can check if the module exists in the database using:")
         print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{moduleName}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
-    out = evalMod(response.content.decode())
-    return out
+        return None
 
 from pprint import pformat
 def saveMapToFile(json, filename):
@@ -849,73 +834,145 @@ def getFirmwareVersionInFC7OT(board):
         print("ERROR: Could not find board %s in the database."%board)
         raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
 
+### Get the optical group and board from a single slotBI
+
+def getOpticaGroupAndBoardFromBISlot(slotBI):
+    """
+    Get the optical group and board from a single slotBI.
+    slotBI is a number between 0 and 8 (slot in the burn-in).
+    Returns: (fc7, og) where fc7 is the FC7 board name and og is the optical group number
+    """
+    if verbose>0: print("Calling getOpticaGroupAndBoardFromBISlot()", slotBI)
+    crate = "B%s"%slotBI
+    out = getConnectionMap(crate)
+    
+    if out is None:
+        raise Exception("Error in calling getOpticaGroupAndBoardFromBISlot() for slot %s. Crate %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(slotBI, crate))
+    
+    fc7 = None
+    og = None
+    for el in out.values():
+        if "connections" in el and len(el["connections"])>0:
+            last = el["connections"][-1]
+            if "cable" in last and last["cable"][:5]== "FC7OT":
+                og = last["det_port"][0].split("OG")[-1]  # Return the optical group number, e.g., "10" from "OG10"
+                fc7 = last["cable"]
+                if verbose>600: print("Optical group %s and board %s found for slot %s"%(og, fc7, slotBI))
+                break
+    
+    if fc7 is None or og is None:
+        raise Exception("Error: Could not find any FC7OT connected to slot %s (crate %s). See http://pccmslab1.pi.infn.it:5000/static/connections.html "%(slotBI, crate))
+    
+    return fc7, og
+
 ### Get the optical group and board from the slotBI
 
-def getOpticaGroupAndBoardFromSlot(slotsBI):
+def getOpticaGroupAndBoardFromSlots(slotsBI):
     """
     Get the optical group and board from the slotBI.
     slotBI is a number between 0 and 8 (slot in the burn-in).
+    Returns: (fc7, optical_group) where fc7 is the FC7 board name and optical_group is a list of optical group numbers
     """
     optical_group = []
     fc7 = None
     for slotBI in slotsBI:
-#        print("slotBI", slotBI)
-        if verbose>0: print("Calling getOpticaGroupAndBoardFromSlot()", slotBI)
-        api_url = "http://%s:%d/snapshot"%(ip, port)
-        crate = "B%s"%slotBI
-        snapshot_data = {
-            "cable": crate,
-            "side": "crateSide"
-        }
-        response = requests.post(api_url, json=snapshot_data)
+        fc7_single, og_single = getOpticaGroupAndBoardFromBISlot(slotBI)
         
-        if response.status_code == 200:
-            if verbose>1: print("Module read successfully")
+        if not fc7:
+            fc7 = fc7_single
         else:
-            print()
-            print(f"ERROR [getOpticaGroupAndBoardFromSlot]: Failed to get optical group for slot {slotBI}. Status code:", response.status_code)
-            print()
-            print("You can check if the crate exists in the database using:")
-            print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{crate}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
-            print("Response:", response.status_code)
-            print("Response:", response.content.decode())
-            print()
-            raise Exception("Error in calling getOpticaGroupAndBoardFromSlot() for slot %s. Crate %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(slotBI, crate))
-        out = evalMod(response.content.decode())
-        og = None
-#        print(out)
-        for el in out.values():
-#            print(el)
-            if "connections" in el and len(el["connections"])>0:
-                last = el["connections"][-1]
-#                print(last)
-                if "cable" in last and last["cable"][:5]== "FC7OT":
-                    og = last["det_port"][0].split("OG")[-1]  # Return the optical group number, e.g., "10" from "OG10"
-                    if not fc7:
-                        fc7 = last["cable"]
-                    else:
-                        if fc7 != last["cable"]:
-                            raise Exception("Error: Found different FC7 for burnin in slots %s. %s and %s. You cannot run simultaneously on two different FC7s."%(slotBI, fc7, last["cable"]))
-                        else:
-                            pass ## Everything is ok, we found the same FC7 for all slots.
-                    if verbose>600: print("Optical group %s and board %s found for slot %s"%(optical_group, fc7, slotBI))
-                    break
-        if og is not None:
-            optical_group.append(og)
-        if fc7 is None or og is None:
-            raise Exception("Error: Could not find any FC7OT connected to slot %s (crate %s). See http://pccmslab1.pi.infn.it:5000/static/connections.html "%(slotBI, crate))
-#        print(fc7, og)
+            if fc7 != fc7_single:
+                raise Exception("Error: Found different FC7 for burnin in slots %s. %s and %s. You cannot run simultaneously on two different FC7s."%(slotBI, fc7, fc7_single))
+        
+        optical_group.append(og_single)
+    
     return fc7, optical_group
+
+def getConnectionMapFromFC7(fc7):
+    """
+    Get the connection map for a given FC7 board (detSide view).
+    Returns the connection map or None if error.
+    """
+    if verbose>0: print("Calling getConnectionMapFromFC7()", fc7)
+    api_url = "http://%s:%d/snapshot"%(ip, port)
+    
+    snapshot_data = {
+        "cable": fc7,
+        "side": "detSide"
+    }
+    response = requests.post(api_url, json=snapshot_data)
+    
+    if response.status_code == 200:
+        if verbose>1: print("FC7 connection map read successfully")
+        out = evalMod(response.content.decode())
+        return out
+    else:
+        print()
+        print(f"ERROR [getConnectionMapFromFC7]: Failed to get connection map for FC7 {fc7}. Status code:", response.status_code)
+        print()
+        print("You can check if the FC7 exists in the database using:")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print("Response:", response.status_code)
+        print("Response:", response.content.decode())
+        print()
+        return None
+
+def getSlotBIFromModuleConnectionMap(connectionMapModule):
+    """
+    Get the slotBI from the module connection map (detSide view).
+    slotBI is a number between 0 and 8 (slot in the burn-in).
+    Returns: slotBI as an integer, or None if not found
+    """
+    if verbose>0: print("Calling getSlotBIFromModuleConnectionMap()")
+    if connectionMapModule is None:
+        raise Exception("Error in calling getSlotBIFromModuleConnectionMap(). Module connection map does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)")
+
+    for el in connectionMapModule.values():
+        if "connections" in el:
+            for conn in el["connections"]:
+                if "cable" in conn and conn["cable"].startswith("B"):
+                    slotBI = int(conn["cable"].replace("B",""))
+                    if verbose>1: print("Found slotBI %s for module in connection map"%(slotBI))
+                    return slotBI
+    print("ERROR [getSlotBIFromModuleConnectionMap]: Could not find any slotBI in the module connection map")
+    return None
+
+
+def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
+    """
+    Get the slotBI from the optical group and board.
+    slotBI is a number between 0 and 8 (slot in the burn-in).
+    Returns: slotBI as an integer, or None if not found
+    """
+    if verbose>0: print("Calling getSlotBIFromOpticalGroupAndBoard()", fc7, og)
+        
+    if connectionMapFC7 is None:
+        raise Exception("Error in calling getSlotBIFromOpticalGroupAndBoard() for optical group %s. FC7 %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(og, fc7))
+    
+    if verbose>1: print("Looking for 'OG%s'"%og)
+    
+    # Search through the connection map for the matching optical group
+    for el in connectionMapFC7.values():
+        if "det_port" in el and el["det_port"].replace(" ", "") == "OG%s"%og:
+            if "connections" in el:
+                for conn in el["connections"]:
+                    if "det_port" in conn and conn["det_port"] == ["fiber"]:
+                        if "cable" in conn and conn["cable"].startswith("B"):
+                            slotBI = int(conn["cable"].replace("B",""))
+                            if verbose>1: print("Found slotBI %s for OG%s in FC7 %s"%(slotBI, og, fc7))
+                            return slotBI
+    
+    print("ERROR [getSlotBIFromOpticalGroupAndBoard]: Could not find any slotBI for optical group %s in FC7 %s"%(og, fc7))
+    return None
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
     print("Testing databaseTools.py")
     print("getFirmwareVersionInFC7OT('FC7OT2'):", getFirmwareVersionInFC7OT("FC7OT2"))
     print("updateFirmwareVersionInFC7OT('FC7OT2', 'v5.0-20221', '2024-11-08 18:00:00'):", updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00"))
-    1/0
     filename = "ModuleTest_settings.xml"
     splitBI_string = "1,2"
-    print("Test getOpticaGroupAndBoardFromSlot('%s'):"%splitBI_string, getOpticaGroupAndBoardFromSlot(splitBI_string.split(",")))
+    print("Test getOpticaGroupAndBoardFromSlots('%s'):"%splitBI_string, getOpticaGroupAndBoardFromSlots(splitBI_string.split(",")))
     print()
     allModules = getListOfModulesFromDB()
     for mod in allModules:
@@ -937,9 +994,19 @@ if __name__ == '__main__':
     print("getFiberLink", 'PS_26_IPG-10010')
     pprint(getFiberLink('PS_26_IPG-10010'))
 
-    print("getModuleConnectedToFC7:", "FC7OT2", "OG10")
-    pprint(getModuleConnectedToFC7("FC7OT2", "OG10"))
-       
+    print("getModuleConnectedToFC7:", "FC7OT2", "OG2")
+    pprint(getModuleConnectedToFC7("FC7OT2", "OG2"))
+
+    print("getSlotBIFromOpticalGroupAndBoard:", "FC7OT2", "2")
+    connectionMapFC7 = getConnectionMapFromFC7("FC7OT2")
+    slot = getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, "2")
+    pprint(slot)
+
+    print("getConnectionMapFromModule:", moduleName)
+    connectionMap = getConnectionMap(moduleName)
+    slot = getSlotBIFromModuleConnectionMap(connectionMap)
+    pprint(slot)
+
     print("\nhwToModuleName:")
     from pprint import pprint
     pprint(hwToModuleName)

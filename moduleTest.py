@@ -154,9 +154,9 @@ if __name__ == '__main__':
             raise Exception("--slotsBI and --modules must have the same number of objects. Check %s and %s."%(slotsBI,modules))
         if len(slotsBI) != len(set(slotsBI)):
             raise Exception("You cannot have the same slot in --slotsBI. Check %s."%(slotsBI))
-        from databaseTools import getOpticaGroupAndBoardFromSlot
+        from databaseTools import getOpticaGroupAndBoardFromSlots
         print("Using --slotBI %s to get optical groups and board name:"%slotsBI)
-        board, opticalGroups = getOpticaGroupAndBoardFromSlot(slotsBI)
+        board, opticalGroups = getOpticaGroupAndBoardFromSlots(slotsBI)
         print("Optical Groups: %s, Board: %s found."%(opticalGroups, board))
 
    
