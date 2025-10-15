@@ -271,30 +271,30 @@ class POTATOPisaFormatter():
         client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
         return client.query_api()
 
-    def getTemperatureAt(self, timestamp, sensorName="Temp0", org="pisaoutertracker"):
-        # Define a small window around the timestamp (±30 seconds)
-        if self.verbose>2: print('Calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
-        window = timedelta(seconds=30)
-        timestamp = datetime.fromisoformat(timestamp)
-        start_window = (timestamp - window).isoformat("T") + "Z"
-        end_window = (timestamp + window).isoformat("T") + "Z"
-        query = f'''
-        from(bucket: "sensor_data")
-            |> range(start: {start_window}, stop: {end_window})
-            |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
-            |> filter(fn: (r) => r["_field"] == "{sensorName}")
-            |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
-            |> yield(name: "mean")
-        '''
-        tables = self.influxQuery.query(query, org=org)
-        # Gather the temperature values found within the time window.
-        temps = [record.get_value() for table in tables for record in table.records]
-        if temps:
-            # Average values if more than one record is returned.
-            return sum(temps) / len(temps)
-        else:
-            print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
-            return -999
+    # def getTemperatureAt(self, timestamp, sensorName="Temp0", org="pisaoutertracker"):
+    #     # Define a small window around the timestamp (±30 seconds)
+    #     if self.verbose>2: print('Calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
+    #     window = timedelta(seconds=30)
+    #     timestamp = datetime.fromisoformat(timestamp)
+    #     start_window = (timestamp - window).isoformat("T") + "Z"
+    #     end_window = (timestamp + window).isoformat("T") + "Z"
+    #     query = f'''
+    #     from(bucket: "sensor_data")
+    #         |> range(start: {start_window}, stop: {end_window})
+    #         |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
+    #         |> filter(fn: (r) => r["_field"] == "{sensorName}")
+    #         |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
+    #         |> yield(name: "mean")
+    #     '''
+    #     tables = self.influxQuery.query(query, org=org)
+    #     # Gather the temperature values found within the time window.
+    #     temps = [record.get_value() for table in tables for record in table.records]
+    #     if temps:
+    #         # Average values if more than one record is returned.
+    #         return sum(temps) / len(temps)
+    #     else:
+    #         print('WARNING: Something wrong calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
+    #         return -999
 
     def getGraphFromInfluxDB(self, sensorName, start_time_TS, stop_time_TS, org="pisaoutertracker"):
         start_time = (datetime.fromisoformat(start_time_TS)+timedelta(minutes=-self.extraTime)).isoformat("T") + "Z"
