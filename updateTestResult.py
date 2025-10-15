@@ -1,4 +1,24 @@
+cernbox_folder_analysis = "/home/thermal/cernbox_shared/Uploads/"
+cernbox_folder_run = "/home/thermal/cernbox_runshared/"
+
 from datetime import datetime,timedelta
+
+#from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
+from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
+import os
+from databaseTools import getTestFromDB, getModuleTestFromDB, getRunFromDB, getModuleFromDB, makeModuleNameMapFromDB
+import zipfile
+from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
+#from makeXml import readXmlConfig
+# from webdavclient import WebDAVWrapper
+from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
+
+verbose = 100000
+
+
+useOnlyMergedPlots = True
+version = "2025-10-15"
+#version = "2025-04-29"
 
 skipInfluxDb= False
 #skipInfluxDb= True
@@ -331,23 +351,11 @@ plotsToBeRenamed = { ##old name --> new name
 }
 
 exstensiveVariables = ["NoiseDistribution", "PedestalDistribution"]
-useOnlyMergedPlots = True
-version = "2025-10-14"
-version = "2025-04-29"
 
-#allVariables = ["NoiseDistribution"]
 
-#from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
-from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
-import os
-from databaseTools import getTestFromDB, getModuleTestFromDB, getRunFromDB, getModuleFromDB, makeModuleNameMapFromDB
-import zipfile
-from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
-#from makeXml import readXmlConfig
-from webdavclient import WebDAVWrapper
-from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
+# allVariables = ["NoiseDistribution"]
 
-verbose = 0
+
 
 import ROOT
 
@@ -896,7 +904,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     plotsPerChip = []
     print("All plots available:")
     for plot in plots:
-        print(plot)
+        if verbose>10: print(plot)
         if "_SSA" in plot or "_MPA" in plot: 
 #            if "Merged" in plot or not useOnlyMergedPlots:
                 plotsPerChip.append(plot)
@@ -1330,12 +1338,12 @@ def getConnectionMap(run, xmlConfig, folder):
 '''
 
 
-def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
+def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     if verbose>2:
         print("Calling updateTestResult")
         print("module_test:", module_test)
         print("tempSensor:", tempSensor)
-        print("skipWebdav:", skipWebdav)
+        # print("skipWebdav:", skipWebdav)
 
     global plots
     tmpFolder = "/tmp/"
@@ -1354,17 +1362,18 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
         pass
     import pathlib
     pathlib.Path(tmpFolder).mkdir(parents=True, exist_ok=True)
+    print("Temporary folder:", tmpFolder)
 
     hwToModuleID, hwToMongoID = makeModuleNameMapFromDB()
 
-    ### Initialize webdav, if necessary
-    hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx\nxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
-    webdav_website = None
-    webdav_wrapper = None
-    if not skipWebdav:
-        hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[1].split("|")
-        from moduleTest import webdav_wrapper
-        webdav_website = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
+    # ### Initialize webdav, if necessary
+    # hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx\nxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
+    # webdav_website = None
+    # webdav_wrapper = None
+    # if not skipWebdav:
+    #     hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[1].split("|")
+    #     from moduleTest import webdav_wrapper
+    #     webdav_website = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
     
     
     test = getModuleTestFromDB(module_test)
@@ -1380,11 +1389,13 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     board_id = boardToId[board]
     module = getModuleFromDB(moduleName)
     fName = run['runFile'].split("//")[-1].replace("/", "_")
-    if webdav_wrapper: 
-        print("Downloading %s to %s"%(run['runFile'].split("//")[-1], "/tmp/%s"%fName))
-        zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
-    else: zip_file_path = "/tmp/%s"%fName
-    
+    # if webdav_wrapper: 
+    #     print("Downloading %s to %s"%(run['runFile'].split("//")[-1], "/tmp/%s"%fName))
+    #     zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
+    # else: zip_file_path = "/tmp/%s"%fName
+    zip_file_path=cernbox_folder_run+"/"+run['runFile'].split("//")[-1]
+    print(f"Reading zip file from: {zip_file_path}")
+
     # Specify the directory where you want to extract the contents
     extracted_dir = zip_file_path.split(".")[0]
 
@@ -1418,7 +1429,7 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     from databaseTools import getSlotBIFromModuleConnectionMap
     slotBI = getSlotBIFromModuleConnectionMap(connectionMap)
     if tempSensor == "auto":
-        tempSensor = "OW0%s"%(slotBI+1)
+        tempSensor = "OW0%s"%(slotBI)
         print("Auto tempSensor:", tempSensor)
 
     ### Add plot with voltage and currents
@@ -1456,14 +1467,20 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     plots = makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, run['runDate'], hv_channel, lv_channel, tempSensor)
     fff = plots+[xmlPyConfigFile]
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
+    # nfolder = base+folder
     nfolder = base+folder
     if verbose>1: print("mkDir %s"%nfolder)
-    if webdav_website: webdav_website.mkDir(nfolder)
-##        print(webdav_website.list_files(nfolder))
+#     if webdav_website: 
+#         response = webdav_website.mkDir(nfolder)
+#         if verbose>2: print("mkDir response:", response, response.status_code, response.reason)
+# ##        print(webdav_website.list_files(nfolder))
+    command=f"mkdir -p {cernbox_folder_analysis}/{nfolder}" 
+    os.system(command)
+    print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
     webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor)
-    zipFile = "results" 
+    zipFile = "results"  
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
     tmpUpFolder = '/'.join(tmpUpFolder.split("/")[:-1])
@@ -1473,9 +1490,13 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", tmpUpFolder+name, tmpFolder)
     shutil.make_archive(tmpUpFolder+name, 'zip', tmpFolder)
     if verbose>20: print("Done")
-    if webdav_website: 
-        newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
-        if verbose>0: print("Uploaded %s"%newFile)
+    # if webdav_website: 
+    #     newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
+    #     if verbose>0: print("Uploaded %s"%newFile)
+    newFile = "%s/results.zip"%(nfolder)
+    os.system(f"cp {tmpUpFolder}{name}.zip {cernbox_folder_analysis}/{newFile}")
+    if verbose>0: 
+        print(f"Copied to {cernbox_folder_analysis}/{newFile}")
     
     if verbose>0: print("Plots:") 
     for p in plots:
@@ -1483,19 +1504,29 @@ def updateTestResult(module_test, tempSensor="auto", skipWebdav = False):
     print("Extracted folder:", extracted_dir)
     print("Webpage:", webpage)
     if verbose>0: print("file:///run/user/1000/gvfs/sftp:host=pccmslab1.tn,user=thermal%s"%webpage)
-    if webdav_website:
-        print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
-        if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
-        download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
-        if verbose>1: print("Download link:", download)
-        navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
-        print("##################################################################################################################")
-        print("### Link to the new webpage:", navigator)
-        print("##################################################################################################################")
-    else:
-        download = "dummy"
-        navigator = "dummy"
-    
+    # if webdav_website:
+    #     print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
+    #     if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
+    #     download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
+    #     if verbose>1: print("Download link:", download)
+    #     navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
+    #     print("##################################################################################################################")
+    #     print("### Link to the new webpage:", navigator)
+    #     print("##################################################################################################################")
+    # else:
+    #     download = "dummy"
+    #     navigator = "dummy"
+
+    print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
+    print(f"Local folder: {cernbox_folder_analysis}/{nfolder}")
+    if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
+    download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
+    if verbose>1: print("Download link:", download)
+    navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
+    print("##################################################################################################################")
+    print("### Link to the new webpage:", navigator)
+    print("##################################################################################################################")
+
     from databaseTools import createAnalysis
     startTime_rome, startTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
     stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
@@ -1547,7 +1578,7 @@ if __name__ == '__main__':
     #printAllSensors
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')
     parser.add_argument('module_test', type=str, help='Single-module test name')
-    parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
+    # parser.add_argument('--skipWebdav', type=bool, nargs='?', const=True, default=False, help='Skip upload to webdav (for testing).')
 #    parser.add_argument('--tempSensor', type=str, const=True, default="-1", help='Skip upload to webdav (for testing).')
     args = parser.parse_args()
-    updateTestResult(module_test = args.module_test , tempSensor="auto", skipWebdav = args.skipWebdav)
+    updateTestResult(module_test = args.module_test , tempSensor="auto") #, skipWebdav = args.skipWebdav)
