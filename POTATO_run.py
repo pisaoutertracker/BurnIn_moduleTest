@@ -6,6 +6,9 @@ import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 
+cernbox_folder_analysis = "/home/thermal/cernbox_shared/Uploads/"
+cernbox_folder_run = "/home/thermal/cernbox_runshared/"
+
 scriptName_base = "POTATO_run_%s.sh"
 POTATOExpressFolder = "/home/thermal/potato/Express/"
 
@@ -21,17 +24,21 @@ if __name__ == "__main__":
     print("python3  POTATO_run.py session747\n")
     print()
 
+    #$DISPLAY not null
+    if os.getenv('DISPLAY') is None:
+        raise Exception("Error: $DISPLAY is not set. This would cause a crash in POTATO Express. Please run it where $DISPLAY is available.")
+
     import argparse
     parser = argparse.ArgumentParser(description='Script used to run potato express test from an existing single test module. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  POTATO_run.py PS_26_IBA-10003__run500087 ')
     #parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('session', type=str, help='Session name (eg. session706)')
     parser.add_argument('--skipPOTATO', type=bool, default=False, const=True, nargs='?', help='Skip the POTATO run and only prepare the files for it for debugging. Default: False')
-    parser.add_argument('--skipWebdav', type=bool, default=False, const=True, nargs='?', help='Skip the webdav download and assume the zip file is already in /tmp/. Default: False')
+    # parser.add_argument('--skipWebdav', type=bool, default=False, const=True, nargs='?', help='Skip the webdav download and assume the zip file is already in /tmp/. Default: False')
 
     #module_test = parser.parse_args().module_test
     session = parser.parse_args().session
     skipPOTATO = parser.parse_args().skipPOTATO
-    skipWebdav = parser.parse_args().skipWebdav
+    # skipWebdav = parser.parse_args().skipWebdav
     moveEverythingToOld = False
 
 def createCSVFromIVScan(iv_scan, path):
@@ -155,20 +162,24 @@ def createIVScanCSVFile(runNumber, module_name, outDir):
 
 
 
-def downloadAndExtractZipFile(remote_path, local_path, webdav_wrapper=None, skipWebdav=False):
-    if verbose>2: print("downloadAndExtractZipFile - START - remote_path:", remote_path, "local_path:", local_path, "skipWebdav:", skipWebdav, "webdav_wrapper:", webdav_wrapper)
-    webdav_wrapper = None
-    if not skipWebdav and not webdav_wrapper: 
-        from moduleTest import webdav_wrapper
-        if not webdav_wrapper:
-            raise Exception("webdav_wrapper not provided and not found in moduleTest.py")
+def downloadAndExtractZipFile(remote_path, local_path): #, webdav_wrapper=None, skipWebdav=False):
+    # if verbose>2: print("downloadAndExtractZipFile - START - remote_path:", remote_path, "local_path:", local_path, "skipWebdav:", skipWebdav, "webdav_wrapper:", webdav_wrapper)
+    # webdav_wrapper = None
+    # if not skipWebdav and not webdav_wrapper: 
+    #     from moduleTest import webdav_wrapper
+    #     if not webdav_wrapper:
+    #         raise Exception("webdav_wrapper not provided and not found in moduleTest.py")
 
-    # Download the zip file from the remote path
-    if webdav_wrapper: 
-        zip_file_path = webdav_wrapper.download_file(remote_path=remote_path , local_path=local_path) ## drop
-    else:
-        print("WARNING: no webdav_wrapper provided (you used --skipWebdav?), assuming the file is already in /tmp/%s"%fName) 
-        zip_file_path = "/tmp/%s"%fName
+    # # Download the zip file from the remote path
+    # if webdav_wrapper: 
+    #     zip_file_path = webdav_wrapper.download_file(remote_path=remote_path , local_path=local_path) ## drop
+    # else:
+    #     print("WARNING: no webdav_wrapper provided (you used --skipWebdav?), assuming the file is already in /tmp/%s"%fName) 
+    #     zip_file_path = "/tmp/%s"%fName
+    file_name = local_path.split("/")[-1]
+    zip_file_path = local_path
+    os.system(f"cp {cernbox_folder_run}/{remote_path} {zip_file_path}")
+    print(f"File copied from {cernbox_folder_run}/{remote_path} to {zip_file_path}")
 
     # Specify the directory where you want to extract the contents
     extracted_dir = zip_file_path.split(".")[0]
@@ -231,7 +242,7 @@ if __name__ == "__main__":
         remote_path=run['runFile'].split("//")[-1]
         local_path="/tmp/%s"%fName
 
-        extracted_dir = downloadAndExtractZipFile(remote_path, local_path, skipWebdav=skipWebdav)
+        extracted_dir = downloadAndExtractZipFile(remote_path, local_path) #, skipWebdav=skipWebdav)
 
         ###############################################################################################
 
