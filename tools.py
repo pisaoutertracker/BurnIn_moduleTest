@@ -234,7 +234,17 @@ def parse_module_settings(xml_file):
       - strips: A sorted list of unique SSA2 Ids collected from all Hybrid elements
       - pixels: A sorted list of unique MPA2 Ids collected from all Hybrid elements
     """
-    tree = ET.parse(xml_file)
+    try:
+        tree = ET.parse(xml_file)
+    except:
+        print()
+        print(f"ERROR [parse_module_settings]: Could not parse {xml_file}")
+        file = open(xml_file, 'r')
+        print("Here is the content of the file:")
+        print(file.read())
+        print()
+        tree = ET.parse(xml_file)
+
     root = tree.getroot()
 
     # Extract board URI from <connection id="board"> and get the host part.
