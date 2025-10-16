@@ -605,6 +605,13 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     plots = []
     startTime_local = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
     stopTime_local = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
+    if verbose>10:
+        print("startTime_local: ", startTime_local)
+        print("stopTime_local: ", stopTime_local)
+    if not "202" in startTime_local:
+        raise Exception("startTime_local (Detector/CalibrationStartTimestamp_Detector) is not valid date: %s"%startTime_local)
+    if not "202" in stopTime_local:
+        raise Exception("stopTime_local (Detector/CalibrationStopTimestamp_Detector) is not valid date: %s"%stopTime_local)
     ## add Influxdb plot
     
     if not skipInfluxDb: 
@@ -1126,6 +1133,7 @@ def makePlotInfluxdbVoltageAndCurrent(startTime_rome, stopTime_rome, folder,
     import matplotlib.pyplot as plt
     from datetime import timedelta
     
+    if verbose>2: print('Calling makePlotInfluxdbVoltageAndCurrent(startTime_rome=%s, stopTime_rome=%s, folder=%s, sensors=%s, org=%s)'%(startTime_rome, stopTime_rome, folder, sensors, org))
 #    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
     startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
     stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
@@ -1267,6 +1275,7 @@ def makePlotInfluxdb(startTime_rome, stopTime_rome, tempSensor, folder, org="pis
     
     from datetime import datetime, timedelta
     
+    if verbose>2: print('Calling makePlotInfluxdb(startTime_rome=%s, stopTime_rome=%s, tempSensor=%s, folder=%s, org=%s)'%(startTime_rome, stopTime_rome, tempSensor, folder, org))
 #    startTime_utc, startTime_rome = getTimeFromUTCToRome(startTime_utc, timeFormat = "%Y-%m-%dT%H:%M:%S")
     startTime_rome, startTime_utc = getTimeFromRomeToUTC(startTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
     stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime_rome, timeFormat = "%Y-%m-%dT%H:%M:%S")
