@@ -143,7 +143,7 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
 
 ### Call fpgaconfigPisa (to be used after FC7 reset)
 def fpgaconfigPisa(board, firmware):
-    if verbose>0: print("Calling fpgaconfigPisa()", options)
+    if verbose>0: print("Calling fpgaconfigPisa()", board, firmware)
     command = f"fpgaconfigPisa {board} -i {firmware}"
 
     ## Run command locally

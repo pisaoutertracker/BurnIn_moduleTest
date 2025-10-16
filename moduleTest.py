@@ -1,7 +1,8 @@
 #!/bin/env python3
+cernbox_folder_run = "/home/thermal/cernbox_runshared/"
 
 ### Default values 
-verbose = 0
+verbose = 10
 lastPh2ACFversion = "ph2_acf_v6-18"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -17,7 +18,7 @@ runFpgaConfig = False ## it will run automatically if necessary
 ## -v /home/thermal/suvankar/power_supply/:/home/thermal/suvankar/power_supply/
 import os
 thermalHome = os.environ['HOME']
-podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v %s/RunNumbers.dat:%s/RunNumbers.dat:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v ~/private/webdav.sct:/root/private/webdav.sct:z -v $HOME/RunNumbers.dat:/root/RunNumbers.dat:z --net host '%(thermalHome, thermalHome)
+podmanCommand = 'podman run  --rm -ti -v $PWD/Results:/home/cmsTkUser/Ph2_ACF/Results/:z -v $PWD/logs:/home/cmsTkUser/Ph2_ACF/logs/:z -v %s/RunNumbers.dat:%s/RunNumbers.dat:z -v $PWD:$PWD:z -v /etc/hosts:/etc/hosts -v $HOME/RunNumbers.dat:/root/RunNumbers.dat:z --net host '%(thermalHome, thermalHome )
 podmanCommand += '--entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracker/pisa_module_test:%s -c "%s"' ## For older version: docker.io/sdonato/pisa_module_test:ph2_acf_v4-23
 prefixCommand = '\cp  /usr/share/zoneinfo/Europe/Rome /etc/localtime && cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder_docker = "/home/cmsTkUser/Ph2_ACF/settings"
@@ -27,12 +28,12 @@ connectionMapFileName = "connectionMap_%s.json"
 #lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x00', '0x67']
 lpGBTids = []
 
-### webdav keys
+# ### webdav keys
 hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxxxxx" > ~/private/webdav.sct
 webdav_url = "https://cernbox.cern.ch/remote.php/dav/public-files"
-from webdavclient import WebDAVWrapper
+# from webdavclient import WebDAVWrapper
 hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[0].split("|")
-webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
+# webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
 
 if __name__ == '__main__':
     import argparse
@@ -66,7 +67,7 @@ if __name__ == '__main__':
     parser.add_argument('--firmware', type=str, nargs='?', const='', help='Firmware used in fpgaconfig. Default=%s'%firmware_5G)
     parser.add_argument('--xmlPyConfigFile', type=str, nargs='?', const="PS_Module_settings.py", default="PS_Module_settings.py", help='location of PS_Module_settings.py file with the XML configuration.')
     parser.add_argument('--ignoreConnection', type=bool, default=False, nargs='?', const=True, help='Ignore database connection check, ie. do not throw exception if there is a mismatch between the database connection and the module declared')
-    parser.add_argument('--tempSensor', type=str, default="Temp0", nargs='?', const=True, help='Select which temperature sensor will be displayed in the analysis page.')
+    parser.add_argument('--tempSensor', type=str, default="auto", nargs='?', const=True, help='Select which temperature sensor will be displayed in the analysis page.')
 
     print()
     print("Example: python3 moduleTest.py --module PS_26_05-IBA_00102 --slot 0 --board fc7ot2 -c readOnlyID  --session session1")
@@ -494,8 +495,10 @@ if __name__ == '__main__':
             #testID = "Run_0"
 
         ## make a folder in CernBox
-        if verbose>10: print("Creating folder %s"%testID)
-        webdav_wrapper.mkDir("/%s"%testID)
+        if verbose>10: print(f"Creating folder {cernbox_folder_run}/{testID}")
+        os.makedirs(f"{cernbox_folder_run}/{testID}", exist_ok=True)
+        # if verbose>10: print("Creating folder %s"%testID)
+        # webdav_wrapper.mkDir("/%s"%testID)
 
         ''' ### Old code used to upload single files to CERN box. Not used anymore, as everything is uploaded through the zip file ###
         ## upload all files
@@ -560,8 +563,11 @@ if __name__ == '__main__':
         if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", zipFile, resultFolder)
         shutil.make_archive(zipFile, 'zip', resultFolder)
         if verbose>20: print("Done")
-        newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
-        if verbose>0: print("Uploaded %s"%newFile)
+        os.system(f"cp {zipFile}.zip {cernbox_folder_run}/{testID}/output.zip")
+        if verbose>0: print(f"Copied {zipFile}.zip to {cernbox_folder_run}/{testID}/output.zip")
+        newFile = f"/{testID}/output.zip"
+        # newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
+        # if verbose>0: print("Uploaded %s"%newFile)
         
         print("++++++++++++++++++  Create session and run and upload it to DB ++++++++++++++++++")
 
