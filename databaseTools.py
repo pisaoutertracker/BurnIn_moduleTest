@@ -940,23 +940,23 @@ def getSlotBIFromModuleConnectionMap(connectionMapModule):
 #module.get("children").get("PS Read-out Hybrid").get("details").get("ALPGBT_VERSION")
 
 ## Get lpGBT version from module in DB
-def getModuleLpGBTversionFromDB(moduleName):
-    if verbose>0: print("Calling getModuleLpGBTversionFromDB()", moduleName)
+def getLpGBTversionFromDB(moduleName):
+    if verbose>0: print("Calling getLpGBTversionFromDB()", moduleName)
     module = getModuleFromDB(moduleName)
     if module is None:
         print("ERROR: Could not find module %s in the database."%moduleName)
-        raise Exception("Error in calling getModuleLpGBTversionFromDB() for module %s. Module does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/modules.html)"%(moduleName))
+        raise Exception("Error in calling getLpGBTversionFromDB() for module %s. Module does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/modules.html)"%(moduleName))
     
     if "children" in module and "lpGBT" in module["children"] and "PS Read-out Hybrid" in module["children"] and "details" in module["children"]["PS Read-out Hybrid"] and "ALPGBT_VERSION" in module["children"]["PS Read-out Hybrid"]["details"]:
         lpGBTversion = module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_VERSION"]
         if verbose>1: print("Found lpGBT version %s for module %s"%(lpGBTversion, moduleName))
         return lpGBTversion
     else:
-        print("[getModuleLpGBTversionFromDB]: Debug info. Module:")
+        print("[getLpGBTversionFromDB]: Debug info. Module:")
         print(module)
         print()
 #        print(module.get("children"))
-        print("WARNING - [getModuleLpGBTversionFromDB] - Could not find lpGBT version for module %s in the database. V1 will be used as fallback."%moduleName)
+        print("WARNING - [getLpGBTversionFromDB] - Could not find lpGBT version for module %s in the database. V1 will be used as fallback."%moduleName)
         return "V1"
 
 def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
@@ -990,7 +990,7 @@ def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
 if __name__ == '__main__':
     print("Testing databaseTools.py")
     module = "PS_26_IBA-10003"
-    print(f"getModuleLpGBTversionFromDB({module}):", getModuleLpGBTversionFromDB(module))
+    print(f"getLpGBTversionFromDB({module}):", getLpGBTversionFromDB(module))
     print("getFirmwareVersionInFC7OT('FC7OT2'):", getFirmwareVersionInFC7OT("FC7OT2"))
     print("updateFirmwareVersionInFC7OT('FC7OT2', 'v5.0-20221', '2024-11-08 18:00:00'):", updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00"))
     filename = "ModuleTest_settings.xml"

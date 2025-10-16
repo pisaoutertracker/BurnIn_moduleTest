@@ -48,7 +48,7 @@ if __name__ == '__main__':
     required.add_argument('--strip', type=str, default='0,1,2,3,4,5,6,7', help='strip number (eg. 0,1,2 default=all).', required=False)
     required.add_argument('--pixel', type=str, default='8,9,10,11,12,13,14,15', help='pixel number (eg. 8,9,15 default=all).', required=False)
     required.add_argument('--hybrid', type=str, default='0,1', help='hybrid number (default=0,1).', required=False)
-    required.add_argument('--lpGBT', type=str, default='auto', help='lpGBT file (default=auto).', required=False)
+    required.add_argument('--lpGBT', type=str, default='auto', help='lpGBT file (default=lpGBT_v2_PS.txt).', required=False)
     
     parser.add_argument('--useExistingModuleTest', type=str, nargs='?', const='', help='Read results from an existing module test. Skip ot_module_test run (for testing).')
     parser.add_argument('-f','--useExistingXmlFile', type=str, nargs='?', const='', help='Specify an existing xml file without generating a new one (for testing).  ')
@@ -174,7 +174,6 @@ if __name__ == '__main__':
         print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels, modules))
         board, opticalGroups, hybrids, strips, pixels  = parse_module_settings(args.useExistingXmlFile)
         modules = ["auto" for s in opticalGroups]
-        print("S")
         opticalGroups = [int(s) for s in opticalGroups]
         print("The new values are: %s, %s, %s, %s, %s, %s."%(board, opticalGroups, hybrids, strips, pixels, modules))
     
@@ -209,78 +208,110 @@ if __name__ == '__main__':
     from databaseTools import  uploadRunToDB, makeModuleNameMapFromDB, getRunFromDB, updateNewModule, getFirmwareVersionInFC7OT
 #    from databaseTools import getTestFromDB, addTestToModuleDB, getModuleFromDB, addNewModule, uploadTestToDB
     
-
-    ###########################################################
-    #################### PRELIMINARY CHECKS ####################
-    ###########################################################
-
     ### make a symbolic link from ~/RunNumber.dat to local folder
     checkAndFixRunNumbersDat(target_dir=thermalHome) ### check if the RunNumbers.dat is in the right place. This file must be binded in podman!
 
-    #### check if the expected modules match the modules declared in the database for the opticalGroups ####
-    print()
-    print("++++++++++++++++++ Check if expected modules matches the modules from DB, resolve 'auto' for modules, check 10G/5G, ++++++++++++++++++")
-    print()
-    # from databaseTools import checkIfExpectedModulesMatchModulesInDB
-    # checkIfExpectedModulesMatchModulesInDB(board, opticalGroups, modules, args)
-    from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
-    moduleBandwidth = None
-    firmware_to_be_used = None
-    lpGBT_versions = [lpGBTfile for i in range(len(opticalGroups))]
-    for i, slot in enumerate(opticalGroups):
-        error = None
-        moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
-        if modules[i] == "auto":  
-            modules[i] = moduleFromDB
-            print("    You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
-        moduleFromCLI = modules[i]
-        print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
-        moduleBandwidth_new = getModuleBandwidthFromDB(moduleFromCLI)
-        if moduleBandwidth != None and moduleBandwidth_new != moduleBandwidth:
-            raise Exception("You are testing modules with different bandwidth (%s and %s). This is not allowed (different firmware required in FC7)."%(moduleBandwidth, moduleBandwidth_new))
-        moduleBandwidth = moduleBandwidth_new
-        if moduleBandwidth == "10Gbps": firmware_to_be_used = firmware_10G
-        elif moduleBandwidth == "5Gbps": firmware_to_be_used = firmware_5G
-        else: raise Exception("Module %s has unknown bandwidth %s in the database. Please fix the database."%(moduleFromCLI, moduleBandwidth))
-        if verbose>1: print("Expected module %s. According to Pisa db is %s. Requires firmware %s."%(moduleFromCLI, moduleBandwidth, firmware_to_be_used))
-        if moduleBandwidth == "5Gbps" and args.g10:
-            raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
-        elif moduleBandwidth == "10Gbps" and args.g5:
-            raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
-        if moduleFromDB == None:
-            from databaseTools import getFiberLink
-            fc7, og = getFiberLink(moduleFromCLI)
-            if fc7 == None:
-                print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
-                if args.addNewModule:
-                    print("It is ok, as you are going to add new modules to the database.")
-                else: 
-                    error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
+
+    if args.useExistingXmlFile:
+        print("As you are using an existing xml file, I will skip the check between the module and the database, and the installation of the firmware.")
+    else:
+        ###########################################################
+        #################### PRELIMINARY CHECKS ####################
+        ###########################################################
+
+        #### check if the expected modules match the modules declared in the database for the opticalGroups ####
+        print()
+        print("++++++++++++++++++ Check if expected modules matches the modules from DB, resolve 'auto' for modules, check 10G/5G, ++++++++++++++++++")
+        print()
+        # from databaseTools import checkIfExpectedModulesMatchModulesInDB
+        # checkIfExpectedModulesMatchModulesInDB(board, opticalGroups, modules, args)
+        from databaseTools import getModuleConnectedToFC7, getModuleBandwidthFromDB
+        moduleBandwidth = None
+        firmware_to_be_used = None
+        if lpGBTfile == "auto": ## will be a list of the same length of opticalGroups
+            lpGBTfiles = []
+        for i, slot in enumerate(opticalGroups):
+            error = None
+            moduleFromDB = getModuleConnectedToFC7(board.upper(), "OG%s"%slot)
+            if modules[i] == "auto":  
+                modules[i] = moduleFromDB
+                print("    You selected 'auto' for the module in board %s and slot %s. I will use the module %s declared in the connection database."%(board, slot, moduleFromDB))
+            moduleFromCLI = modules[i]
+            print("board %s, slot %s, moduleFromDB %s, moduleFromCLI %s"%(board, slot, moduleFromDB, moduleFromCLI))
+            moduleBandwidth_new = getModuleBandwidthFromDB(moduleFromCLI)
+            if moduleBandwidth != None and moduleBandwidth_new != moduleBandwidth:
+                raise Exception("You are testing modules with different bandwidth (%s and %s). This is not allowed (different firmware required in FC7)."%(moduleBandwidth, moduleBandwidth_new))
+            moduleBandwidth = moduleBandwidth_new
+            if moduleBandwidth == "10Gbps": firmware_to_be_used = firmware_10G
+            elif moduleBandwidth == "5Gbps": firmware_to_be_used = firmware_5G
+            else: raise Exception("Module %s has unknown bandwidth %s in the database. Please fix the database."%(moduleFromCLI, moduleBandwidth))
+            if verbose>1: print("Expected module %s. According to Pisa db is %s. Requires firmware %s."%(moduleFromCLI, moduleBandwidth, firmware_to_be_used))
+            if moduleBandwidth == "5Gbps" and args.g10:
+                raise Exception("Module %s is declared in the database as 5Gbps, but you are trying to run the test with 10Gbps firmware."%moduleFromDB)
+            elif moduleBandwidth == "10Gbps" and args.g5:
+                raise Exception("Module %s is declared in the database as 10Gbps, but you are trying to run the test with 5Gbps firmware."%moduleFromDB)
+            if moduleFromDB == None:
+                from databaseTools import getFiberLink
+                fc7, og = getFiberLink(moduleFromCLI)
+                if fc7 == None:
+                    print("No module declared in the database for board %s and slot %s."%(board.upper(), "OG%s"%slot))
+                    if args.addNewModule:
+                        print("It is ok, as you are going to add new modules to the database.")
+                    else: 
+                        error = "No module declared in the database for board %s and slot %s. If you are not adding a new module, something is wrong. If you want to add a new module, please use --addNewModule option."%(board.upper(), "OG%s"%slot)
+                        print(error)
+                else:
+                    error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
                     print(error)
             else:
-                error = "Module %s is already in the connection database and it is expected in board %s and slot %s, not in board %s and slot %s. You can avoid this error using --ignoreConnection option."%(moduleFromCLI, fc7, og, board.upper(), "OG%s"%slot)
-                print(error)
-        else:
-            if moduleFromDB != moduleFromCLI:
-                error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
-                print(error)
-            else:
-                print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
-        if error: 
-            if args.ignoreConnection:
-                print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
-                print("WARNING: %s"%error)
-            else:
-                raise Exception(error+" You can skip this error using --ignoreConnection flag.")
-        if lpGBT_versions[i] == "auto":
-            from databaseTools import getModuleLpGBTversionFromDB
-            lpGBT_versions[i] = f"lpGBT_{getModuleLpGBTversionFromDB(modules[i]).lower()}_PS.txt"
-            print("As you selected 'auto' for the lpGBT version, I will use %s according to the module %s."%(lpGBT_versions[i], modules[i]))
-    
+                if moduleFromDB != moduleFromCLI:
+                    error = "Module %s declared in the database for board %s and slot %s does not match the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i])
+                    print(error)
+                else:
+                    print("Module %s declared in the database for board %s and slot %s matches the module declared in the command line (%s)."%(moduleFromDB, board, slot, modules[i]))
+            if error: 
+                if args.ignoreConnection:
+                    print("WARNING: --ignoreConnection option is active. I will not throw exception if there is a mismatch between the database connection and the module declared.")
+                    print("WARNING: %s"%error)
+                else:
+                    raise Exception(error+" You can skip this error using --ignoreConnection flag.")
+            if lpGBTfile == "auto":
+                from databaseTools import getLpGBTversionFromDB
+                lpGBTfiles.append(f"lpGBT_{getLpGBTversionFromDB(moduleFromCLI).lower()}_PS.txt")
+                print("You selected 'auto' as lpGBT file. Module %s will use lpGBT file %s according to the database."%(moduleFromCLI, lpGBTfiles[-1]))
 
-    ###########################################################
-    ########## read xml config file and create XML  ###########
-    ###########################################################
+        if lpGBTfile == "auto":
+            lpGBTfile = lpGBTfiles
+            print("The final lpGBT files are: %s"%lpGBTfile)
+
+        ##################################
+        ### INSTALL FIRMWARE IF NEEDED ###
+        ##################################
+        ### check the firmware version in the FC7 from the database
+        print()
+        firmware_installed, firmware_timestamp = getFirmwareVersionInFC7OT(board)
+        if verbose>-1: 
+            from datetime import datetime
+            print("Firmware installed in board %s: %s (%s)"%(board, firmware_installed, str(datetime.fromtimestamp(float(firmware_timestamp)))))
+
+        if firmware_to_be_used:
+            print("-"*80)
+            if firmware_to_be_used == firmware_installed: 
+                print("Firmware %s is already installed in board %s. I will use it. No needs to install it again."%(firmware_to_be_used, board))
+            else:
+                print("Firmware %s is not installed in board %s (it has %s). I will install it using fpgaconfigPisa."%(firmware_to_be_used, board, firmware_installed))
+                firmware = firmware_to_be_used
+                fpgaconfigPisa( board, firmware_to_be_used)
+            print("-"*80)
+        else: raise Exception("Cannot define which firmware to use.")
+
+        if "quad" in firmware.lower():
+            raise Exception("WARNING: You are trying to use a module firmware 'quad' (%s). This means that the optical group numbering is completely messed up. See https://mattermost.web.cern.ch/cms-exp/pl/fthqcio7k3n83rinqppuwb15ay and https://mattermost.web.cern.ch/cms-exp/pl/proeggigf3rhjxecfdcm6rpppr . Once you fixed the optical group numbering, remove this exception manually!"%firmware)
+            
+
+    #################################################
+    ### read xml config file and create XML
+    ###############################################
     print()
     print("++++++++++++++++++ Creation of the XML file++++++++++++++++++")
     print()
@@ -292,6 +323,7 @@ if __name__ == '__main__':
         xmlPyConfigPath = "%s/%s"%("Results/"+folder, xmlPyConfigFile)
         if os.path.exists("%s/%s"%(xmlPyConfigPath, xmlPyConfigFile)):
             xmlConfig = readXmlConfig(xmlPyConfigFile, folder=xmlPyConfigPath)
+            print("Using existing xmlPyConfigFile: %s"%xmlPyConfigPath)
         else:
             xmlPyConfigFile = None
             from makeXml import makeConfigFromROOTfile, getInfosFromXmlPyConfig
@@ -300,6 +332,7 @@ if __name__ == '__main__':
             print("As you are using an existing module test, I will overwrite the board, opticalGroups, hybrids, strips, pixels with the one from the existing module test.")
             print("Value passed in the command line will be ignored (ie %s, %s, %s, %s, %s)."%(board, opticalGroups, hybrids, strips, pixels))
             board, opticalGroups, hybrids, strips, pixels  = getInfosFromXmlPyConfig(xmlConfig)
+            print(board, opticalGroups, hybrids, strips, pixels)
             opticalGroups = [int(s) for s in opticalGroups]
             print("The new values are: %s, %s, %s, %s, %s."%(board, opticalGroups, hybrids, strips, pixels))
             if verbose>1: print(xmlConfig)      
@@ -314,12 +347,13 @@ if __name__ == '__main__':
         if not args.useExistingXmlFile:
             from shellCommands import copyXml
             copyXml(ph2ACFversion)
-        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, lpGBT_versions, Nevents=1000)
+        xmlConfig = makeXmlPyConfig(board, opticalGroups, hybrids, strips, pixels, lpGBTfile, edgeSelect, outFile, Nevents=1000)
         if args.useExistingXmlFile:
             xmlFile = args.useExistingXmlFile
         else:
+            print(xmlOutput, xmlConfig, xmlTemplate)
             xmlFile = makeXml(xmlOutput, xmlConfig, xmlTemplate)
-
+    
     if verbose>1:
         print("xmlConfig:")
         pprint(xmlConfig)
@@ -328,32 +362,6 @@ if __name__ == '__main__':
     if verbose>10:
         print(board)
         print(opticalGroups)
-    
-
-    ##################################
-    ### INSTALL FIRMWARE IF NEEDED ###
-    ##################################
-    ### check the firmware version in the FC7 from the database
-    print()
-    firmware_installed, firmware_timestamp = getFirmwareVersionInFC7OT(board)
-    if verbose>-1: 
-        from datetime import datetime
-        print("Firmware installed in board %s: %s (%s)"%(board, firmware_installed, str(datetime.fromtimestamp(float(firmware_timestamp)))))
-
-    if firmware_to_be_used:
-        print("-"*80)
-        if firmware_to_be_used == firmware_installed: 
-            print("Firmware %s is already installed in board %s. I will use it. No needs to install it again."%(firmware_to_be_used, board))
-        else:
-            print("Firmware %s is not installed in board %s (it has %s). I will install it using fpgaconfigPisa."%(firmware_to_be_used, board, firmware_installed))
-            firmware = firmware_to_be_used
-            fpgaconfigPisa( board, firmware_to_be_used)
-        print("-"*80)
-    else: raise Exception("Cannot define which firmware to use.")
-
-    if "quad" in firmware.lower():
-        raise Exception("WARNING: You are trying to use a module firmware 'quad' (%s). This means that the optical group numbering is completely messed up. See https://mattermost.web.cern.ch/cms-exp/pl/fthqcio7k3n83rinqppuwb15ay and https://mattermost.web.cern.ch/cms-exp/pl/proeggigf3rhjxecfdcm6rpppr . Once you fixed the optical group numbering, remove this exception manually!"%firmware)
-        
 
     ###########################################################
     #################### START OF THE TEST ####################
