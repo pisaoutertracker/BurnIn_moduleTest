@@ -135,7 +135,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
             OpticalGroup.set("Id", str(opticalGroup_id))
 #            lpGBT.set("Id", lpGBT_version(opticalGroup["lpGBT"])) ## keep it to 0
             if "lpGBT" in opticalGroup:
-                lpGBT.set("version", lpGBT_version(opticalGroup["lpGBT"]))
+#                lpGBT.set("version", lpGBT_version(opticalGroup["lpGBT"]))
                 lpGBT.set("configFile", opticalGroup["lpGBT"])
             tags = [i.tag for i in OpticalGroup]
             OpticalGroup.insert(tags.index("lpGBT_Files")+1, lpGBT)
