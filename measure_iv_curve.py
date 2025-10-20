@@ -554,7 +554,7 @@ def measure_and_upload(
             "averageTemperature": sum(m['Temperature'] for m in iv_curve.measurements) / len(iv_curve.measurements) if iv_curve.measurements else -999,
             "averageHumidity": sum(m['Relative Humidity'] for m in iv_curve.measurements) / len(iv_curve.measurements) if iv_curve.measurements else -999,
             "sessionName": session,  # Use session name from args
-            "IVScanId": f"{channel}_{module_name}_{scan_type}",
+            "IVScanId": f"{channel}_{module_name}_{scan_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             "data": {
                 "VOLTS": [m['Voltage'] for m in iv_curve.measurements],  # Negative voltage for IV curve
                 "CURRNT_NAMP": [m['Current'] for m in iv_curve.measurements],
