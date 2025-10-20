@@ -167,27 +167,17 @@ def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", buc
     # Format timestamps properly with quotes for Flux query
     start_window = (timestamp - lookback_window).isoformat("T") + "Z"
     stop_window = timestamp.isoformat("T") + "Z"
-    
-    # Use sensor_field for filtering the specific sensor reading
-    if not sensor_field.startswith("/fnalbox/full/"):
-        query = f'''
-                from(bucket: "{bucket}")
-                    |> range(start: {start_window}, stop: {stop_window})
-                    |> filter(fn: (r) => r["_measurement"] == "{measurement}")
-                    |> filter(fn: (r) => r["_field"] == "{sensor_field}") 
-                    |> last() 
-                '''
-    else:
-        # for /fnalbox/full/ we need to specify the topic as well
-        topic, sensorName = sensor_field.rsplit("/",1)
-        query = f'''
-                from(bucket: "{bucket}")
-                    |> range(start: {start_window}, stop: {stop_window})
-                    |> filter(fn: (r) => r["_measurement"] == "{measurement}")
-                    |> filter(fn: (r) => r["topic"] == "{topic}")
-                    |> filter(fn: (r) => r["_field"] == "{sensorName}")
-                    |> last()
-                '''
+
+    sensor_field = "/fnalbox/full/"  + sensor_field
+    topic, sensorName = sensor_field.rsplit("/",1)
+    query = f'''
+            from(bucket: "{bucket}")
+                |> range(start: {start_window}, stop: {stop_window})
+                |> filter(fn: (r) => r["_measurement"] == "{measurement}")
+                |> filter(fn: (r) => r["topic"] == "{topic}")
+                |> filter(fn: (r) => r["_field"] == "{sensorName}")
+                |> last()
+            '''
     
     # Retry logic to handle potential connection/rate limit issues
     for attempt in range(max_retries):
@@ -429,7 +419,7 @@ class IVCurveMeasurement:
                     # Attempt to get temperature (replace 'Temp0' if needed)
                     temp_value = get_latest_sensor_value(now, sensor_field="Temp0")
                     # Attempt to get humidity (replace '/ble/Sensor-2' if needed)
-                    humidity_value = get_latest_sensor_value(now, sensor_field="/fnalbox/full/Humidity")
+                    humidity_value = get_latest_sensor_value(now, sensor_field="Humidity")
                     
                     # Use default values if InfluxDB query failed or returned no data
                     temperature = temp_value if temp_value is not None else 25.0
