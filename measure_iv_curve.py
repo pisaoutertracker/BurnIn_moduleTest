@@ -155,52 +155,82 @@ def getInfluxQueryAPI(token_location="~/private/influx.sct", force_new=False):
     return _influx_query_api
 
 
-def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", bucket="sensor_data", measurement="mqtt_consumer", lookback_window=timedelta(seconds=15)):
-    """Fetches the latest sensor value from InfluxDB before a given timestamp."""
+def get_latest_sensor_value(timestamp, sensor_field, org="pisaoutertracker", bucket="sensor_data", measurement="mqtt_consumer", lookback_window=timedelta(seconds=90), max_retries=3):
+    """Fetches the latest sensor value from InfluxDB before a given timestamp.
+    
+    Note: Default lookback window is 90 seconds because sensors typically update every 60 seconds.
+    """
     query_api = getInfluxQueryAPI()
     if query_api is None:
         return None
 
+    # Format timestamps properly with quotes for Flux query
     start_window = (timestamp - lookback_window).isoformat("T") + "Z"
     stop_window = timestamp.isoformat("T") + "Z"
     
     # Use sensor_field for filtering the specific sensor reading
     if not sensor_field.startswith("/fnalbox/full/"):
-        query = f''' 
-        from(bucket: "{bucket}")
-            |> range(start: {start_window}, stop: {stop_window})
-            |> filter(fn: (r) => r["_measurement"] == "{measurement}")
-            |> filter(fn: (r) => r["_field"] == "{sensor_field}") 
-            |> last() 
-            |> yield(name: "last")
-        '''
+        query = f'''
+                from(bucket: "{bucket}")
+                    |> range(start: {start_window}, stop: {stop_window})
+                    |> filter(fn: (r) => r["_measurement"] == "{measurement}")
+                    |> filter(fn: (r) => r["_field"] == "{sensor_field}") 
+                    |> last() 
+                '''
     else:
         # for /fnalbox/full/ we need to specify the topic as well
         topic, sensorName = sensor_field.rsplit("/",1)
-        topicLine = f'\n                |> filter(fn: (r) => r["topic"] == "{topic}")'
         query = f'''
-                from(bucket: "sensor_data")
-                |> range(start: {start_window}, stop: {stop_window})
-                |> filter(fn: (r) => r["_measurement"] == "{measurement}")
-                |> filter(fn: (r) => r["_field"] == "{sensorName}" ){topicLine} 
-                |> last()
-                |> yield(name: "last")
+                from(bucket: "{bucket}")
+                    |> range(start: {start_window}, stop: {stop_window})
+                    |> filter(fn: (r) => r["_measurement"] == "{measurement}")
+                    |> filter(fn: (r) => r["topic"] == "{topic}")
+                    |> filter(fn: (r) => r["_field"] == "{sensorName}")
+                    |> last()
                 '''
     
-    try:
-        tables = query_api.query(query, org=org)
-        values = [record.get_value() for table in tables for record in table.records]
-        
-        if values:
-            # Return the single latest value found
-            return values[0]
-        else:
-            # print(f"Warning: No data found for sensor '{sensor_field}' in the last {lookback_window.total_seconds()}s before {timestamp}") # Optional: More verbose warning
-            return None
+    print(f"InfluxDB Query for '{sensor_field}' [{start_window} to {stop_window}]:")
+    print(query)  # Debug: Show the constructed query
+    
+    # Retry logic to handle potential connection/rate limit issues
+    for attempt in range(max_retries):
+        try:
+            # Small delay between retries to avoid rate limiting
+            if attempt > 0:
+                time.sleep(0.5)
+                print(f"  Retry attempt {attempt + 1}/{max_retries}")
             
-    except Exception as e:
-        print(f"Warning: Error querying InfluxDB for sensor '{sensor_field}' - {e}")
-        return None
+            tables = query_api.query(query, org=org)
+            
+            # Debug: Show what tables were returned
+            print(f"Number of tables returned: {len(tables)}")
+            
+            values = []
+            for table in tables:
+                print(f"  Table records: {len(table.records)}")
+                for record in table.records:
+                    value = record.get_value()
+                    print(f"    Record value: {value}, field: {record.get_field()}, time: {record.get_time()}")
+                    values.append(value)
+            
+            print(f"InfluxDB values for '{sensor_field}':", values)  # Debug: Show fetched values
+            
+            if values:
+                # Return the single latest value found
+                return values[0]
+            else:
+                print(f"Warning: No data found for sensor '{sensor_field}' in the last {lookback_window.total_seconds()}s before {timestamp}")
+                return None
+                
+        except Exception as e:
+            print(f"Warning: Error querying InfluxDB for sensor '{sensor_field}' (attempt {attempt + 1}/{max_retries}) - {e}")
+            if attempt == max_retries - 1:
+                import traceback
+                traceback.print_exc()
+                return None
+            continue
+    
+    return None
     
 # Define scan types
 SCAN_CONFIGS = {
@@ -459,13 +489,13 @@ class IVCurveMeasurement:
             else:
                 mean_temp = -999
                 mean_rh = -999
-            f.write(f"{run_info.get('Station_Name', 'TEST_STATION')},{mean_temp},{mean_rh}\n\n")
+            f.write(f"{run_info.get('Station_Name', 'TEST_STATION')},{mean_temp:.3f},{mean_rh:.3f}\n\n")
             
             # Write measurement data
             f.write("VOLTS, CURRNT_NAMP, TEMP_DEGC, RH_PRCNT, TIME\n")
             for point in self.measurements:
-                f.write(f"{point['Voltage']},{point['Current']},{point['Temperature']},"
-                       f"{point['Relative Humidity']},{point['Timestamp']}\n")
+                f.write(f"{point['Voltage']},{point['Current']},{point['Temperature']:.3f},"
+                       f"{point['Relative Humidity']:.3f},{point['Timestamp']}\n")
         
         return target_file
 
