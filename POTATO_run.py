@@ -16,7 +16,7 @@ POTATOExpressFolder = "/home/thermal/potato/Express/"
 #skipWebdav = True ## Use this if you have already downloaded the zip file manually (for speeding up testing!)
 from moduleTest import verbose ## to be updated
 
-verbose = 10
+#verbose = 10
 outDir = "POTATOFiles"
 
 if __name__ == "__main__":
@@ -33,11 +33,15 @@ if __name__ == "__main__":
     #parser.add_argument('module_test', type=str, help='Single-module test name')
     parser.add_argument('session', type=str, help='Session name (eg. session706)')
     parser.add_argument('--skipPOTATO', type=bool, default=False, const=True, nargs='?', help='Skip the POTATO run and only prepare the files for it for debugging. Default: False')
+    parser.add_argument('--module-test', type=str, default=None, help='Optional: Filter to run only a specific module test name. Default: None (runs all module tests)')
+    parser.add_argument('--run', type=str, default=None, help='Optional: Filter to run only a specific run name (eg. run501170). Default: None (runs all runs)')
     # parser.add_argument('--skipWebdav', type=bool, default=False, const=True, nargs='?', help='Skip the webdav download and assume the zip file is already in /tmp/. Default: False')
 
     #module_test = parser.parse_args().module_test
     session = parser.parse_args().session
     skipPOTATO = parser.parse_args().skipPOTATO
+    module_test_filter = parser.parse_args().module_test
+    run_filter = parser.parse_args().run
     # skipWebdav = parser.parse_args().skipWebdav
     moveEverythingToOld = False
 
@@ -128,10 +132,12 @@ def createIVScanCSVFile(runNumber, module_name, outDir):
     iv_scans = getIVscansOfModule(module_name)
     print(f"Looking for IV scans of module {module_name} in session {session} before run date {run_date}")
     print(f"Found {len(iv_scans)} IV scans for module {module_name}")
-    print("IV scans:")
-    for iv_scan in iv_scans:
-        print(iv_scan)
-        print(iv_scan["sessionName"], iv_scan["runType"], iv_scan["IVScanId"], iv_scan["date"])
+    if verbose>0:
+        print("IV scans:")
+        for iv_scan in iv_scans:
+            print(iv_scan)
+            if verbose>100:
+                print(iv_scan["sessionName"], iv_scan["runType"], iv_scan["IVScanId"], iv_scan["date"])
     iv_scan = None
     ## Loop over the IV scans of a specific module, select the one of the same session, and take the last one before the run date
     iv_scan_date_last = datetime.strptime("2000-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
@@ -232,6 +238,12 @@ if __name__ == "__main__":
     for run in runs:
         print("+"*200)
         print("Run:", run)
+        
+        # Filter by run if specified
+        if run_filter is not None and run != run_filter:
+            print(f"Skipping run {run} (filter: {run_filter})")
+            continue
+        
         run = getRunFromDB(run)
         if verbose>10:
             print(run)
@@ -276,6 +288,11 @@ if __name__ == "__main__":
         runType = run['runType']
 
         for module_test in run['moduleTestName']:
+            # Filter by module_test if specified
+            if module_test_filter is not None and module_test != module_test_filter:
+                print(f"Skipping module test {module_test} (filter: {module_test_filter})")
+                continue
+            
             if len(run['moduleTestName']) > 1:
                 print("Run: ", run)
                 raise Exception("More than one module test found in the run %s. Please specify a single module test. Multiple modules in a single modules might bot be supported"%runNumber)
@@ -343,8 +360,8 @@ if __name__ == "__main__":
             print(f"Calling POTATO Pisa Formatter version with files {rootTrackerFileName}, {iv_csv_path}")
             print(f"using as input {resultsFile} and {monitorDQMFile}")
             print("#"*200)
-            print( next_session_timestamp)
-            print( session['timestamp'])
+            print( f"next session timestamp: {next_session_timestamp}")
+            print( f"session timestamp: {session['timestamp']}")
             theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, session['timestamp'], next_session_timestamp)
 
             ############### Prepare a script to run POTATO
