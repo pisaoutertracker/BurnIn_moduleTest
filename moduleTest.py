@@ -2,7 +2,7 @@
 cernbox_folder_run = "/home/thermal/cernbox_runshared/"
 
 ### Default values 
-verbose = 10
+verbose = 0
 lastPh2ACFversion = "ph2_acf_v6-18"
 xmlPyConfigFile = "PS_Module_settings.py"
 ip="192.168.0.45"
@@ -23,6 +23,8 @@ podmanCommand += '--entrypoint bash  gitlab-registry.cern.ch/cms-pisa/pisatracke
 prefixCommand = '\cp  /usr/share/zoneinfo/Europe/Rome /etc/localtime && cd /home/cmsTkUser/Ph2_ACF && source setup.sh && cd %s' %os.getcwd()
 settingFolder_docker = "/home/cmsTkUser/Ph2_ACF/settings"
 connectionMapFileName = "connectionMap_%s.json"
+
+commandToSkipAnalysis = ["readOnlyID", "vtrxoff"] #"configureonly"
 
 ## assign these lpGBT hardware IDs to some random modules (they will be in the module database)
 #lpGBTids = ['3962125297', '42949672', '42949673', '42949674', '2762808384', '0x00', '0x67']
@@ -677,7 +679,10 @@ if __name__ == '__main__':
             if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
                 print("++++++++++++++++++  Run updateTestResult on %s ++++++++++++++++++"%moduleTestName)
-                updateTestResult(moduleTestName, tempSensor=args.tempSensor)
+                if commandOption in commandToSkipAnalysis:
+                    print(f"Skipping updateTestResult for {commandOption} test. (commandToSkipAnalysis={commandToSkipAnalysis})")
+                else:  
+                    updateTestResult(moduleTestName, tempSensor=args.tempSensor)
                 #print("################################################")
 
 
