@@ -278,7 +278,7 @@ def handle_interactive_process(command, timeout=60):
     return process.returncode
 
 class IVCurveMeasurement:
-    def __init__(self, channels, voltage_steps, delay=5.0, voltage_threshold=0.5, voltage_threshold_time=0.5, voltage_threshold_retries=20, settling_time=0.5, final_voltage=300):
+    def __init__(self, channels, voltage_steps, delay=5.0, voltage_threshold=0.5, voltage_threshold_time=0.5, voltage_threshold_retries=20, settling_time=0.5, final_voltage=600):
         self.channels = channels
         self.voltage_steps = voltage_steps
         self.delay = delay
@@ -375,6 +375,7 @@ class IVCurveMeasurement:
                 for ch in self.channels:
                     current_voltage = parsed_data[f'caen_{ch}_Voltage']
                     if abs(current_voltage - target_voltage) > self.voltage_threshold:
+                        print(f"Channel {ch} voltage {current_voltage} V not within threshold of target {target_voltage} V")
                         all_good = False
                         break
                 if all_good:
@@ -395,6 +396,8 @@ class IVCurveMeasurement:
             for ch in self.channels:
                 print(f"Turning on channel {ch}")
                 conn.sendMessage(f'TurnOn,PowerSupplyId:caen,ChannelId:{ch}')
+                time.sleep(0.5) # Short delay between channel on commands
+                print(f"Channel {ch} turned on.")
             print("All channels turned on.")
             time.sleep(1) # Short delay after turning on
 
@@ -402,6 +405,8 @@ class IVCurveMeasurement:
                 print(f"Setting voltage to {voltage} V for all channels")
                 for ch in self.channels:
                     conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{ch},Voltage:{voltage}')
+                    time.sleep(0.3) # Short delay between channel on commands
+                    print(f"Set voltage to {voltage} V on {ch}.")
 
                 time.sleep(self.delay)  # Wait for voltage to stabilize
 
@@ -451,6 +456,7 @@ class IVCurveMeasurement:
                 try:
                     print(f"Turning off channel {ch}")
                     conn.sendMessage(f'TurnOff,PowerSupplyId:caen,ChannelId:{ch}')
+                    time.sleep(0.3) # Short delay between channel off commands
                     print(f"Channel {ch} turned off.")
                 except (socket.error, RuntimeError) as e:
                     print(f"Error turning off channel {ch}: {e}")
@@ -460,6 +466,7 @@ class IVCurveMeasurement:
                 try:
                     print(f"Setting final voltage to {self.final_voltage} V on channel {ch}")
                     conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{ch},Voltage:{self.final_voltage}')
+                    time.sleep(0.3) # Short delay between channel commands
                     print(f"Final voltage set to {self.final_voltage} V on {ch}.")
                 except (socket.error, RuntimeError) as e:
                     print(f"Error setting final voltage on channel {ch}: {e}")
@@ -517,7 +524,7 @@ def measure_and_upload(
     session='session0',
     upload=False,
     store_locally=False,
-    final_voltage=300
+    final_voltage=600
 ):
     """
     Measure IV curve and optionally upload to database
@@ -633,9 +640,9 @@ if __name__ == "__main__":
     parser.add_argument('--session', type=str, default='session0', help='Session name (default: session0)') 
     parser.add_argument('--upload', action='store_true', help='Upload to central database')
     parser.add_argument('--store-locally', action='store_true', help='Store the CSV file locally')
-    parser.add_argument('--final-voltage', type=float, default=300,
-                      help='Final voltage to set before turning off (default: 300V)')
-    
+    parser.add_argument('--final-voltage', type=float, default=600,
+                      help='Final voltage to set before turning off (default: 600V)')
+
     args = parser.parse_args()
     
     channels = [ch.strip() for ch in args.channels.split(',')]
