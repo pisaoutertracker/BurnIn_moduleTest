@@ -986,13 +986,43 @@ def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
     print("ERROR [getSlotBIFromOpticalGroupAndBoard]: Could not find any slotBI for optical group %s in FC7 %s"%(og, fc7))
     return None
 
+## print all single module test analyses associated to a session
+def printSingleModuleTestAnalysesOfSession(sessionName):
+    if verbose>0: print("Calling printSingleModuleTestAnalysesOfSession()", sessionName)
+    session = getSessionFromDB(sessionName)
+    if session is None:
+        print("ERROR: Could not find session %s in the database."%sessionName)
+        raise Exception("Error in calling printSingleModuleTestAnalysesOfSession() for session %s. Session does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/sessions.html)"%(sessionName))
+    
+    if "test_runName"  in session:
+        runs = session["test_runName"]
+    else:
+        print("ERROR: Could not find 'test_runName' field in session %s in the database."%sessionName)
+        raise Exception("Error in calling printSingleModuleTestAnalysesOfSession() for session %s. 'test_runName' field does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/sessions.html)"%(sessionName))
+
+    for run in runs:
+        run = getRunFromDB(run)
+        #print(f"Run: {run.get('test_runName', 'unknown')}")
+        moduleTests = run.get("moduleTestName", None)
+        for moduleTest in moduleTests:
+            moduleTest = getModuleTestFromDB(moduleTest)
+            print(f"{moduleTest['moduleTestName']} , {run['runDate']}")
+            analysisName = moduleTest.get("moduleTestAnalysisName", None)
+            if analysisName:
+                print(f"- {analysisName}")
+
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    session = "session789"
+    # print("printSingleModuleTestAnalysesOfSession(%s):"%session)
+    # printSingleModuleTestAnalysesOfSession(session)
     print("Testing databaseTools.py")
     module = "PS_26_IBA-10003"
     print(f"getLpGBTversionFromDB({module}):", getLpGBTversionFromDB(module))
     print("getFirmwareVersionInFC7OT('FC7OT2'):", getFirmwareVersionInFC7OT("FC7OT2"))
-    print("updateFirmwareVersionInFC7OT('FC7OT2', 'v5.0-20221', '2024-11-08 18:00:00'):", updateFirmwareVersionInFC7OT("FC7OT2", "v5.0-20221", "2024-11-08 18:00:00"))
+    from datetime import datetime
+    now = datetime.now().timestamp()
+    print(f"updateFirmwareVersionInFC7OT('FC7OT2', 'databaseToolsTest', {now}):", updateFirmwareVersionInFC7OT("FC7OT2", "databaseToolsTest", now))
     filename = "ModuleTest_settings.xml"
     splitBI_string = "1,2"
     print("Test getOpticaGroupAndBoardFromSlots('%s'):"%splitBI_string, getOpticaGroupAndBoardFromSlots(splitBI_string.split(",")))
