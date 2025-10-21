@@ -605,6 +605,9 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     plots = []
     startTime_local = str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")).replace(" ","T")
     stopTime_local = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")).replace(" ","T")
+    if stopTime_local == "<cppyy.gbl.TObjectTobjectTatT0x(nil)>":
+        stopTime_local = startTime_local
+        print("WARNING: stopTime_local is empty, setting it to startTime_local")
     if verbose>10:
         print("startTime_local: ", startTime_local)
         print("stopTime_local: ", stopTime_local)
@@ -970,6 +973,9 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("CalibrationStartTimestamp [local time]: ") + startTime
     body += ". " + grayText(f"Temperature ({tempSensor}):") + "%.2f &deg;C <br>\n"%getTemperatureAt(startTime_utc.isoformat("T").split("+")[0])
     stopTime = str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector"))
+    if stopTime == "<cppyy.gbl.TObject object at 0x(nil)>":
+        stopTime = startTime
+        print("WARNING: stopTime_local is empty, setting it to startTime_local")
     stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(stopTime, timeFormat = "%Y-%m-%d %H:%M:%S")
     body += grayText("CalibrationStopTimestamp_Detector [local time]: ") + stopTime
     body += ". " + grayText(f"Temperature ({tempSensor}):") + "%.2f &deg;C <br>\n"%getTemperatureAt(stopTime_utc.isoformat("T").split("+")[0])
@@ -1420,6 +1426,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
         rootFile = TFile.Open(extracted_dir+"/Hybrid.root")
     else:
         raise Exception("No Results.root or Hybrid.root found in %s"%extracted_dir)
+    print("Opened ROOT file:", rootFile)
 #    xmlConfig = readXmlConfig(xmlPyConfigFile=xmlPyConfigFile, folder=extracted_dir)
     xmlConfig = run["runConfiguration"] ## take configuration from db instead of python file
 
@@ -1538,7 +1545,11 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
 
     from databaseTools import createAnalysis
     startTime_rome, startTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStartTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
-    stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
+    try:
+        stopTime_rome, stopTime_utc = getTimeFromRomeToUTC(str(rootFile.Get("Detector/CalibrationStopTimestamp_Detector")), timeFormat = "%Y-%m-%d %H:%M:%S")
+    except:
+        print("WARNING: CalibrationStopTimestamp_Detector not found, using start time instead.")
+        stopTime_rome, stopTime_utc = startTime_rome, startTime_utc
     json = {
         "moduleTestAnalysisName": folder, #"PS_26_05-IBA_00004__run79__Test", 
         "moduleTestName": module_test, #"PS_26_05-IBA_00004__run79", 
