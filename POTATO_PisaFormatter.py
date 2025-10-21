@@ -34,9 +34,10 @@ chillerSetPointName = "/julabo/full/Temp_SP1" ##can we please get rid of the 3 s
 #
 
 # The maximum number of hours since the start of the run to query InfluxDB.
-maxNumHoursSinceStartRun_influxQuery = 48 # hours (time)
+maxNumHoursSinceStartRun_influxQuery = 24*4 # hours (time) ## 4 days for the full burn-in
+from moduleTest import verbose ## to be updated
 
-verbose = 1000
+#verbose = 1000
 # Define the path to the main directory
 #main_directory = "./data"
 #output_directory = "./potato"
@@ -469,12 +470,13 @@ class POTATOPisaFormatter():
         if detectorTrackerMonitorDirectory == 0:
             raise RuntimeError(f"MonitorDQM directory not found in file: {rootTrackerFileName}")
 #        print(theHistogrammer.Print())
-        print("Detector directory: ", detectorTrackerDirectory.GetName())
-        for el in detectorTrackerDirectory.GetListOfKeys():
-            print("Key: ", el.GetName(), " Class: ", el.GetClassName())
-        print("MonitorDQM directory: ", detectorTrackerMonitorDirectory.GetName())
-        for el in detectorTrackerMonitorDirectory.GetListOfKeys():
-            print("Key: ", el.GetName(), " Class: ", el.GetClassName())
+        if verbose>100:
+            print("Detector directory: ", detectorTrackerDirectory.GetName())
+            for el in detectorTrackerDirectory.GetListOfKeys():
+                print("Key: ", el.GetName(), " Class: ", el.GetClassName())
+            print("MonitorDQM directory: ", detectorTrackerMonitorDirectory.GetName())
+            for el in detectorTrackerMonitorDirectory.GetListOfKeys():
+                print("Key: ", el.GetName(), " Class: ", el.GetClassName())
         moduleNameIdStr = "Board_0/OpticalGroup_" + opticalGroupNumber + "/D_B(0)_NameId_OpticalGroup(" + opticalGroupNumber + ")"
         moduleName = str(detectorTrackerDirectory.Get(moduleNameIdStr))
         print("Formatting file for module: " + moduleName)
@@ -497,11 +499,14 @@ class POTATOPisaFormatter():
 
         if stopSession_utc > startSession_utc + timedelta(hours=maxNumHoursSinceStartRun_influxQuery):
             print("%"* 80)
-            print("WARNING: Session stop time is less than %.1f hours after start time. This may lead to missing data in InfluxDB queries." % maxNumHoursSinceStartRun_influxQuery)
+            print("WARNING: Session stop time is MORE than %.1f hours after start time (%.2f). This may lead to missing data in InfluxDB queries." % (maxNumHoursSinceStartRun_influxQuery, (stopSession_utc - startSession_utc).total_seconds() / 3600.0 ) )
             print("Start time (UTC): ", startTime_utc, " Stop time (UTC): ", stopTime_utc)
+            print("Session start time (UTC): ", startSession_utc, " Session stop time (UTC): ", stopSession_utc)
             stopSession_utc = startSession_utc + timedelta(hours=maxNumHoursSinceStartRun_influxQuery)
             stopSession_rome = stopSession_utc.astimezone(tz=None)  # Convert to local time zone
             print("Adjusted session stop time (UTC): ", stopSession_utc, " Adjusted session stop time (local): ", stopSession_rome)
+            print("%"* 80)
+            print("This might mean that the burnin was longer than %.1f hours or that there are no other session afterwards. You can fix this by increasing the maxNumHoursSinceStartRun_influxQuery parameter." % (maxNumHoursSinceStartRun_influxQuery) )
             print("%"* 80)
 
         ### For influxDB:
@@ -588,8 +593,14 @@ class POTATOPisaFormatter():
         moduleCarrierTemperatureGraph_IV_Influx    = self.getGraphFromInfluxDB(moduleCarrierTemperatureSensor%(moduleCarrierName), start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
         dewPointGraph_IV_Influx    = self.getGraphFromInfluxDB(dewPointSensor, start_time_TS=timeFromRoot_start_IV_utc, stop_time_TS=timeFromRoot_stop_IV_utc)
 
+        print(moduleLVCurrentGraph.GetX()[0], moduleLVCurrentGraph.GetX()[-1])
+        print(moduleName)
+        print(moduleLVCurrentGraph.GetY()[0], moduleLVCurrentGraph.GetY()[-1])
         lvCurrentHistoryGraph = theHistogrammer.makeMonitorLVCurrent  (moduleLVCurrentGraph.GetX(), moduleLVCurrentGraph.GetY(), module=moduleName)
-        print(moduleLVCurrentGraph.GetX()[0], moduleLVCurrentGraph.GetX()[-1], testTimeStart, testTimeStop)
+        print(f"Test time start: {datetime.fromtimestamp(testTimeStart)}, stop: {datetime.fromtimestamp(testTimeStop)}")
+        print(f"Graph time min: {datetime.fromtimestamp(moduleLVCurrentGraph.GetX()[0])}, max: {datetime.fromtimestamp(moduleLVCurrentGraph.GetX()[-1])}")
+        print(f"Session start UTC: {session_start_utc}, stop: {session_stop_utc}")
+        # print(moduleLVCurrentGraph.GetX()[0]-testTimeStart, moduleLVCurrentGraph.GetX()[-1]-testTimeStart, testTimeStart-testTimeStart, testTimeStop-testTimeStart, session_start_utc - testTimeStart, session_stop_utc - testTimeStart)
         lvCurrentGraph        = theHistogrammer.makeMonitorLVCurrent  (moduleLVCurrentGraph.GetX(), moduleLVCurrentGraph.GetY(), testTimeStart, testTimeStop, module=moduleName)
 
         theHistogrammer.makeMonitorLVVoltage  (moduleLVVoltageGraph.GetX(), moduleLVVoltageGraph.GetY(), module=moduleName)
@@ -819,3 +830,31 @@ class POTATOPisaFormatter():
         theHistogrammer.closeRootFile()
 #        powerSupplyFile.Close()
 #        burninFile.Close()
+
+if "__main__" == __name__:
+    ## POTATOFiles/PS_26_IPG-10014_2025-10-19_11h14m43s_+23C_PSquickTest_v6-19.root
+
+    ## Run potatoconverter (or formatter)
+    from POTATO_PisaFormatter import POTATOPisaFormatter as Formatter
+    print("#"*200)
+    # mergeTwoROOTfiles(resultsFile, monitorDQMFile, rootTrackerFileName)
+    # iv_csv_path = createIVScanCSVFile(runNumber, module_name, outDir)
+    theFormatter = Formatter("")
+    rootTrackerFileName = "POTATOFiles/PS_26_IPG-10014_2025-10-19_11h14m43s_+23C_PSquickTest_v6-19.root"
+    iv_csv_path = "POTATOFiles/HV0.9_PS_26_IPG-10014_after_encapsulation_20251019_103201_IVScan.csv"
+    print(f"Calling POTATO Pisa Formatter version with files {rootTrackerFileName}, {iv_csv_path}")
+    runNumber = "26"
+    opticalGroup = "0"
+    moduleBurninName = "PSquickTest_v6-19"
+    moduleCarrierName = "IPG-10014"
+    connectionMapFilePath = "connectionMaps/connection_map_PS_26_IPG-10014.csv"
+    session_timestamp = "2025-10-19T11:14:43"
+    next_session_timestamp = "2025-10-19T15:14:43"
+
+    print("#"*200)
+    print( next_session_timestamp)
+    print( session_timestamp)
+    theFormatter.do_burnin_format(rootTrackerFileName, runNumber, opticalGroup, moduleBurninName, moduleCarrierName, iv_csv_path, connectionMapFilePath, session_timestamp, next_session_timestamp)
+
+    pisaFormatter = POTATO_PisaFormatter()
+    pisaFormatter.run()
