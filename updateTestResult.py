@@ -18,7 +18,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2025-10-21"
+version = "2025-10-22"
 #version = "2025-04-29"
 
 skipInfluxDb= False
