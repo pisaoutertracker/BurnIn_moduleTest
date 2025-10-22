@@ -12,13 +12,13 @@ import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 # from webdavclient import WebDAVWrapper
-from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_read, hash_value_write ## to be updated
+from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_analysis_read #, hash_value_analysis_write ## to be updated
 
 verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2025-10-22d"
+version = "2025-10-22e"
 #version = "2025-04-29"
 
 skipInfluxDb= False
@@ -1404,16 +1404,26 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     boardToId = {v: k for k, v in run["runBoards"].items()}
     board_id = boardToId[board]
     module = getModuleFromDB(moduleName)
-    fName = run['runFile'].split("//")[-1].replace("/", "_")
+    # fName = run['runFile'].split("//")[-1].replace("/", "_")
+    fName = run['runFile'].split("//")[-1]
+    fDir = fName.split("/")[0]
+    cmd = f"mkdir -p /tmp/{fDir}"
+    print("Executing:", cmd)
+    os.system(cmd)
+    print("Run file:", fName)
     # if webdav_wrapper: 
     #     print("Downloading %s to %s"%(run['runFile'].split("//")[-1], "/tmp/%s"%fName))
     #     zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
     # else: zip_file_path = "/tmp/%s"%fName
     zip_file_path=cernbox_folder_run+"/"+run['runFile'].split("//")[-1]
-    print(f"Reading zip file {zip_file_path} from {cernbox_computer}.")
-    os.system(f"scp {cernbox_computer}:{zip_file_path} /tmp/{fName}")
-    zip_file_path = "/tmp/%s"%fName
-    print(f"Copied to local {zip_file_path}")
+    if os.path.exists(f"/tmp/{fName}"):
+        print(f"File /tmp/{fName} already exists, using it. Instead of copying from {cernbox_computer}:{zip_file_path}.")
+        zip_file_path = "/tmp/%s"%fName
+    else:
+        print(f"Reading zip file {zip_file_path} from {cernbox_computer}.")
+        os.system(f"scp {cernbox_computer}:{zip_file_path} /tmp/{fName}")
+        zip_file_path = "/tmp/%s"%fName
+        print(f"Copied to local {zip_file_path}")
 
 
     # Specify the directory where you want to extract the contents
@@ -1540,7 +1550,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #     download = "dummy"
     #     navigator = "dummy"
 
-    print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
+    print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_analysis_read,nfolder))
     print(f"Local folder: {cernbox_folder_analysis}/{nfolder}")
     if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
     download = f"https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/{nfolder}/results.zip"
