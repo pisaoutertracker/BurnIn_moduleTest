@@ -930,7 +930,7 @@ def getSlotBIFromModuleConnectionMap(connectionMapModule):
     for el in connectionMapModule.values():
         if "connections" in el:
             for conn in el["connections"]:
-                if "cable" in conn and conn["cable"].startswith("B"):
+                if "cable" in conn and conn["cable"].startswith("B") and conn["cable"][1].isdigit(): ## expect "B0" to "B8"
                     slotBI = int(conn["cable"].replace("B",""))
                     if verbose>1: print("Found slotBI %s for module in connection map"%(slotBI))
                     return slotBI
