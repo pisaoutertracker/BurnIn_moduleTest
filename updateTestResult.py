@@ -1,5 +1,6 @@
 cernbox_folder_analysis = "/home/thermal/cernbox_shared/Uploads/"
 cernbox_folder_run = "/home/thermal/cernbox_runshared/"
+cernbox_computer = "cmslabburnin"
 
 from datetime import datetime,timedelta
 
@@ -17,7 +18,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2025-10-15"
+version = "2025-10-21"
 #version = "2025-04-29"
 
 skipInfluxDb= False
@@ -1409,7 +1410,11 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #     zip_file_path = webdav_wrapper.download_file(remote_path=run['runFile'].split("//")[-1] , local_path="/tmp/%s"%fName) ## drop
     # else: zip_file_path = "/tmp/%s"%fName
     zip_file_path=cernbox_folder_run+"/"+run['runFile'].split("//")[-1]
-    print(f"Reading zip file from: {zip_file_path}")
+    print(f"Reading zip file {zip_file_path} from {cernbox_computer}.")
+    os.system(f"scp {cernbox_computer}:{zip_file_path} /tmp/{fName}")
+    zip_file_path = "/tmp/%s"%fName
+    print(f"Copied to local {zip_file_path}")
+
 
     # Specify the directory where you want to extract the contents
     extracted_dir = zip_file_path.split(".")[0]
@@ -1485,12 +1490,12 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     folder = "Module_%s_Run_%s_Result_%s"%(moduleName, runName, version)
     # nfolder = base+folder
     nfolder = base+folder
-    if verbose>1: print("mkDir %s"%nfolder)
+    if verbose>1: print(f"mkDir {tmpFolder}/{folder}")
 #     if webdav_website: 
 #         response = webdav_website.mkDir(nfolder)
 #         if verbose>2: print("mkDir response:", response, response.status_code, response.reason)
 # ##        print(webdav_website.list_files(nfolder))
-    command=f"mkdir -p {cernbox_folder_analysis}/{nfolder}" 
+    command=f"mkDir {tmpFolder}/{folder}" 
     os.system(command)
     print(command)
     fff = [f for f in fff if os.path.exists(f)]
@@ -1509,10 +1514,12 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     # if webdav_website: 
     #     newFile = webdav_website.write_file(tmpUpFolder+name+".zip", "%s/results.zip"%(nfolder))
     #     if verbose>0: print("Uploaded %s"%newFile)
-    newFile = "%s/results.zip"%(nfolder)
-    os.system(f"cp {tmpUpFolder}{name}.zip {cernbox_folder_analysis}/{newFile}")
-    if verbose>0: 
-        print(f"Copied to {cernbox_folder_analysis}/{newFile}")
+    cmd = f"mkdir -p {tmpFolder}/{folder} && cp {tmpUpFolder}{name}.zip {tmpFolder}/{folder}/results.zip"
+    print(cmd)
+    os.system(cmd)
+    cmd = f"scp -r {tmpFolder}/{folder} {cernbox_computer}:{cernbox_folder_analysis}/{nfolder}"
+    print(cmd)
+    os.system(cmd)
     
     if verbose>0: print("Plots:") 
     for p in plots:
@@ -1570,7 +1577,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
         raise Exception("appendAnalysisToModule failed of moduleTestAnalysisName %s."%folder)
 
     os.system("rm -rf /tmp/latest_ana")
-    os.system("mv %s /tmp/latest_ana"%tmpFolder)
+    os.system("cp -r %s /tmp/latest_ana"%tmpFolder)
 
 def printAllSensors(org="pisaoutertracker"):
     query = f'''
