@@ -598,15 +598,15 @@ def measure_and_upload(
             "data": {
                 "VOLTS": [m['Voltage'] for m in measurements_for_module],
                 "CURRNT_NAMP": [m['Current'] for m in measurements_for_module],
-                "TEMP_DEGC": [f"{m['Temperature']:.3f}" for m in measurements_for_module],
-                "RH_PRCNT": [f"{m['Relative Humidity']:.3f}" for m in measurements_for_module],
+                "TEMP_DEGC": [float(f"{m['Temperature']:.3f}") for m in measurements_for_module],
+                "RH_PRCNT": [float(f"{m['Relative Humidity']:.3f}") for m in measurements_for_module],
                 "TIME": [m['Timestamp'] for m in measurements_for_module]
             }
         }
         
         # Upload to local db
         response = requests.post(f"{API_URL}/iv_scans", json=document)
-        print(f"Upload for {mn} to local db: {response.status_code}")
+        print(f"Upload for {mn} to local db: {response.status_code} - {response.text}")
         
         if upload:
             print(f"Uploading {mn} to central database...")
