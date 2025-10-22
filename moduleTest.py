@@ -36,6 +36,7 @@ hash_value_location = "~/private/webdav.sct" #echo "xxxxxxxxxxxxxxx|xxxxxxxxxxxx
 webdav_url = "https://cernbox.cern.ch/remote.php/dav/public-files"
 # from webdavclient import WebDAVWrapper
 hash_value_read, hash_value_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[0].split("|")
+hash_value_analysis_read, hash_value_analysis_write = open(os.path.expanduser(hash_value_location)).read()[:-1].split("\n")[0].split("|")
 # webdav_wrapper = WebDAVWrapper(webdav_url, hash_value_read, hash_value_write)
 
 if __name__ == '__main__':
