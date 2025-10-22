@@ -1,5 +1,6 @@
 #!/bin/env python3
 cernbox_folder_run = "/home/thermal/cernbox_runshared/"
+cernbox_computer = "cmslabburnin"
 
 ### Default values 
 verbose = 0
@@ -214,8 +215,8 @@ if __name__ == '__main__':
     checkAndFixRunNumbersDat(target_dir=thermalHome) ### check if the RunNumbers.dat is in the right place. This file must be binded in podman!
 
 
-    if args.useExistingXmlFile:
-        print("As you are using an existing xml file, I will skip the check between the module and the database, and the installation of the firmware.")
+    if args.useExistingXmlFile or args.useExistingModuleTest:
+        print("As you are using an existing xml file or uploading an existing test, I will skip the check between the module and the database, and the installation of the firmware.")
     else:
         ###########################################################
         #################### PRELIMINARY CHECKS ####################
@@ -514,9 +515,9 @@ if __name__ == '__main__':
             #shutil.copytree("Results/"+testID, "Results/Run_0", dirs_exist_ok=True)
             #testID = "Run_0"
 
-        ## make a folder in CernBox
-        if verbose>10: print(f"Creating folder {cernbox_folder_run}/{testID}")
-        os.makedirs(f"{cernbox_folder_run}/{testID}", exist_ok=True)
+        # ## make a folder in CernBox
+        if verbose>10: print(f"Creating folder /tmp/{testID}")
+        os.makedirs(f"/tmp/{testID}", exist_ok=True)
         # if verbose>10: print("Creating folder %s"%testID)
         # webdav_wrapper.mkDir("/%s"%testID)
 
@@ -583,9 +584,14 @@ if __name__ == '__main__':
         if verbose>20: print("shutil.make_archive(zipFile, 'zip', resultFolder)", zipFile, resultFolder)
         shutil.make_archive(zipFile, 'zip', resultFolder)
         if verbose>20: print("Done")
-        os.system(f"cp {zipFile}.zip {cernbox_folder_run}/{testID}/output.zip")
-        if verbose>0: print(f"Copied {zipFile}.zip to {cernbox_folder_run}/{testID}/output.zip")
+        os.system(f"cp {zipFile}.zip /tmp/{testID}/output.zip")
+        if verbose>0: print(f"Copied {zipFile}.zip to /tmp/{testID}/output.zip")
         newFile = f"/{testID}/output.zip"
+
+        cmd = f"scp -r /tmp/{testID} {cernbox_computer}:{cernbox_folder_run}/{testID}"
+        print("Uploading zip file to CERN box with command:", cmd)
+        os.system(cmd)
+
         # newFile = webdav_wrapper.write_file(zipFile+".zip", "/%s/output.zip"%(testID))
         # if verbose>0: print("Uploaded %s"%newFile)
         
