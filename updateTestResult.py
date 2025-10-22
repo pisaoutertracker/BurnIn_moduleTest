@@ -1543,9 +1543,9 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_read,nfolder))
     print(f"Local folder: {cernbox_folder_analysis}/{nfolder}")
     if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
-    download = "https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/%s"%(newFile)
+    download = f"https://cmstkita.web.cern.ch/Pisa/TBPS/Uploads/{nfolder}/results.zip"
     if verbose>1: print("Download link:", download)
-    navigator = "https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/%s/"%(newFile)
+    navigator = f"https://cmstkita.web.cern.ch/Pisa/TBPS/navigator.php/Uploads/{nfolder}/results.zip/"
     print("##################################################################################################################")
     print("### Link to the new webpage:", navigator)
     print("##################################################################################################################")
