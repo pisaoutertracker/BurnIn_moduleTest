@@ -477,8 +477,8 @@ class IVCurveMeasurement:
             # Write measurement data
             f.write("VOLTS, CURRNT_NAMP, TEMP_DEGC, RH_PRCNT, TIME\n")
             for point in self.measurements:
-                f.write(f"{point['Voltage']},{point['Current']},{point['Temperature']:.3f},"
-                       f"{point['Relative Humidity']:.3f},{point['Timestamp']}\n")
+                f.write(f"{point['Voltage']},{point['Current']},{round(point['Temperature'],3)},"
+                       f"{round(point['Relative Humidity'],3)},{point['Timestamp']}\n")
         
         return target_file
 
