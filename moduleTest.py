@@ -490,11 +490,12 @@ if __name__ == '__main__':
             message = "The modules declared in --modules (%s) do not correspond to the module found in --opticalGroups (%s) of --board (%s). See above for more details."%(str(modules), str(opticalGroups),str(board))
             print(message)
             if not args.skipModuleCheck: raise Exception(message) 
-        if readOnlyID:
+        if commandOption in commandToSkipAnalysis:
             print()
-            print("readOnlyID finished successfully.")
+            print(f"Skipping updateTestResult for {commandOption} test. (commandToSkipAnalysis={commandToSkipAnalysis})")
+            print(f"{commandOption} test finished successfully.")
             print()
-            exit(0) ##if you just want the hardware module names, stop here.
+            exit(0) ##if you just want to run a test without analysis, stop here.
         
         ### convert IDs of modules used in the test to ModuleID and to MongoID ()
         board_opticals = list(IDs.keys())
@@ -686,10 +687,7 @@ if __name__ == '__main__':
             if not args.skipUploadResults and moduleTestName[0]!="-": ## skip analysis if skipUploadResults or test failed (moduleName = -1)
                 print("Running updateTestResult")
                 print("++++++++++++++++++  Run updateTestResult on %s ++++++++++++++++++"%moduleTestName)
-                if commandOption in commandToSkipAnalysis:
-                    print(f"Skipping updateTestResult for {commandOption} test. (commandToSkipAnalysis={commandToSkipAnalysis})")
-                else:  
-                    updateTestResult(moduleTestName, tempSensor=args.tempSensor)
+                updateTestResult(moduleTestName, tempSensor=args.tempSensor)
                 #print("################################################")
 
 
