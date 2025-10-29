@@ -1,8 +1,8 @@
 import os
 import subprocess
-from moduleTest import verbose, podmanCommand, prefixCommand, lastPh2ACFversion
+from config import Config
 
-#verbose = 1000
+verbose = 1
 ### Launch a command from shell
 
 def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, executable='/bin/bash', showInPrompt=True):
@@ -10,7 +10,7 @@ def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PI
         command = command + " 2>&1 | tee /dev/tty"
     print("Launching command: %s"%command)
     try:
-        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
+        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell, timeout=7200)
     except subprocess.CalledProcessError as e:
         print(e.output)
         print(type(e), type(e.output))
@@ -72,7 +72,7 @@ def getGitTagFromHash(gitHash):
     print()
     return gitHash
 
-def copyXml(ph2ACFversion=lastPh2ACFversion):
+def copyXml(ph2ACFversion=Config.LAST_PH2ACF_VERSION):
     if verbose>0: print("Calling copyXml()")
     if ph2ACFversion=="local":
         print("Copying settings/PS_Module_v2p1.xml locally.")
@@ -80,9 +80,9 @@ def copyXml(ph2ACFversion=lastPh2ACFversion):
         output = runCommand(command)
     else:
         print("Copying settings/PS_Module_v2p1.xml (from Docker) locally.")
-        command = "%s && cp settings/PS_Module_v2p1.xml ."%(prefixCommand)
-        print(podmanCommand)
-        output = runCommand(podmanCommand%(ph2ACFversion,command))
+        command = "%s && cp settings/PS_Module_v2p1.xml ."%(Config.PREFIX_COMMAND)
+        print(Config.PODMAN_COMMAND)
+        output = runCommand(Config.PODMAN_COMMAND%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
         print()
@@ -108,7 +108,7 @@ def copyXml(ph2ACFversion=lastPh2ACFversion):
 #         raise Exception("Generic Error running fpgaconfig. Check the error above. Command: %s"%output.args)
 #     if verbose>1: print(output)
 
-def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
+def fpgaconfigNew(options, ph2ACFversion=Config.LAST_PH2ACF_VERSION):
     if verbose>0: print("Calling fpgaconfigNew()", options)
     if ph2ACFversion=="local":
         command = "fpgaconfig %s "%(options)
@@ -117,7 +117,7 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
 
         ## Drop all -v options of Docker except the one used to link /etc/hosts
         podmanCommandMinimal = ""
-        for word in podmanCommand.split("-"):
+        for word in Config.PODMAN_COMMAND.split("-"):
             ## Remove all volume bindings except for /etc/hosts
             if word.startswith("v"):
                 if "/etc/hosts" in word:
@@ -131,7 +131,7 @@ def fpgaconfigNew(options, ph2ACFversion=lastPh2ACFversion):
 
         podmanCommandMinimal = podmanCommandMinimal[1:] # remove initial -
         import os
-        command = "%s && fpgaconfig %s"%(prefixCommand.replace(os.getcwd(), "/home/cmsTkUser/Ph2_ACF/"), options)
+        command = "%s && fpgaconfig %s"%(Config.PREFIX_COMMAND.replace(os.getcwd(), "/home/cmsTkUser/Ph2_ACF/"), options)
         output = runCommand(podmanCommandMinimal%(ph2ACFversion,command))
     error = output.stderr.decode()
     if error:
@@ -177,7 +177,7 @@ def getDateTimeAndTestID():
 ### Launch ot_module_test, given an xml file.
 # if useExistingModuleTest, skip the test and read the existing log file
 
-def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=lastPh2ACFversion, commandOption="readOnlyID", logFolder="logs"):
+def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=Config.LAST_PH2ACF_VERSION, commandOption="readOnlyID", logFolder="logs"):
     global error 
     if verbose>0: print("Calling runModuleTest()", xmlFile, useExistingModuleTest, ph2ACFversion, logFolder, commandOption)
     date, tmp_testID = getDateTimeAndTestID()
@@ -191,9 +191,9 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
             if commandOption=="help": command = "runCalibration --help"
             output = runCommand(command)
         else:
-            command = "%s && runCalibration -b -f %s -c %s 2>&1 | tee %s"%(prefixCommand, xmlFile, commandOption, logFile)
-            if commandOption=="help": command = "%s && runCalibration --help"%(prefixCommand)
-            output = runCommand(podmanCommand%(ph2ACFversion,command))
+            command = "%s && runCalibration -b -f %s -c %s 2>&1 | tee %s"%(Config.PREFIX_COMMAND, xmlFile, commandOption, logFile)
+            if commandOption=="help": command = "%s && runCalibration --help"%(Config.PREFIX_COMMAND)
+            output = runCommand(Config.PODMAN_COMMAND%(ph2ACFversion,command))
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,tmp_testID,logFile)
     else:
         log = "logs/%s.log"%useExistingModuleTest

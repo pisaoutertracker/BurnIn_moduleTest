@@ -7,12 +7,17 @@ from datetime import datetime,timedelta
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
 import os
+from config import Config
 from databaseTools import getTestFromDB, getModuleTestFromDB, getRunFromDB, getModuleFromDB, makeModuleNameMapFromDB
 import zipfile
 from tools import getNoisePerChip, getIDsFromROOT, getResultPerModule
 #from makeXml import readXmlConfig
 # from webdavclient import WebDAVWrapper
-from moduleTest import verbose,webdav_url, xmlPyConfigFile, hash_value_analysis_read #, hash_value_analysis_write ## to be updated
+
+webdav_url = Config.WEBDAV_URL
+xmlPyConfigFile = Config.XML_PY_CONFIG_FILE
+hash_location = os.path.expanduser(Config.HASH_VALUE_LOCATION)
+hash_value_analysis_read, hash_value_analysis_write = open(hash_location).read().strip().split("\n")[1].split("|")
 
 verbose = 100000
 
