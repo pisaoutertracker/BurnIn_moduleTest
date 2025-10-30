@@ -10,7 +10,7 @@ def runCommand(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PI
         command = command + " 2>&1 | tee /dev/tty"
     print("Launching command: %s"%command)
     try:
-        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell)
+        return subprocess.run(command, check=check, stdout=stdout, stderr=stderr, shell=shell, timeout=7200)
     except subprocess.CalledProcessError as e:
         print(e.output)
         print(type(e), type(e.output))
