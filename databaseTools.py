@@ -1013,9 +1013,9 @@ def printSingleModuleTestAnalysesOfSession(sessionName):
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
-    session = "session789"
-    # print("printSingleModuleTestAnalysesOfSession(%s):"%session)
-    # printSingleModuleTestAnalysesOfSession(session)
+    session = "session812"
+    print("printSingleModuleTestAnalysesOfSession(%s):"%session)
+    printSingleModuleTestAnalysesOfSession(session)
     print("Testing databaseTools.py")
     module = "PS_26_IBA-10003"
     print(f"getLpGBTversionFromDB({module}):", getLpGBTversionFromDB(module))
