@@ -1,4 +1,4 @@
-from moduleTest import verbose, ip, port, lpGBTids
+from config import Config
 #verbose = 100
 
 from pprint import pprint
@@ -49,7 +49,7 @@ def make_get_request(function_name, api_url, entity_type, entity_id=None):
     """
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose > 1:
+        if Config.VERBOSE > 1:
             print(f"{entity_type.capitalize()} read successfully")
         return evalMod(response.content.decode().replace("null", "[]"))
     else:
@@ -77,7 +77,7 @@ def make_post_request(function_name, api_url, json_data, entity_type, success_co
     """
     response = requests.post(api_url, json=json_data)
     if response.status_code == success_code:
-        if verbose > 1:
+        if Config.VERBOSE > 1:
             print(f"{entity_type.capitalize()} created successfully")
     else:
         error_desc = f"Failed to create {entity_type}"
@@ -90,24 +90,24 @@ def make_post_request(function_name, api_url, json_data, entity_type, success_co
 ## (obsolete) ##
 
 def uploadTestToDB(testID, testResult = {}):
-    if verbose>0: print("Calling uploadTestToDB()", testID)
-    if verbose>2: pprint(testResult)
+    if Config.VERBOSE>0: print("Calling uploadTestToDB()", testID)
+    if Config.VERBOSE>2: pprint(testResult)
    
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/tests"%(ip, port)
+    api_url = "http://%s:%d/tests"%(Config.IP, Config.PORT)
     
     # Send a PUT request
     response = requests.post(api_url, json=testResult)
     
     # Check the response
     if response.status_code == 201:
-        if verbose>1: print("Test %s created successfully"%testID)
+        if Config.VERBOSE>1: print("Test %s created successfully"%testID)
     else:
         print()
         print(f"ERROR [uploadTestToDB]: Failed to create test {testID}. Status code:", response.status_code)
         print()
         print("You can check if the test exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/tests/{testID}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/tests/{testID}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -115,30 +115,30 @@ def uploadTestToDB(testID, testResult = {}):
 ### upload the new Run to the "module_test" and "test_run" DB 
 
 def uploadRunToDB(newRun = {}):
-    if verbose>0: print("Calling uploadRunToDB()")
+    if Config.VERBOSE>0: print("Calling uploadRunToDB()")
     if len(newRun["runDate"].split("-")[0])==2:
         print("WARNING: runDate is in the wrong format. It should be YYYY-MM-DD HH:MM:SS. Fixing it.")
         print ("Before:", newRun["runDate"])
         newRun["runDate"] = "20" + newRun["runDate"]
         print ("After:", newRun["runDate"])
-    if verbose>2: pprint(newRun)
+    if Config.VERBOSE>2: pprint(newRun)
    
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/addRun"%(ip, port)
+    api_url = "http://%s:%d/addRun"%(Config.IP, Config.PORT)
     
     # Send a PUT request
     response = requests.post(api_url, json=newRun)
-    if verbose>0: print(response)
+    if Config.VERBOSE>0: print(response)
     
     # Check the response
     if response.status_code == 201:
-        if verbose>1: print("Run uploaded successfully")
+        if Config.VERBOSE>1: print("Run uploaded successfully")
     else:
         print()
         print(f"ERROR [uploadRunToDB]: Failed to upload run. Status code:", response.status_code)
         print()
         print("You can check if the run endpoint exists using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/addRun'")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/addRun'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -147,7 +147,7 @@ def uploadRunToDB(newRun = {}):
         print(api_url)
         print(newRun)
     
-    if verbose>1:
+    if Config.VERBOSE>1:
         print(response.json()['message'])
     
     print(response.json())
@@ -157,71 +157,71 @@ def uploadRunToDB(newRun = {}):
 ### read the test result from DB
 
 def getTestFromDB(testID):
-    if verbose>0: print("Calling getTestFromDB()", testID)
-    api_url = "http://%s:%d/tests/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getTestFromDB()", testID)
+    api_url = "http://%s:%d/tests/%s"%(Config.IP, Config.PORT, testID)
     result = make_get_request("getTestFromDB", api_url, "test", testID)
     return result if result is not None else evalMod("{}")
 
 ### read the list of sessions
 
 def getListOfSessionsFromDB():
-    if verbose>0: print("Calling getListOfSessionsFromDB()")
-    api_url = "http://%s:%d/sessions"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfSessionsFromDB()")
+    api_url = "http://%s:%d/sessions"%(Config.IP, Config.PORT)
     result = make_get_request("getListOfSessionsFromDB", api_url, "sessions list")
     return result if result is not None else []
 
 ### read the list of modules
 
 def getListOfModulesFromDB():
-    if verbose>0: print("Calling getListOfModulesFromDB()")
-    api_url = "http://%s:%d/modules"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfModulesFromDB()")
+    api_url = "http://%s:%d/modules"%(Config.IP, Config.PORT)
     result = make_get_request("getListOfModulesFromDB", api_url, "modules list")
     return result if result is not None else []
 
 ### read the test modules analysis
 
 def getListOfAnalysisFromDB():
-    if verbose>0: print("Calling getListOfAnalysisFromDB()")
-    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfAnalysisFromDB()")
+    api_url = "http://%s:%d/module_test_analysis"%(Config.IP, Config.PORT)
     result = make_get_request("getListOfAnalysisFromDB", api_url, "analysis list")
     return result if result is not None else []
 
 ### read the module test result from DB
 
 def getSessionFromDB(testID):
-    if verbose>0: print("Calling getSessionFromDB()", testID)
-    api_url = "http://%s:%d/sessions/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getSessionFromDB()", testID)
+    api_url = "http://%s:%d/sessions/%s"%(Config.IP, Config.PORT, testID)
     result = make_get_request("getSessionFromDB", api_url, "session", testID)
     return result if result is not None else evalMod("{}")
 
 ### read the module test result from DB
 
 def getModuleTestFromDB(testID):
-    if verbose>0: print("Calling getModuleTestFromDB()", testID)
-    api_url = "http://%s:%d/module_test/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getModuleTestFromDB()", testID)
+    api_url = "http://%s:%d/module_test/%s"%(Config.IP, Config.PORT, testID)
     result = make_get_request("getModuleTestFromDB", api_url, "module test", testID)
     return result if result is not None else evalMod("{}")
 
 ### get run from DB
 
 def getRunFromDB(testID):
-    if verbose>0: print("Calling getRunFromDB()", testID)
-    api_url = "http://%s:%d/test_run/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getRunFromDB()", testID)
+    api_url = "http://%s:%d/test_run/%s"%(Config.IP, Config.PORT, testID)
     result = make_get_request("getRunFromDB", api_url, "run", testID)
     return result if result is not None else evalMod("{}")
 
 ### read a module from DB, given the moduleName
 
 def getModuleFromDB(moduleName=1234):
-    if verbose>0: print("Calling getModuleFromDB()", moduleName)
-    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    if Config.VERBOSE>0: print("Calling getModuleFromDB()", moduleName)
+    api_url = "http://%s:%d/modules/%s"%(Config.IP, Config.PORT, moduleName)
     result = make_get_request("getModuleFromDB", api_url, "module", moduleName)
     return result if result is not None else evalMod("{}")
 
 ### read the fiber connections of slot X
 
 def getFiberLink(slot):
-    if verbose>0: print("Calling getFiberLink()", slot)
+    if Config.VERBOSE>0: print("Calling getFiberLink()", slot)
     out = getConnectionMap(slot)
     if out is None:
         return None, None
@@ -247,8 +247,8 @@ def getFiberLink(slot):
 ### read the fiber connections of slot X
 
 def getConnectionMap(moduleName):
-    if verbose>0: print("Calling getConnectionMap()", moduleName)
-    api_url = "http://%s:%d/snapshot"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getConnectionMap()", moduleName)
+    api_url = "http://%s:%d/snapshot"%(Config.IP, Config.PORT)
     
     snapshot_data = {
         "cable": moduleName,
@@ -257,7 +257,7 @@ def getConnectionMap(moduleName):
     response = requests.post(api_url, json=snapshot_data)
     
     if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
+        if Config.VERBOSE>1: print("Module read successfully")
         out = evalMod(response.content.decode())
         return out
     else:
@@ -266,7 +266,7 @@ def getConnectionMap(moduleName):
         print()
         print("Check if module %s exists in the database: http://pccmslab1.pi.infn.it:5000/static/connections.html "%moduleName)
         print("You can check if the module exists in the database using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{moduleName}\", \"side\":\"crateSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{moduleName}\", \"side\":\"crateSide\"}}' 'http://{Config.IP}:{Config.PORT}/snapshot'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -282,8 +282,8 @@ def saveMapToFile(json, filename):
 ### read the expected module connected of slot board X optical group Y
 
 def getModuleConnectedToFC7(fc7, og):
-    if verbose>0: print("Calling getModuleConnectedToFC7()",fc7, og)
-    api_url = "http://%s:%d/snapshot"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getModuleConnectedToFC7()",fc7, og)
+    api_url = "http://%s:%d/snapshot"%(Config.IP, Config.PORT)
     
     snapshot_data = {
         "cable": fc7,
@@ -292,13 +292,13 @@ def getModuleConnectedToFC7(fc7, og):
     response = requests.post(api_url, json=snapshot_data)
     
     if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
+        if Config.VERBOSE>1: print("Module read successfully")
     else:
         print()
         print(f"ERROR [getModuleConnectedToFC7]: Failed to get module connected to {fc7} {og}. Status code:", response.status_code)
         print()
         print("You can check if the FC7 exists in the database using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{Config.IP}:{Config.PORT}/snapshot'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -326,7 +326,7 @@ def getModuleConnectedToFC7(fc7, og):
 
 ### check from DB if the module is 5G or 10G, looking at module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_BANDWIDTH"]
 def getModuleBandwidthFromDB(moduleName):
-    if verbose>0: print("Calling getModuleBandwidthFromDB()", moduleName)
+    if Config.VERBOSE>0: print("Calling getModuleBandwidthFromDB()", moduleName)
     module = getModuleFromDB(moduleName)
     if "children" in module and "PS Read-out Hybrid" in module["children"] and "details" in module["children"]["PS Read-out Hybrid"] and "ALPGBT_BANDWIDTH" in module["children"]["PS Read-out Hybrid"]["details"]:
         return module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_BANDWIDTH"]
@@ -344,17 +344,17 @@ def getModuleBandwidthFromDB(moduleName):
 ### read the list of sessions
 
 def getListOfSessionsFromDB():
-    if verbose>0: print("Calling getListOfSessionsFromDB()")
-    api_url = "http://%s:%d/sessions"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfSessionsFromDB()")
+    api_url = "http://%s:%d/sessions"%(Config.IP, Config.PORT)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Session read successfully")
+        if Config.VERBOSE>1: print("Session read successfully")
     else:
         print()
         print(f"ERROR [getListOfSessionsFromDB]: Failed to get list of sessions. Status code:", response.status_code)
         print()
         print("You can check if the sessions endpoint exists using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/sessions'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -363,17 +363,17 @@ def getListOfSessionsFromDB():
 ### read the list of modules
 
 def getListOfModulesFromDB():
-    if verbose>0: print("Calling getListOfModulesFromDB()")
-    api_url = "http://%s:%d/modules"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfModulesFromDB()")
+    api_url = "http://%s:%d/modules"%(Config.IP, Config.PORT)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Session read successfully")
+        if Config.VERBOSE>1: print("Session read successfully")
     else:
         print()
         print(f"ERROR [getListOfModulesFromDB]: Failed to get list of modules. Status code:", response.status_code)
         print()
         print("You can check if the modules endpoint exists using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/modules'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -383,17 +383,17 @@ def getListOfModulesFromDB():
 ### read the test modules analysis
 
 def getListOfAnalysisFromDB():
-    if verbose>0: print("Calling getListOfAnalysisFromDB()")
-    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getListOfAnalysisFromDB()")
+    api_url = "http://%s:%d/module_test_analysis"%(Config.IP, Config.PORT)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Session read successfully")
+        if Config.VERBOSE>1: print("Session read successfully")
     else:
         print()
         print(f"ERROR [getListOfAnalysisFromDB]: Failed to get list of analysis. Status code:", response.status_code)
         print()
         print("You can check if the analysis endpoint exists using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test_analysis'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/module_test_analysis'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -402,17 +402,17 @@ def getListOfAnalysisFromDB():
 ### read the module test result from DB
 
 def getSessionFromDB(testID):
-    if verbose>0: print("Calling getSessionFromDB()", testID)
-    api_url = "http://%s:%d/sessions/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getSessionFromDB()", testID)
+    api_url = "http://%s:%d/sessions/%s"%(Config.IP, Config.PORT, testID)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Session read successfully")
+        if Config.VERBOSE>1: print("Session read successfully")
     else:
         print()
         print(f"ERROR [getSessionFromDB]: Failed to get session {testID}. Status code:", response.status_code)
         print()
         print("You can check if the session exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions/{testID}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/sessions/{testID}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -421,17 +421,17 @@ def getSessionFromDB(testID):
 ### read the module test result from DB
 
 def getModuleTestFromDB(testID):
-    if verbose>0: print("Calling getModuleTestFromDB()", testID)
-    api_url = "http://%s:%d/module_test/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getModuleTestFromDB()", testID)
+    api_url = "http://%s:%d/module_test/%s"%(Config.IP, Config.PORT, testID)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Module test read successfully")
+        if Config.VERBOSE>1: print("Module test read successfully")
     else:
         print()
         print(f"ERROR [getModuleTestFromDB]: Failed to get module test {testID}. Status code:", response.status_code)
         print()
         print("You can check if the module test exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test/{testID}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/module_test/{testID}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -440,17 +440,17 @@ def getModuleTestFromDB(testID):
 ### get run from DB
 
 def getRunFromDB(testID):
-    if verbose>0: print("Calling getRunFromDB()", testID)
-    api_url = "http://%s:%d/test_run/%s"%(ip, port, testID)
+    if Config.VERBOSE>0: print("Calling getRunFromDB()", testID)
+    api_url = "http://%s:%d/test_run/%s"%(Config.IP, Config.PORT, testID)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
+        if Config.VERBOSE>1: print("Module read successfully")
     else:
         print()
         print(f"ERROR [getRunFromDB]: Failed to get run {testID}. Status code:", response.status_code)
         print()
         print("You can check if the run exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/test_run/{testID}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/test_run/{testID}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -459,16 +459,16 @@ def getRunFromDB(testID):
 ### read a module from DB, given the moduleName
 
 def getIVscansOfModule(moduleName=1234):
-    if verbose>0: print("Calling getIVscansOfModule()", moduleName)
-    api_url = "http://%s:%d/iv_scans/%s"%(ip, port, moduleName)
+    if Config.VERBOSE>0: print("Calling getIVscansOfModule()", moduleName)
+    api_url = "http://%s:%d/iv_scans/%s"%(Config.IP, Config.PORT, moduleName)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("IV scan read successfully")
+        if Config.VERBOSE>1: print("IV scan read successfully")
     else:
         print()
         print(f"ERROR [getIVscansOfModule]: Failed to read IV scans for module {moduleName}. Status code:", response.status_code)
         print("You can check if the module exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/modules/{moduleName}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -478,61 +478,61 @@ def getIVscansOfModule(moduleName=1234):
 
 def addTestToModuleDB(updatedTestList, moduleName):
     if not updatedTestList or len(updatedTestList)<1: raise Exception("updatedTestList is empty. " + str(updatedTestList))
-    if verbose>0: print("Calling addTestToModuleDB()", updatedTestList, moduleName)
-    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    if Config.VERBOSE>0: print("Calling addTestToModuleDB()", updatedTestList, moduleName)
+    api_url = "http://%s:%d/modules/%s"%(Config.IP, Config.PORT, moduleName)
     updated_module = { "tests": updatedTestList }
     response = requests.put(api_url, json=updated_module)
     if response.status_code == 200:
-        if verbose>1: print("Module updated successfully")
+        if Config.VERBOSE>1: print("Module updated successfully")
     else:
         print()
         print(f"ERROR [addTestToModuleDB]: Failed to update module {moduleName}. Status code:", response.status_code)
         print()
         print("You can check if the module exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/modules/{moduleName}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
 
 def createAnalysis(json):
-    if verbose>0: print("Calling createAnalysis()")
-    api_url = "http://%s:%d/module_test_analysis"%(ip, port)
+    if Config.VERBOSE>0: print("Calling createAnalysis()")
+    api_url = "http://%s:%d/module_test_analysis"%(Config.IP, Config.PORT)
 #    json = {'moduleTestAnalysisName': analysisName}
     response = requests.post(api_url, json=json)
     print(response)
     print(response.content.decode())
     print(response.status_code)
     if response.status_code == 201:
-        if verbose>1: print("Single module test analysis added successfully")
+        if Config.VERBOSE>1: print("Single module test analysis added successfully")
     else:
         print()
         print(f"ERROR [createAnalysis]: Failed to create analysis. Status code:", response.status_code)
         print()
         print("You can check if the analysis endpoint exists using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/module_test_analysis'")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/module_test_analysis'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
     return response.status_code
 
 def appendAnalysisToModule(analysisName):
-    if verbose>0: print("Calling appendAnalysisToModule()", analysisName)
-    api_url = "http://%s:%d/addAnalysis"%(ip, port)
+    if Config.VERBOSE>0: print("Calling appendAnalysisToModule()", analysisName)
+    api_url = "http://%s:%d/addAnalysis"%(Config.IP, Config.PORT)
     json = {'moduleTestAnalysisName': analysisName}
     response = requests.get(api_url, params=json)
-    if verbose>4: 
+    if Config.VERBOSE>4: 
         print("Calling request.get(%s, %s)"%(api_url, json))
         print(response)
         print(response.content.decode())
         print(response.status_code)
     if response.status_code == 200:
-        if verbose>1: print("Analysis appended to existing module successfully")
+        if Config.VERBOSE>1: print("Analysis appended to existing module successfully")
     else:
         print()
         print(f"ERROR [appendAnalysisToModule]: Failed to append analysis {analysisName}. Status code:", response.status_code)
         print()
         print("You can check if the analysis endpoint exists using:")
-        print(f"curl -X GET 'http://{ip}:{port}/addAnalysis?moduleTestAnalysisName={analysisName}'")
+        print(f"curl -X GET 'http://{Config.IP}:{Config.PORT}/addAnalysis?moduleTestAnalysisName={analysisName}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -584,7 +584,7 @@ def appendAnalysisToModule(analysisName):
 
 def createSession(message, moduleList):
     from datetime import datetime
-    if verbose>0: print("Calling createSession()")
+    if Config.VERBOSE>0: print("Calling createSession()")
     splitted = message.split("|")
     if len(splitted)<2:
         raise Exception("Error: Message should have at least two fields (author|message)separated by |. You used -m %s"%message)
@@ -598,19 +598,19 @@ def createSession(message, moduleList):
         "modulesList": moduleList,
     }
     #create new session in DB
-    api_url = "http://%s:%d/sessions"%(ip, port)
+    api_url = "http://%s:%d/sessions"%(Config.IP, Config.PORT)
     response = requests.post(api_url, json=sessionJson)
     print(response)
     print(response.content.decode())
     print(response.status_code)
     if response.status_code == 201:
-        if verbose>1: print("Session added successfully")
+        if Config.VERBOSE>1: print("Session added successfully")
     else:
         print()
         print(f"ERROR [createSession]: Failed to create session. Status code:", response.status_code)
         print()
         print("You can check if the session endpoint exists using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/sessions'")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/sessions'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -642,28 +642,28 @@ def createSession(message, moduleList):
 #}
 
 #def addTestToModuleDBNew():
-#    if verbose>0: print("Calling addTestToModuleDBNew()")
-#    api_url = "http://%s:%d/addTest"%(ip, port)
+#    if Config.VERBOSE>0: print("Calling addTestToModuleDBNew()")
+#    api_url = "http://%s:%d/addTest"%(Config.IP, Config.PORT)
 #    response = requests.put(api_url, json=new_test)
 #    if response.status_code == 201:
-#        if verbose>1: print("Module added successfully")
+#        if Config.VERBOSE>1: print("Module added successfully")
 #    else:
 #        print("Failed to add the module. Status code:", response.status_code)
 
 ### read a module from DB, given the moduleName
 
 def getModuleFromDB(moduleName=1234):
-    if verbose>0: print("Calling getModuleFromDB()", moduleName)
-    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    if Config.VERBOSE>0: print("Calling getModuleFromDB()", moduleName)
+    api_url = "http://%s:%d/modules/%s"%(Config.IP, Config.PORT, moduleName)
     response = requests.get(api_url)
     if response.status_code == 200:
-        if verbose>1: print("Module read successfully")
+        if Config.VERBOSE>1: print("Module read successfully")
     else:
         print()
         print(f"ERROR [getModuleFromDB]: Failed to get module {moduleName}. Status code:", response.status_code)
         print()
         print("You can check if the module exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{ip}:{port}/modules/{moduleName}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/modules/{moduleName}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -673,8 +673,8 @@ def getModuleFromDB(moduleName=1234):
 # -1 = missing module (module didn't work during the test)
 
 def makeModuleNameMapFromDB():
-    if verbose>0: print("Calling makeModuleNameMapFromDB()")
-    api_url = "http://%s:%d/modules"%(ip, port)
+    if Config.VERBOSE>0: print("Calling makeModuleNameMapFromDB()")
+    api_url = "http://%s:%d/modules"%(Config.IP, Config.PORT)
     response = requests.get(api_url)
     modules = evalMod(response.content.decode().replace("null","[]"))
 #    if len(modules)==0:
@@ -694,7 +694,7 @@ def makeModuleNameMapFromDB():
             print('WARNING: Missing module["children"]["lpGBT"]["CHILD_SERIAL_NUMBER"] (ie. hardwareID) in module %s'%module["moduleName"])
     
     ### hard-code some modules, waiting to have these numbers in the database
-    for i, lpGBTid in enumerate(lpGBTids):
+    for i, lpGBTid in enumerate(Config.LPGBT_IDS):
         try:
             if not lpGBTid in hwToModuleName: hwToModuleName[lpGBTid] = modules[i]["moduleName"]
             if not lpGBTid in hwToMongoID: hwToMongoID[lpGBTid] = modules[i]["_id"]
@@ -710,10 +710,10 @@ def makeModuleNameMapFromDB():
 
 ### This code allow you to test this code using "python3 databaseTools.py"
 def addNewModule(moduleName, id_):
-    if verbose>0: print("addNewModule(%s, %s)"%(moduleName, id_))
+    if Config.VERBOSE>0: print("addNewModule(%s, %s)"%(moduleName, id_))
    
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/modules"%(ip, port)
+    api_url = "http://%s:%d/modules"%(Config.IP, Config.PORT)
     
     # Send a PUT request
     json = {
@@ -729,18 +729,18 @@ def addNewModule(moduleName, id_):
     }
 
     response = requests.post(api_url, json=json)
-    if verbose>1: print(response)
+    if Config.VERBOSE>1: print(response)
     print(response.json())
     
     # Check the response
     if response.status_code == 201:
-        if verbose>1: print("Module %s uploaded successfully (hwId=%d)"%(moduleName, id_))
+        if Config.VERBOSE>1: print("Module %s uploaded successfully (hwId=%d)"%(moduleName, id_))
     else:
         print()
         print(f"ERROR [addNewModule]: Failed to add new module {moduleName}. Status code:", response.status_code)
         print()
         print("You can check if the module endpoint exists using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{ip}:{port}/modules'")
+        print(f"curl -X POST -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/modules'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -748,15 +748,15 @@ def addNewModule(moduleName, id_):
         print("response = requests.post(api_url, json=newRun)")
         print(api_url)
     
-    if verbose>1:
+    if Config.VERBOSE>1:
         print(response.json()['message'])
     return response.json()
 
 ###  This code allow you to add missing field in an already existing module
 def updateNewModule(moduleName, id_):
-    if verbose>0: print("updateNewModule(%s, %s)"%(moduleName, id_))
+    if Config.VERBOSE>0: print("updateNewModule(%s, %s)"%(moduleName, id_))
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/modules/%s"%(ip, port, moduleName)
+    api_url = "http://%s:%d/modules/%s"%(Config.IP, Config.PORT, moduleName)
     response = requests.get(api_url)
     moduleJson = evalMod(response.content.decode().replace("null","[]"))
     if moduleJson:
@@ -795,44 +795,44 @@ def updateNewModule(moduleName, id_):
 
 def updateFirmwareVersionInFC7OT(board, firmware, firmware_timestamp):
     board = board.upper()
-    if verbose>0: print("Calling updateFirmwareVersionInFC7OT(%s, %s, %s)"%(board, firmware, firmware_timestamp))
+    if Config.VERBOSE>0: print("Calling updateFirmwareVersionInFC7OT(%s, %s, %s)"%(board, firmware, firmware_timestamp))
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/cables/%s"%(ip, port, board)
+    api_url = "http://%s:%d/cables/%s"%(Config.IP, Config.PORT, board)
     response = requests.get(api_url)
     cableJson = evalMod(response.content.decode().replace("null","[]"))
     if response.status_code == 200:
-        if verbose>0: print("Board %s found in database"%board)
+        if Config.VERBOSE>0: print("Board %s found in database"%board)
         #print("Cable json:", cableJson)
         newFirmwareInfo = {"firmware": firmware, "firmware_timestamp": firmware_timestamp}
         response = requests.put(api_url, json=newFirmwareInfo)
-        if verbose>0: print("Updated firmware version of board %s to %s (%s)"%(board, firmware, firmware_timestamp))
+        if Config.VERBOSE>0: print("Updated firmware version of board %s to %s (%s)"%(board, firmware, firmware_timestamp))
         ## print response text
         return response
     else:
         print("ERROR: Could not find board %s in the database."%board)
-        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
+        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, Config.IP, Config.PORT))
 
 ### Get firmware version in a FC7OT board
 def getFirmwareVersionInFC7OT(board):
     board = board.upper()
-    if verbose>0: print("Calling getFirmwareVersionInFC7OT(%s)"%(board))
+    if Config.VERBOSE>0: print("Calling getFirmwareVersionInFC7OT(%s)"%(board))
     # URL of the API endpoint for updating a module
-    api_url = "http://%s:%d/cables/%s"%(ip, port, board)
+    api_url = "http://%s:%d/cables/%s"%(Config.IP, Config.PORT, board)
     response = requests.get(api_url)
     cableJson = evalMod(response.content.decode().replace("null","[]"))
     if response.status_code == 200:
-        if verbose>0: print("Board %s found in database"%board)
+        if Config.VERBOSE>0: print("Board %s found in database"%board)
         #print("Cable json:", cableJson)
         if "firmware" in cableJson and "firmware_timestamp" in cableJson:
             return cableJson["firmware"], cableJson["firmware_timestamp"]
         else:
             print("ERROR: Could not find firmware information in board %s in the database."%board)
             print("It might be the first time you use this board, so I will return None, None.")
-            #raise Exception("Board %s does not have firmware information. Please update it using:\ncurl -X PUT -H 'Content-Type: application/json' -d '{\"firmware\": \"abcd\", \"firmware_timestamp\" : \"12349032123\" }' 'http://%s:%d/cables/%s'"%(board, ip, port, board))
+            #raise Exception("Board %s does not have firmware information. Please update it using:\ncurl -X PUT -H 'Content-Type: application/json' -d '{\"firmware\": \"abcd\", \"firmware_timestamp\" : \"12349032123\" }' 'http://%s:%d/cables/%s'"%(board, Config.IP, Config.PORT, board))
             return None, None
     else:
         print("ERROR: Could not find board %s in the database."%board)
-        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, ip, port))
+        raise Exception("Board %s does not exist. Please check the board name. You can check the list of boards using:\ncurl -X GET -H 'Content-Type: application/json' 'http://%s:%d/cables'"%(board, Config.IP, Config.PORT))
 
 ### Get the optical group and board from a single slotBI
 
@@ -842,7 +842,7 @@ def getOpticaGroupAndBoardFromBISlot(slotBI):
     slotBI is a number between 0 and 8 (slot in the burn-in).
     Returns: (fc7, og) where fc7 is the FC7 board name and og is the optical group number
     """
-    if verbose>0: print("Calling getOpticaGroupAndBoardFromBISlot()", slotBI)
+    if Config.VERBOSE>0: print("Calling getOpticaGroupAndBoardFromBISlot()", slotBI)
     crate = "B%s"%slotBI
     out = getConnectionMap(crate)
     
@@ -857,7 +857,7 @@ def getOpticaGroupAndBoardFromBISlot(slotBI):
             if "cable" in last and last["cable"][:5]== "FC7OT":
                 og = last["det_port"][0].split("OG")[-1]  # Return the optical group number, e.g., "10" from "OG10"
                 fc7 = last["cable"]
-                if verbose>600: print("Optical group %s and board %s found for slot %s"%(og, fc7, slotBI))
+                if Config.VERBOSE>600: print("Optical group %s and board %s found for slot %s"%(og, fc7, slotBI))
                 break
     
     if fc7 is None or og is None:
@@ -893,8 +893,8 @@ def getConnectionMapFromFC7(fc7):
     Get the connection map for a given FC7 board (detSide view).
     Returns the connection map or None if error.
     """
-    if verbose>0: print("Calling getConnectionMapFromFC7()", fc7)
-    api_url = "http://%s:%d/snapshot"%(ip, port)
+    if Config.VERBOSE>0: print("Calling getConnectionMapFromFC7()", fc7)
+    api_url = "http://%s:%d/snapshot"%(Config.IP, Config.PORT)
     
     snapshot_data = {
         "cable": fc7,
@@ -903,7 +903,7 @@ def getConnectionMapFromFC7(fc7):
     response = requests.post(api_url, json=snapshot_data)
     
     if response.status_code == 200:
-        if verbose>1: print("FC7 connection map read successfully")
+        if Config.VERBOSE>1: print("FC7 connection map read successfully")
         out = evalMod(response.content.decode())
         return out
     else:
@@ -911,7 +911,7 @@ def getConnectionMapFromFC7(fc7):
         print(f"ERROR [getConnectionMapFromFC7]: Failed to get connection map for FC7 {fc7}. Status code:", response.status_code)
         print()
         print("You can check if the FC7 exists in the database using:")
-        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{ip}:{port}/snapshot'")
+        print(f"curl -X POST -H 'Content-Type: application/json' -d '{{\"cable\":\"{fc7}\", \"side\":\"detSide\"}}' 'http://{Config.IP}:{Config.PORT}/snapshot'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -923,7 +923,7 @@ def getSlotBIFromModuleConnectionMap(connectionMapModule):
     slotBI is a number between 0 and 8 (slot in the burn-in).
     Returns: slotBI as an integer, or None if not found
     """
-    if verbose>0: print("Calling getSlotBIFromModuleConnectionMap()")
+    if Config.VERBOSE>0: print("Calling getSlotBIFromModuleConnectionMap()")
     if connectionMapModule is None:
         raise Exception("Error in calling getSlotBIFromModuleConnectionMap(). Module connection map does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)")
 
@@ -932,7 +932,7 @@ def getSlotBIFromModuleConnectionMap(connectionMapModule):
             for conn in el["connections"]:
                 if "cable" in conn and conn["cable"].startswith("B") and conn["cable"][1].isdigit(): ## expect "B0" to "B8"
                     slotBI = int(conn["cable"].replace("B",""))
-                    if verbose>1: print("Found slotBI %s for module in connection map"%(slotBI))
+                    if Config.VERBOSE>1: print("Found slotBI %s for module in connection map"%(slotBI))
                     return slotBI
     print("ERROR [getSlotBIFromModuleConnectionMap]: Could not find any slotBI in the module connection map")
     return None
@@ -941,7 +941,7 @@ def getSlotBIFromModuleConnectionMap(connectionMapModule):
 
 ## Get lpGBT version from module in DB
 def getLpGBTversionFromDB(moduleName):
-    if verbose>0: print("Calling getLpGBTversionFromDB()", moduleName)
+    if Config.VERBOSE>0: print("Calling getLpGBTversionFromDB()", moduleName)
     module = getModuleFromDB(moduleName)
     if module is None:
         print("ERROR: Could not find module %s in the database."%moduleName)
@@ -949,7 +949,7 @@ def getLpGBTversionFromDB(moduleName):
     
     if "children" in module and "lpGBT" in module["children"] and "PS Read-out Hybrid" in module["children"] and "details" in module["children"]["PS Read-out Hybrid"] and "ALPGBT_VERSION" in module["children"]["PS Read-out Hybrid"]["details"]:
         lpGBTversion = module["children"]["PS Read-out Hybrid"]["details"]["ALPGBT_VERSION"]
-        if verbose>1: print("Found lpGBT version %s for module %s"%(lpGBTversion, moduleName))
+        if Config.VERBOSE>1: print("Found lpGBT version %s for module %s"%(lpGBTversion, moduleName))
         return lpGBTversion
     else:
         print("[getLpGBTversionFromDB]: Debug info. Module:")
@@ -965,12 +965,12 @@ def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
     slotBI is a number between 0 and 8 (slot in the burn-in).
     Returns: slotBI as an integer, or None if not found
     """
-    if verbose>0: print("Calling getSlotBIFromOpticalGroupAndBoard()", fc7, og)
+    if Config.VERBOSE>0: print("Calling getSlotBIFromOpticalGroupAndBoard()", fc7, og)
         
     if connectionMapFC7 is None:
         raise Exception("Error in calling getSlotBIFromOpticalGroupAndBoard() for optical group %s. FC7 %s does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)"%(og, fc7))
     
-    if verbose>1: print("Looking for 'OG%s'"%og)
+    if Config.VERBOSE>1: print("Looking for 'OG%s'"%og)
     
     # Search through the connection map for the matching optical group
     for el in connectionMapFC7.values():
@@ -980,7 +980,7 @@ def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
                     if "det_port" in conn and conn["det_port"] == ["fiber"]:
                         if "cable" in conn and conn["cable"].startswith("B"):
                             slotBI = int(conn["cable"].replace("B",""))
-                            if verbose>1: print("Found slotBI %s for OG%s in FC7 %s"%(slotBI, og, fc7))
+                            if Config.VERBOSE>1: print("Found slotBI %s for OG%s in FC7 %s"%(slotBI, og, fc7))
                             return slotBI
     
     print("ERROR [getSlotBIFromOpticalGroupAndBoard]: Could not find any slotBI for optical group %s in FC7 %s"%(og, fc7))
@@ -988,7 +988,7 @@ def getSlotBIFromOpticalGroupAndBoard(connectionMapFC7, og):
 
 ## print all single module test analyses associated to a session
 def printSingleModuleTestAnalysesOfSession(sessionName):
-    if verbose>0: print("Calling printSingleModuleTestAnalysesOfSession()", sessionName)
+    if Config.VERBOSE>0: print("Calling printSingleModuleTestAnalysesOfSession()", sessionName)
     session = getSessionFromDB(sessionName)
     if session is None:
         print("ERROR: Could not find session %s in the database."%sessionName)

@@ -1,6 +1,6 @@
-from moduleTest import verbose
+from config import Config
 
-#verbose = 1000
+verbose = 1
 #date, testID = getDateTimeAndTestID()
 
 ### Get hardware ID from ot_module_test log (obsolete)
