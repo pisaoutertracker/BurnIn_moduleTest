@@ -1,4 +1,4 @@
-from moduleTest import verbose
+from config import Config
 
 # Get "0/1" from "lpGBT_v0/1.txt"
 
@@ -56,7 +56,7 @@ def makeConfigFromROOTfile(fileName):
                             for objPS in ROOTfile.Get("Detector/%s/%s/%s"%(objB_, objO_, objH_)).GetListOfKeys(): 
                                 objPS_ = objPS.GetName()
                                 hybrid = xmlConfig["boards"][board_id]["opticalGroups"][optical_id]["hybrids"][hybrid_id_fixed]
-                                if verbose>5: print("makeConfigFromROOTfile:",objPS_)
+                                if Config.VERBOSE>5: print("makeConfigFromROOTfile:",objPS_)
                                 if "SSA" in objPS_ and len(objPS_)<7: ## if it is SSA_3 (not D_B(0)_O(0)_PatternMatchingEfficiencyMPA_SSA_Hybrid(0) !)
                                     hybrid["strips"].append(int(objPS_.split("SSA_")[1]))
                                 if "MPA" in objPS_ and len(objPS_)<7:
@@ -69,9 +69,9 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     legacyVersion = False
     if "v0" in xmlTemplate: legacyVersion = True
     global BeBoard, connection, board, MPA, SSA, Hybrid, tree, OpticalGroup, lpGBT
-    if verbose>0: print("Calling makeXml()", xmlOutput, xmlTemplate)
+    if Config.VERBOSE>0: print("Calling makeXml()", xmlOutput, xmlTemplate)
     from pprint import pprint
-    if verbose>2: pprint(xmlConfig)
+    if Config.VERBOSE>2: pprint(xmlConfig)
     from bs4 import BeautifulSoup
     import xml.etree.ElementTree as ET
     import os
@@ -91,7 +91,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     else:
         SSA = Hybrid.find("SSA")
         MPA = Hybrid.find("MPA")
-    if verbose > 5:
+    if Config.VERBOSE > 5:
         for el in [HwDescription, BeBoard, OpticalGroup, lpGBT, Hybrid, SSA, MPA]:
             print(el)
             print(list(el),el.keys())
@@ -100,12 +100,12 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
     for el in Hybrid[:]:
         if ("SSA" in el.tag or "MPA" in el.tag) and not "_" in el.tag:
             Hybrid.remove(el)
-            if verbose > 5:
+            if Config.VERBOSE > 5:
                 print(el, "Removed")
     for el in OpticalGroup[:]:
         if "Hybrid" in el.tag:
             OpticalGroup.remove(el)
-            if verbose > 5:
+            if Config.VERBOSE > 5:
                 print(el, "Removed")
     OpticalGroup.remove(lpGBT)
     BeBoard.remove(OpticalGroup)
@@ -166,7 +166,7 @@ def makeXml(xmlOutput, xmlConfig, xmlTemplate):
                 setting.text = str(Nevents)
 
     tree.write(xmlOutput)
-    if verbose>0: print("Created XML %s"%xmlOutput)
+    if Config.VERBOSE>0: print("Created XML %s"%xmlOutput)
     return xmlOutput
 
 # Read a string ("PS_Module_settings.py") and return the dictionary contained in that file
@@ -290,7 +290,7 @@ def makeNoiseMap(xmlConfig, noisePerChip, IDs, hwToModuleID):
 
 
 def getInfosFromXmlPyConfig(xmlConfig):
-    if verbose>5: print(xmlConfig)
+    if Config.VERBOSE>5: print(xmlConfig)
     board = xmlConfig["boards"]["0"]["ip"].split(":")[0]
     slots = list(xmlConfig["boards"]["0"]["opticalGroups"].keys())
     hybrids = list(xmlConfig["boards"]["0"]["opticalGroups"][str(slots[0])]["hybrids"].keys())
