@@ -1460,7 +1460,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     from databaseTools import getSlotBIFromModuleConnectionMap
     slotBI = getSlotBIFromModuleConnectionMap(connectionMap)
     if tempSensor == "auto":
-        tempSensor = "OW0%s"%(slotBI)
+        tempSensor = "OW%02d"%(slotBI)
         print("Auto tempSensor:", tempSensor)
 
     ### Add plot with voltage and currents
