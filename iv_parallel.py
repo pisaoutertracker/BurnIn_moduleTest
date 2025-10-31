@@ -395,6 +395,8 @@ class IVCurveMeasurement:
             # turn on all channels
             for ch in self.channels:
                 print(f"Turning on channel {ch}")
+                conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{ch},Voltage:0')
+                time.sleep(0.3) # Short delay between channel on commands
                 conn.sendMessage(f'TurnOn,PowerSupplyId:caen,ChannelId:{ch}')
                 time.sleep(0.5) # Short delay between channel on commands
                 print(f"Channel {ch} turned on.")
@@ -439,7 +441,7 @@ class IVCurveMeasurement:
                     for ch in self.channels:
                         measurement = {
                             'Voltage': -parsed_data[f'caen_{ch}_Voltage'], # NOTE: Negative voltage for IV curve
-                            'Current': parsed_data[f'caen_{ch}_Current'] * 1e3, # Convert to nA
+                            'Current': -parsed_data[f'caen_{ch}_Current'] * 1e3, # Convert to nA, set negative for IV curve
                             'Temperature': temperature, # Modified: Use fetched or default value
                             'Relative Humidity': humidity, # Modified: Use fetched or default value
                             'Timestamp': now.strftime('%Y-%m-%d %H:%M:%S') # Modified: Use consistent timestamp
