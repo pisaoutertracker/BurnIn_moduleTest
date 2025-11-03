@@ -674,8 +674,8 @@ def run_module_test(xml_file: str,
             if out == "Run fpgaconfig":
                 raise Exception("fpgaconfig failed. Please check the error above.")
     
-    test_id, date = out
-    return test_id, date
+    test_id, date, error_code = out
+    return test_id, date, error_code
 
 
 def process_test_results(root_file, xml_config: Dict) -> Tuple[Dict, Dict]:
@@ -835,7 +835,7 @@ def verify_and_update_modules(ids: Dict,
 # ============================================================================
 
 def prepare_result_files(test_id: str,
-                        root_file,
+                        root_file_name,
                         xml_py_config_file: str,
                         xml_file: str,
                         modules: List[str],
@@ -845,7 +845,7 @@ def prepare_result_files(test_id: str,
     
     Args:
         test_id: Test ID string
-        root_file: ROOT file object
+        root_file_name: Name of the ROOT file
         xml_py_config_file: Path to XML Python config file
         xml_file: Path to XML file
         modules: List of module names
@@ -858,7 +858,7 @@ def prepare_result_files(test_id: str,
     from databaseTools import getConnectionMap, saveMapToFile
     
     # Get result folder
-    result_folder = root_file.GetName()[:root_file.GetName().rfind("/")]
+    result_folder = root_file_name[:root_file_name.rfind("/")]
     log_file = f"logs/{test_id}.log"
     
     # Get MonitorDQM file
@@ -875,7 +875,7 @@ def prepare_result_files(test_id: str,
     # Copy files to result folder
     files_to_copy = [xml_py_config_file, xml_file, log_file, monitor_dqm_file]
     for file in files_to_copy:
-        if not file or file == root_file.GetName():
+        if not file or file == root_file_name:
             continue
         
         # Handle existing module test
@@ -935,7 +935,7 @@ def upload_results_to_database(test_id: str,
                                noise_map: Dict,
                                uploaded_file: str,
                                command: str,
-                               args) -> str:
+                               args,runStatus="done") -> str:
     """
     Upload test results to database
     
@@ -966,7 +966,7 @@ def upload_results_to_database(test_id: str,
         'runNumber': f"run{run_number}",
         'runDate': date,
         'runSession': session,
-        'runStatus': 'done',
+        'runStatus': runStatus,
         'runType': command,
         'runBoards': board_map,
         'runModules': module_map,
@@ -1203,99 +1203,118 @@ def main():
     # Run module test
     logger.info("")
     logger.info("#### Launch the test ###")
-    test_id, date = run_module_test(xml_file, firmware, board, args)
+    test_id, date, error_code = run_module_test(xml_file, firmware, board, args)
     
-    logger.info("++++++++++++++++++ Test completed. Parse ROOT file ++++++++++++++++++")
-    
-    # Get ROOT file
-    from tools import getROOTfile
-    root_file = (
-        getROOTfile(test_id) if not args.useExistingModuleTest
-        else getROOTfile(args.useExistingModuleTest)
-    )
-    
-    # Process results
-    ids, noise_per_chip = process_test_results(root_file, xml_config)
-    
-    # Handle existing XML file - remove missing IDs
-    if args.useExistingXmlFile:
-        for key in list(ids.keys()):
-            if ids[key] == "-1":
-                logger.debug(f"Deleting {key}")
-                del ids[key]
-                del xml_config["boards"][str(key[0])]["opticalGroups"][str(key[1])]
-    
-    if Config.VERBOSE > 5:
-           logger.debug(pformat(ids))
-    
-    # Handle readOnlyID mode
-    if read_only_id and args.skipMongo:
-        logger.info(pformat(ids))
-        logger.info("")
-        logger.info("readOnlyID finished successfully.")
-        logger.info("")
-        return
-    
-    # Get results per module
-    from tools import getResultsPerModule
-    logger.info("++++++++++++++++++ Get noise and evaluate module: pass/failed ++++++++++++++++++")
-    if Config.VERBOSE > 5:
-        logger.debug(pformat(noise_per_chip))
-    result = getResultsPerModule(noise_per_chip, xml_config)
-    
-    # Verify and update modules in database
-    if not args.skipMongo:
-        logger.info("")
-        logger.info("++++++++++++++++++  Check module name vs hardware ID ++++++++++++++++++")
-        hw_to_module_name, hw_to_mongo_id = verify_and_update_modules(
-            ids, modules, optical_groups, xml_config, args
-        )
+
+#          test_id, date, session, xml_config, board_map, module_map,
+#            noise_map, uploaded_file, args.command, args
+    date = date.replace(" ", "T").split(".")[0]
+
+    board_map = {}
+    module_map = {}
+    noise_map = {}
+    uploaded_file = ""
+    try:
+            
+        logger.info("++++++++++++++++++ Test completed. Parse ROOT file ++++++++++++++++++")
         
-        # Skip analysis for certain commands
-        if args.command in Config.COMMANDS_TO_SKIP_ANALYSIS:
+        # Get ROOT file
+        from tools import getROOTfile
+        root_file_name = f"Results/{test_id}/Results.root"
+        uploaded_file = prepare_result_files(
+                test_id, root_file_name, xml_py_config_file, xml_file, modules, args
+        )
+
+        root_file = (
+            getROOTfile(test_id) if not args.useExistingModuleTest
+            else getROOTfile(args.useExistingModuleTest)
+        )       
+
+        # Process results
+        ids, noise_per_chip = process_test_results(root_file, xml_config)
+        
+        # Handle existing XML file - remove missing IDs
+        if args.useExistingXmlFile:
+            for key in list(ids.keys()):
+                if ids[key] == "-1":
+                    logger.debug(f"Deleting {key}")
+                    del ids[key]
+                    del xml_config["boards"][str(key[0])]["opticalGroups"][str(key[1])]
+        
+        if Config.VERBOSE > 5:
+            logger.debug(pformat(ids))
+        
+        # Handle readOnlyID mode
+        if read_only_id and args.skipMongo:
+            logger.info(pformat(ids))
             logger.info("")
-            logger.info(f"Skipping updateTestResult for {args.command} test. "
-                  f"(commandToSkipAnalysis={Config.COMMANDS_TO_SKIP_ANALYSIS})")
-            logger.info(f"{args.command} test finished successfully.")
+            logger.info("readOnlyID finished successfully.")
             logger.info("")
             return
         
-            logger.info("++++++++++++++++++  Make folder on CERNbox, create zip, upload ++++++++++++++++++")
+        # Get results per module
+        from tools import getResultsPerModule
+        logger.info("++++++++++++++++++ Get noise and evaluate module: pass/failed ++++++++++++++++++")
+        if Config.VERBOSE > 5:
+            logger.debug(pformat(noise_per_chip))
+        result = getResultsPerModule(noise_per_chip, xml_config)
         
-        # Prepare and upload results
-        uploaded_file = prepare_result_files(
-            test_id, root_file, xml_py_config_file, xml_file, modules, args
-        )
+        # Verify and update modules in database
+        if not args.skipMongo:
+            logger.info("")
+            logger.info("++++++++++++++++++  Check module name vs hardware ID ++++++++++++++++++")
+            hw_to_module_name, hw_to_mongo_id = verify_and_update_modules(
+                ids, modules, optical_groups, xml_config, args
+            )
+            
+            # Skip analysis for certain commands
+            if args.command in Config.COMMANDS_TO_SKIP_ANALYSIS:
+                logger.info("")
+                logger.info(f"Skipping updateTestResult for {args.command} test. "
+                    f"(commandToSkipAnalysis={Config.COMMANDS_TO_SKIP_ANALYSIS})")
+                logger.info(f"{args.command} test finished successfully.")
+                logger.info("")
+                return
+            
+                logger.info("++++++++++++++++++  Make folder on CERNbox, create zip, upload ++++++++++++++++++")
+            
+            # Prepare and upload results
+
+            logger.info("++++++++++++++++++  Create session and run and upload to DB ++++++++++++++++++")
+            
+            # Create noise map
+            from makeXml import makeNoiseMap
+            board_map, module_map, noise_map = makeNoiseMap(
+                xml_config, noise_per_chip, ids, hw_to_module_name
+            )
+            
+            # Format date
+            if args.useExistingModuleTest:
+                timestamp = str(root_file.Get("Detector/CalibrationStartTimestamp_Detector"))
+                date = timestamp.replace(" ", "T")
+            runStatus="done"
+
+    except Exception as e:
+        runStatus="failed"
+        logger.error(f"Error during processing of test results: {e}")
         
-        logger.info("++++++++++++++++++  Create session and run and upload to DB ++++++++++++++++++")
-        
-        # Create noise map
-        from makeXml import makeNoiseMap
-        board_map, module_map, noise_map = makeNoiseMap(
-            xml_config, noise_per_chip, ids, hw_to_module_name
-        )
-        
-        # Format date
-        date = date.replace(" ", "T").split(".")[0]
-        if args.useExistingModuleTest:
-            timestamp = str(root_file.Get("Detector/CalibrationStartTimestamp_Detector"))
-            date = timestamp.replace(" ", "T")
-        
+    if not args.skipMongo:
         # Get or create session
         if args.session != "-1":
             session = args.session
         else:
             from databaseTools import createSession
             session = createSession(args.message, modules)
-        
         # Upload results to database
         test_run_name = upload_results_to_database(
             test_id, date, session, xml_config, board_map, module_map,
-            noise_map, uploaded_file, args.command, args
+            noise_map, uploaded_file, args.command, args,runStatus=runStatus
         )
-        
+    if not error_code:
         # Run analysis
         run_analysis(test_run_name, args)
+    else:
+        raise Exception(f"Module test failed with error code {error_code}.")
 
  
 # ============================================================================

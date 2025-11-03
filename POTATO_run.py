@@ -14,9 +14,9 @@ POTATOExpressFolder = "/home/thermal/potato/Express/"
 
 #skipWebdav = False
 #skipWebdav = True ## Use this if you have already downloaded the zip file manually (for speeding up testing!)
-from moduleTest import verbose ## to be updated
+#from moduleTest import verbose ## to be updated
 
-#verbose = 10
+verbose = 10
 outDir = "POTATOFiles"
 
 if __name__ == "__main__":
@@ -401,7 +401,7 @@ if __name__ == "__main__":
                 from shellCommands import runCommand
                 print()
                 print("#"*200)
-                output = runCommand(scriptPath)
+                output = runCommand(scriptPath,shell=False)
                 print("#"*200)
                 print()
                 xmlFile = None

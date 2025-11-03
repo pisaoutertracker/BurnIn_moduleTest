@@ -1,4 +1,7 @@
 import os
+import shutil
+
+import re
 import subprocess
 from config import Config
 
@@ -179,6 +182,7 @@ def getDateTimeAndTestID():
 
 def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFversion=Config.LAST_PH2ACF_VERSION, commandOption="readOnlyID", logFolder="logs"):
     global error 
+    error_code = None
     if verbose>0: print("Calling runModuleTest()", xmlFile, useExistingModuleTest, ph2ACFversion, logFolder, commandOption)
     date, tmp_testID = getDateTimeAndTestID()
     logFile = "%s/%s.log"%(logFolder,tmp_testID)
@@ -197,7 +201,6 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
 #        command = "%s && ot_module_test -f %s -t -m -a --reconfigure -b --moduleId %s --readIDs | tee %s"%(prefixCommand, xmlFile,tmp_testID,logFile)
     else:
         log = "logs/%s.log"%useExistingModuleTest
-        import os
         if os.path.exists(log):
             output = runCommand("cat %s 2>&1 | tee %s"%(log, logFile))
         else:
@@ -233,7 +236,9 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
             print("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n Please check that you have installed the firmware (fpgaconfig). Command: %s"%output.args)
             return "Run fpgaconfigPisa"
         else:
-            raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected.  \n It might be due to a wrong version of the firmware installed in the FC7. \n Command: %s"%output.args)
+         #   raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected.  \n It might be due to a wrong version of the firmware installed in the FC7. \n Command: %s"%output.args)
+            error_code = "ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected. It might be due to a wrong version of the firmware installed in the FC7. Command: %s"%output.args
+
 #    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
 #        print()
 #        print(error)
@@ -241,21 +246,45 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
     if error and not "Closing result file:" in error:
         print()
         print("|"+error+"|")
-        raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
-    
+        #raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
+        error_code = "Generic Error running ot_module_test. Check the error above. Command: %s"%output.args
+        
     ## find ROOT file from log file:
-    if "Closing result file: " in error:
-        rootFile = error.split("Closing result file: ")[1].split(".root")[0]+".root" ##eg. Results/Run_28/Results.root
-        testID = rootFile.split("/")[1] ## get "Run_28"
-        import shutil
+#    if "Closing result file: " in error:
+#        rootFile = error.split("Closing result file: ")[1].split(".root")[0]+".root" ##eg. Results/Run_28/Results.root
+    #    testID = rootFile.split("/")[1] ## get "Run_28"
+    mrun=re.match(r".*Run (\d+) started.*", error, re.DOTALL)
+    if mrun:
+        runNumber = mrun.group(1)
+        testID = "Run_%s"%runNumber
         #shutil.copytree("Results/"+testID, "Results/"+tmp_testID)
         shutil.copy(logFile, logFile.replace(tmp_testID,testID))
         print("Results copied to %s"%logFile.replace(tmp_testID,testID))
     else:
-        testID = tmp_testID
+        #read ~/RunNumbers.dat last line, increment by 1, save in the file and that is our runNumber
+        runNumbersFile = os.path.expanduser("~/RunNumbers.dat")
+        if os.path.exists(runNumbersFile):
+            with open(runNumbersFile, "r") as f:
+                lines = f.readlines()
+                if lines:
+                    lastLine = lines[-1]
+                    lastRunNumber = int(lastLine.strip())
+                    runNumber = lastRunNumber + 1
+                    #append new run number to the file
+                    with open(runNumbersFile, "a") as fa:
+                        fa.write("%d\n"%runNumber)
+                    testID = "Run_%s"%runNumber
+                    #mkdir Results/testID
+                    if not os.path.exists("Results/%s"%testID):
+                        os.makedirs("Results/%s"%testID)
+                    shutil.copy(logFile, logFile.replace(tmp_testID,testID))
+                    print("Results copied to %s"%logFile.replace(tmp_testID,testID))
+        else:
+            testID = tmp_testID
+ 
     if useExistingModuleTest:
         testID = useExistingModuleTest
-    return testID, date
+    return testID, date, error_code
 
 
 ### This code allow you to test this code using "python3 shellCommands.py"

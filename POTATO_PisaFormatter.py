@@ -35,9 +35,9 @@ chillerSetPointName = "/julabo/full/Temp_SP1" ##can we please get rid of the 3 s
 
 # The maximum number of hours since the start of the run to query InfluxDB.
 maxNumHoursSinceStartRun_influxQuery = 24*4 # hours (time) ## 4 days for the full burn-in
-from moduleTest import verbose ## to be updated
+#from moduleTest import verbose ## to be updated
 
-#verbose = 1000
+verbose = 10
 # Define the path to the main directory
 #main_directory = "./data"
 #output_directory = "./potato"
