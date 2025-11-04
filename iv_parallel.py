@@ -340,7 +340,7 @@ class IVCurveMeasurement:
 
 
         raise RuntimeError("Failed to get valid data from CAEN after maximum retries")
-
+    
     def verify_voltage(self, target_voltage, caen_conn=None):
         attempt = 0
         if not caen_conn:
@@ -388,6 +388,34 @@ class IVCurveMeasurement:
                 continue
         return False
 
+    def calibrate_current_at_zero_voltage(self, caen_conn=None):
+        calibrations={}
+        if not caen_conn:
+            raise ValueError("caen connection is required for calibration")
+        #set voltage to zero for all channels
+        for ch in self.channels:
+            caen_conn.sendMessage(f'SetVoltage,PowerSupplyId:caen,ChannelId:{ch},Voltage:0')
+            time.sleep(0.2) # Short delay between channel on commands
+        time.sleep(1) # Wait for voltages to stabilize
+        #verify that voltage is near zero
+        for attempt in range(self.voltage_threshold_retries):
+            try:
+                parsed_data = self.get_caen_data(caen_conn=caen_conn)
+                for ch in self.channels:
+                    current_voltage = parsed_data[f'caen_{ch}_Voltage']
+                    if abs(current_voltage) < self.voltage_threshold:
+                        #we are good to get a calibration point
+                        calibrations[ch] = parsed_data[f'caen_{ch}_Current']
+                if len(calibrations) == len(self.channels):
+                    print("Calibration at zero voltage successful:", calibrations)
+                    return calibrations
+                time.sleep(self.voltage_threshold_time)
+            except Exception as e:
+                print(f"Error during calibration attempt {attempt + 1}: {e}")
+                continue
+        print("Calibrated only for ", len(calibrations), " out of ", len(self.channels), " channels:\n", calibrations)
+        return calibrations
+
     def measure_curve(self):
         conn = CAENQuery(ip='192.168.0.45', port=7000)
 
@@ -402,6 +430,12 @@ class IVCurveMeasurement:
                 print(f"Channel {ch} turned on.")
             print("All channels turned on.")
             time.sleep(1) # Short delay after turning on
+            if self.verify_all_voltages(0, caen_conn=conn):
+               print("Zero volts calibration values") 
+
+            zero_calibrations = self.calibrate_current_at_zero_voltage(caen_conn=conn)
+            print("Zero voltage current calibrations:", zero_calibrations)
+            
 
             for voltage in self.voltage_steps:
                 print(f"Setting voltage to {voltage} V for all channels")
@@ -441,7 +475,7 @@ class IVCurveMeasurement:
                     for ch in self.channels:
                         measurement = {
                             'Voltage': -parsed_data[f'caen_{ch}_Voltage'], # NOTE: Negative voltage for IV curve
-                            'Current': -parsed_data[f'caen_{ch}_Current'] * 1e3, # Convert to nA, set negative for IV curve
+                            'Current': -(parsed_data[f'caen_{ch}_Current'] - zero_calibrations.get(ch, 0)) * 1e3, # Convert to nA, set negative for IV curve
                             'Temperature': temperature, # Modified: Use fetched or default value
                             'Relative Humidity': humidity, # Modified: Use fetched or default value
                             'Timestamp': now.strftime('%Y-%m-%d %H:%M:%S') # Modified: Use consistent timestamp
