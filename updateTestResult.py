@@ -1515,7 +1515,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
 #         if verbose>2: print("mkDir response:", response, response.status_code, response.reason)
 # ##        print(webdav_website.list_files(nfolder))
     #command=f"mkdir {tmpFolder}/{folder}" 
-    os.system(command)
+    #os.system(command)
     print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)

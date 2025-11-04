@@ -1296,6 +1296,9 @@ def main():
 
     except Exception as e:
         #build module map from configuration
+        if args.command in Config.COMMANDS_TO_SKIP_ANALYSIS:
+                return
+                
         from databaseTools import getModuleConnectedToFC7, getFiberLink   
         for board_id, board in xml_config["boards"].items():
             board_id = int(board_id)
