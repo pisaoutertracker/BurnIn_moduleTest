@@ -1514,7 +1514,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
 #         response = webdav_website.mkDir(nfolder)
 #         if verbose>2: print("mkDir response:", response, response.status_code, response.reason)
 # ##        print(webdav_website.list_files(nfolder))
-    command=f"mkDir {tmpFolder}/{folder}" 
+    #command=f"mkdir {tmpFolder}/{folder}" 
     os.system(command)
     print(command)
     fff = [f for f in fff if os.path.exists(f)]

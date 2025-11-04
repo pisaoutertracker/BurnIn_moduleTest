@@ -249,7 +249,7 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         print("|"+error+"|")
         #raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
         error_code = "Generic Error running ot_module_test. "
-        print("Failed Command: %s"%output.args
+        print("Failed Command: %s"%output.args)
         
     ## find ROOT file from log file:
 #    if "Closing result file: " in error:
