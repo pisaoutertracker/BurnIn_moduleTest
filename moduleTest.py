@@ -1295,7 +1295,20 @@ def main():
             runStatus="done"
 
     except Exception as e:
-        runStatus="failed"
+        #build module map from configuration
+        from databaseTools import getModuleConnectedToFC7, getFiberLink   
+        for board_id, board in xml_config["boards"].items():
+            board_id = int(board_id)
+            fc7 = board["ip"] ##get fc7ot3:50001
+            fc7 = fc7.split(":")[0] #keep fc7ot3
+            board_map[board_id] = fc7
+            for opticalGroup_id, opticalGroup in board["opticalGroups"].items():
+                opticalGroup_id = int(opticalGroup_id)
+                module_from_db = getModuleConnectedToFC7(fc7.upper(), f"OG{opticalGroup_id}")
+                module_map[f"{fc7}_optical{opticalGroup_id}"] = (module_from_db, -1)
+
+
+        runStatus=error_code 
         logger.error(f"Error during processing of test results: {e}")
         
     if not args.skipMongo:

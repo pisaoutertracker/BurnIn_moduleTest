@@ -237,7 +237,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
             return "Run fpgaconfigPisa"
         else:
          #   raise Exception("ExceptionHandler Error: No object enabled in fDetectorContainer.  \n All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected.  \n It might be due to a wrong version of the firmware installed in the FC7. \n Command: %s"%output.args)
-            error_code = "ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected. It might be due to a wrong version of the firmware installed in the FC7. Command: %s"%output.args
+            error_code = "ExceptionHandler Error: No object enabled in fDetectorContainer. All modules seem off. Please check that the low voltages are turned on. Check that some light is coming out from the optical fibers that you selected. It might be due to a wrong version of the firmware installed in the FC7."
+            print("Failed Command: %s"%output.args)
 
 #    if "ExceptionHandler Error: No object enabled in fDetectorContainer" in error:
 #        print()
@@ -247,7 +248,8 @@ def runModuleTest(xmlFile="PS_Module.xml", useExistingModuleTest=False, ph2ACFve
         print()
         print("|"+error+"|")
         #raise Exception("Generic Error running ot_module_test. Check the error above. Command: %s"%output.args)
-        error_code = "Generic Error running ot_module_test. Check the error above. Command: %s"%output.args
+        error_code = "Generic Error running ot_module_test. "
+        print("Failed Command: %s"%output.args
         
     ## find ROOT file from log file:
 #    if "Closing result file: " in error:
