@@ -1292,7 +1292,7 @@ def main():
             if args.useExistingModuleTest:
                 timestamp = str(root_file.Get("Detector/CalibrationStartTimestamp_Detector"))
                 date = timestamp.replace(" ", "T")
-            runStatus="done"
+            runStatus="done" if error_code is None else "failed nicely"
 
     except Exception as e:
         #build module map from configuration
