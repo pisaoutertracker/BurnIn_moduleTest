@@ -1516,7 +1516,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
 # ##        print(webdav_website.list_files(nfolder))
     #command=f"mkdir {tmpFolder}/{folder}" 
     #os.system(command)
-    print(command)
+    #print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
     webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor)
