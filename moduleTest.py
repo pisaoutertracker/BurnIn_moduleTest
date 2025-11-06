@@ -1331,7 +1331,8 @@ def main():
         run_analysis(test_run_name, args)
     else:
         raise Exception(f"Module test failed with error code {error_code}.")
-
+    if error_code is not None:
+        exit(1)
  
 # ============================================================================
 # ENTRY POINT
