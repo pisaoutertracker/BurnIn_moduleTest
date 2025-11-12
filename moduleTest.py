@@ -1246,6 +1246,8 @@ def main():
         
         # Handle readOnlyID mode
         if read_only_id and args.skipMongo:
+            if error_code is not None :
+                exit(1)
             logger.info(pformat(ids))
             logger.info("")
             logger.info("readOnlyID finished successfully.")
@@ -1274,6 +1276,8 @@ def main():
                     f"(commandToSkipAnalysis={Config.COMMANDS_TO_SKIP_ANALYSIS})")
                 logger.info(f"{args.command} test finished successfully.")
                 logger.info("")
+                if error_code is not None :
+                    exit(1)
                 return
             
                 logger.info("++++++++++++++++++  Make folder on CERNbox, create zip, upload ++++++++++++++++++")
@@ -1297,7 +1301,10 @@ def main():
     except Exception as e:
         #build module map from configuration
         if args.command in Config.COMMANDS_TO_SKIP_ANALYSIS:
-                return
+            if error_code is not None:
+                print("RETURNING ERROR")
+                exit(1)
+            return
                 
         from databaseTools import getModuleConnectedToFC7, getFiberLink   
         for board_id, board in xml_config["boards"].items():
@@ -1332,7 +1339,9 @@ def main():
     else:
         raise Exception(f"Module test failed with error code {error_code}.")
     if error_code is not None:
+        print("RETURNING ERROR")
         exit(1)
+    print("SUCCESS",error_code)
  
 # ============================================================================
 # ENTRY POINT
