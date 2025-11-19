@@ -245,6 +245,10 @@ if __name__ == "__main__":
             continue
         
         run = getRunFromDB(run)
+        if run['runStatus'] != 'done':
+            print("RUN FAILED, skipping")
+            continue
+
         if verbose>10:
             print(run)
         print("Module tests:", run['moduleTestName'])
@@ -401,7 +405,8 @@ if __name__ == "__main__":
                 from shellCommands import runCommand
                 print()
                 print("#"*200)
-                output = runCommand(scriptPath,shell=False)
+                scriptPathFull = os.path.abspath(scriptPath)
+                output = runCommand(scriptPathFull,shell=True)
                 print("#"*200)
                 print()
                 xmlFile = None
