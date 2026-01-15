@@ -723,9 +723,9 @@ class POTATOPisaFormatter():
         
         # Set Run_Type based on carrier temperature at test start
         if(moduleCarrierTemperatureGraph.Eval(testTimeStart) > -15):
-            ROOT.TObjString("mod_burnin_warm").Write("Run_Type")
+            ROOT.TObjString("inc_mod_burnin_warm").Write("Run_Type")
         else:
-            ROOT.TObjString("mod_burnin_cold").Write("Run_Type")
+            ROOT.TObjString("inc_mod_burnin_cold").Write("Run_Type")
         
         print("Module_Slot: ", opticalGroupToBurninSlot[opticalGroupNumber])
         TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
