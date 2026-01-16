@@ -514,6 +514,19 @@ class IVCurveMeasurement:
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(target_file), exist_ok=True)
         
+        if measurements_list: # avoid division by zero
+            mean_temp = sum(float(f"{m['Temperature']:.3f}") for m in measurements_list) / len(measurements_list)
+            mean_rh = sum(float(f"{m['Relative Humidity']:.3f}") for m in measurements_list) / len(measurements_list)
+        else:
+            mean_temp = -999
+            mean_rh = -999
+        
+        # set the RunType name, can either be inc_mod_burnin_warm or inc_mod_burnin_cold if mean temp is above or below -15C
+        if mean_temp > -15:
+            run_info['Run_type'] = 'inc_mod_burnin_warm'
+        else:
+            run_info['Run_type'] = 'inc_mod_burnin_cold'
+        
         with open(target_file, 'w') as f:
             # Write header information
             f.write('#NameLabel,' + module_name + "\n")
@@ -526,12 +539,6 @@ class IVCurveMeasurement:
             
             # Write temperature summary
             f.write("STATION, AV_TEMP_DEGC, AV_RH_PRCNT\n")
-            if measurements_list: # avoid division by zero
-                mean_temp = sum(float(f"{m['Temperature']:.3f}") for m in measurements_list) / len(measurements_list)
-                mean_rh = sum(float(f"{m['Relative Humidity']:.3f}") for m in measurements_list) / len(measurements_list)
-            else:
-                mean_temp = -999
-                mean_rh = -999
             f.write(f"{run_info.get('Station_Name', 'TEST_STATION')},{mean_temp},{mean_rh}\n\n")
             
             # Write measurement data
