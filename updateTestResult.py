@@ -23,8 +23,8 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2025-10-22e"
-#version = "2025-04-29"
+version = "2026-01-30"
+#version = "2025-10-22e"
 
 skipInfluxDb= False
 #skipInfluxDb= True
@@ -64,7 +64,7 @@ allVariables = [
 
 hybridPlots = [
     "BitSlipValues", 
-    "WordAlignmentRetryNumbers", 
+#    "WordAlignmentRetryNumbers", 
 
     "HybridStripNoiseDistribution", 
     "HybridPixelNoiseDistribution", 
@@ -89,7 +89,15 @@ hybridPlots = [
     "SSA(4)toMPA(12)_correlation", 
     "SSA(5)toMPA(13)_correlation", 
     "SSA(6)toMPA(14)_correlation", 
-    "SSA(7)toMPA(15)_correlation", 
+    "SSA(7)toMPA(15)_correlation",
+    "SSA0toMPA8_MissingClusters",
+    "SSA1toMPA9_MissingClusters",
+    "SSA2toMPA10_MissingClusters",
+    "SSA3toMPA11_MissingClusters",
+    "SSA4toMPA12_MissingClusters",
+    "SSA5toMPA13_MissingClusters",
+    "SSA6toMPA14_MissingClusters",
+    "SSA7toMPA15_MissingClusters", 
     "StripPixelHybridHits", 
     "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_1", 
     "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_4", 
@@ -282,6 +290,8 @@ hybridPlots = [
     "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_4",
     "MPAtoCIC_PhaseScanErrorRate_MPA_SLVScurrent_7",
     "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_7",
+
+    "CICBX0AlignmentDelay",
 ]
 
 
@@ -312,6 +322,32 @@ opticalGroupPlots = [
     "BERTtestedBitCounter",
     "BERTbestPhase",
     "FECerrorCounter",   
+
+    "SameEvHist",
+    "StripTCFWHist",
+    "StripTCBWHist",
+    "MinHitsFWHist",
+    "MinHitsBWHist",
+    "3DTSFWCorr",
+    "3DTSBWCorr",
+    "TSFWCorrSlice_0",
+    "TSBWCorrSlice_0",
+    "TSFWCorrSlice_1",
+    "TSBWCorrSlice_1",
+    "TSFWCorrSlice_2",
+    "TSBWCorrSlice_2",
+    "TSFWCorrSlice_3",
+    "TSBWCorrSlice_3",
+    "TSFWCorrSlice_4",
+    "TSBWCorrSlice_4",
+    "TSFWCorrSlice_5",
+    "TSBWCorrSlice_5",
+    "TSFWCorrSlice_6",
+    "TSBWCorrSlice_6",
+    "TSFWCorrSlice_7",
+    "TSBWCorrSlice_7",
+
+
 ]
 
 
@@ -453,7 +489,8 @@ def makeMultiplePlot2D(plots, chip):
 def addHistoPlot(plots, canvas, plot, fName):
     if verbose>10: print("Calling addHistoPlot(%d, %s, %s, %s)"%(len(plots), canvas, plot, fName))
     ## skip single chip plots if useOnlyMergedPlots is activated
-    if (("SSA" in fName) or ("MPA" in fName) or ("Chip" in fName)) and (not ("Merged" in fName)) and (not ("Multiple" in fName)) and (useOnlyMergedPlots):
+    ## but don't skip SSAtoMPA correlation/MissingClusters plots (they are hybrid-level, not chip-level)
+    if (("SSA" in fName) or ("MPA" in fName) or ("Chip" in fName)) and (not ("Merged" in fName)) and (not ("Multiple" in fName)) and (not ("toMPA" in fName)) and (useOnlyMergedPlots):
         isNum = "a"
         # if "/SSA_" in fName: isNum = fName.split("/SSA_")[1][0]
         # if "/MPA_" in fName: isNum = fName.split("/MPA_")[1][0]
@@ -921,7 +958,8 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     print("All plots available:")
     for plot in plots:
         if verbose>10: print(plot)
-        if "_SSA" in plot or "_MPA" in plot: 
+        # Plots with "toMPA" are hybrid-level (like SSA0toMPA8_MissingClusters), not per-chip
+        if ("_SSA" in plot or "_MPA" in plot) and ("toMPA" not in plot): 
 #            if "Merged" in plot or not useOnlyMergedPlots:
                 plotsPerChip.append(plot)
         else: plotsInclusive.append(plot)
@@ -948,6 +986,12 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     html = html.replace("[ADD TEXT CODE]",txt.replace("\n", "<br>\n"))
     ### Analysis
     body = "<h1> %s %s  </h1>"%(grayText("Analysis:") ,version) + "\n"
+    
+    ### Upload Time
+    from datetime import datetime
+    upload_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    body += grayText("Analysis time [local time]: ") + upload_time + "<br>" + "\n"
+    body += "<br>" + "\n"
     
     ### Module
     body += "<h1> %s %s  </h1>"%(grayText("Module:"), moduleName) + "\n"
@@ -1536,7 +1580,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     cmd = f"mkdir -p {tmpFolder}/{folder} && cp {tmpUpFolder}{name}.zip {tmpFolder}/{folder}/results.zip"
     print(cmd)
     os.system(cmd)
-    cmd = f"scp -r {tmpFolder}/{folder} {cernbox_computer}:{cernbox_folder_analysis}/{nfolder}"
+    cmd = f"rsync -av {tmpFolder}/{folder}/ {cernbox_computer}:{cernbox_folder_analysis}/{nfolder}/"
     print(cmd)
     os.system(cmd)
     
