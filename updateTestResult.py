@@ -346,7 +346,22 @@ opticalGroupPlots = [
     "TSBWCorrSlice_6",
     "TSFWCorrSlice_7",
     "TSBWCorrSlice_7",
-
+    "TSFWCorrSlice_8",
+    "TSBWCorrSlice_8",
+    "TSFWCorrSlice_9",
+    "TSBWCorrSlice_9",
+    "TSFWCorrSlice_10",
+    "TSBWCorrSlice_10",
+    "TSFWCorrSlice_11",
+    "TSBWCorrSlice_11",
+    "TSFWCorrSlice_12",
+    "TSBWCorrSlice_12",
+    "TSFWCorrSlice_13",
+    "TSBWCorrSlice_13",
+    "TSFWCorrSlice_14",
+    "TSBWCorrSlice_14",
+    "TSFWCorrSlice_15",
+    "TSBWCorrSlice_15",
 
 ]
 
