@@ -3,6 +3,8 @@ cernbox_folder_run = "/home/thermal/cernbox_runshared/"
 cernbox_computer = "cmslabburnin"
 
 from datetime import datetime,timedelta
+import re
+import fnmatch
 
 #from tools import getROOTfile, getNoisePerChip, getResultPerModule, getIDsFromROOT
 from ROOT import TFile, TCanvas, gROOT, TH1F, TH2F, gStyle, TGraphErrors
@@ -23,7 +25,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2026-01-30"
+version = "2026-02-10"
 #version = "2025-10-22e"
 
 skipInfluxDb= False
@@ -330,38 +332,8 @@ opticalGroupPlots = [
     "MinHitsBWHist",
     "3DTSFWCorr",
     "3DTSBWCorr",
-    "TSFWCorrSlice_0",
-    "TSBWCorrSlice_0",
-    "TSFWCorrSlice_1",
-    "TSBWCorrSlice_1",
-    "TSFWCorrSlice_2",
-    "TSBWCorrSlice_2",
-    "TSFWCorrSlice_3",
-    "TSBWCorrSlice_3",
-    "TSFWCorrSlice_4",
-    "TSBWCorrSlice_4",
-    "TSFWCorrSlice_5",
-    "TSBWCorrSlice_5",
-    "TSFWCorrSlice_6",
-    "TSBWCorrSlice_6",
-    "TSFWCorrSlice_7",
-    "TSBWCorrSlice_7",
-    "TSFWCorrSlice_8",
-    "TSBWCorrSlice_8",
-    "TSFWCorrSlice_9",
-    "TSBWCorrSlice_9",
-    "TSFWCorrSlice_10",
-    "TSBWCorrSlice_10",
-    "TSFWCorrSlice_11",
-    "TSBWCorrSlice_11",
-    "TSFWCorrSlice_12",
-    "TSBWCorrSlice_12",
-    "TSFWCorrSlice_13",
-    "TSBWCorrSlice_13",
-    "TSFWCorrSlice_14",
-    "TSBWCorrSlice_14",
-    "TSFWCorrSlice_15",
-    "TSBWCorrSlice_15",
+    "TSFWCorrSlice_*",
+    "TSBWCorrSlice_*",
 
 ]
 
