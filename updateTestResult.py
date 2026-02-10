@@ -84,77 +84,17 @@ hybridPlots = [
     "SSAringOscillatorInverterCounts", 
     "SSAringOscillatorDelayCounts", 
     "PixelHybridHits", 
-    "SSA(0)toMPA(8)_correlation", 
-    "SSA(1)toMPA(9)_correlation", 
-    "SSA(2)toMPA(10)_correlation", 
-    "SSA(3)toMPA(11)_correlation", 
-    "SSA(4)toMPA(12)_correlation", 
-    "SSA(5)toMPA(13)_correlation", 
-    "SSA(6)toMPA(14)_correlation", 
-    "SSA(7)toMPA(15)_correlation",
-    "SSA0toMPA8_MissingClusters",
-    "SSA1toMPA9_MissingClusters",
-    "SSA2toMPA10_MissingClusters",
-    "SSA3toMPA11_MissingClusters",
-    "SSA4toMPA12_MissingClusters",
-    "SSA5toMPA13_MissingClusters",
-    "SSA6toMPA14_MissingClusters",
-    "SSA7toMPA15_MissingClusters", 
+    "SSA(*)toMPA(*)_correlation",
+    "SSA*toMPA*_MissingClusters",
     "StripPixelHybridHits", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_1-Clock_Strength_7", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_3-Clock_Strength_7", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_0-CIC_Signal_Strength_5-Clock_Strength_7", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_1-Clock_Strength_7", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_3-Clock_Strength_7", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_1", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_4", 
-    "Efficiency_CIC_Clock_Polarity_1-CIC_Signal_Strength_5-Clock_Strength_7", 
-    "SSAtoMPAStubPhaseScan_SLVScurrent_1", 
-    "SSAtoMPAL1PhaseScan_SLVScurrent_1", 
-    "SSAtoMPAStubPhaseScan_SLVScurrent_4", 
-    "SSAtoMPAL1PhaseScan_SLVScurrent_4", 
-    "SSAtoMPAStubPhaseScan_SLVScurrent_7", 
-    "SSAtoMPAL1PhaseScan_SLVScurrent_7", 
-    "SSAtoSSAStubPhaseScan_SLVScurrent_1", 
-    "SSAtoSSAStubPhaseScan_SLVScurrent_4", 
+    "Efficiency_CIC_Clock_Polarity_*",
+    "SSAtoMPAStubPhaseScan_SLVScurrent_*",
+    "SSAtoMPAL1PhaseScan_SLVScurrent_*",
+    "SSAtoSSAStubPhaseScan_SLVScurrent_*",
     "SSAtoSSAStubPhaseScan_SLVScurrent_7", 
-    "LpGBTforCICbypassPhaseScan_phyPort0", 
-    "LpGBTforCICbypassBestPhase_phyPort0", 
-    "LpGBTforCICbypassPhaseScan_phyPort1", 
-    "LpGBTforCICbypassBestPhase_phyPort1", 
-    "LpGBTforCICbypassPhaseScan_phyPort2", 
-    "LpGBTforCICbypassBestPhase_phyPort2", 
-    "LpGBTforCICbypassPhaseScan_phyPort3", 
-    "LpGBTforCICbypassBestPhase_phyPort3", 
-    "LpGBTforCICbypassPhaseScan_phyPort4", 
-    "LpGBTforCICbypassBestPhase_phyPort4", 
-    "LpGBTforCICbypassPhaseScan_phyPort5", 
-    "LpGBTforCICbypassBestPhase_phyPort5", 
-    "LpGBTforCICbypassPhaseScan_phyPort6", 
-    "LpGBTforCICbypassBestPhase_phyPort6", 
-    "LpGBTforCICbypassPhaseScan_phyPort7", 
-    "LpGBTforCICbypassBestPhase_phyPort7", 
-    "LpGBTforCICbypassPhaseScan_phyPort8", 
-    "LpGBTforCICbypassBestPhase_phyPort8", 
-    "LpGBTforCICbypassPhaseScan_phyPort9", 
-    "LpGBTforCICbypassBestPhase_phyPort9", 
-    "LpGBTforCICbypassPhaseScan_phyPort10", 
-    "LpGBTforCICbypassBestPhase_phyPort10", 
-    "LpGBTforCICbypassPhaseScan_phyPort11", 
-    "LpGBTforCICbypassBestPhase_phyPort11", 
-    "MPAtoCICPhaseScan_SLVScurrent_1", 
-    "MPAtoCICPhaseScan_SLVScurrent_4", 
-    "MPAtoCICPhaseScan_SLVScurrent_7", 
+    "LpGBTforCICbypassPhaseScan_phyPort*",
+    "LpGBTforCICbypassBestPhase_phyPort*",
+    "MPAtoCICPhaseScan_SLVScurrent_*",
     "RegisterMatchingEfficiency",
 
     "Board_WordAlignmentBitSlipValues",
@@ -182,25 +122,11 @@ hybridPlots = [
 
     "CommonNoiseHitsStrip_OccupancyDriven",
     "CommonNoiseHitsPixel_OccupancyDriven",
-    "SSA(0)toMPA(8)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(1)toMPA(9)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(2)toMPA(10)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(3)toMPA(11)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(4)toMPA(12)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(5)toMPA(13)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(6)toMPA(14)_CommonNoiseCorrelation_OccupancyDriven",
-    "SSA(7)toMPA(15)_CommonNoiseCorrelation_OccupancyDriven",
+    "SSA(*)toMPA(*)_CommonNoiseCorrelation_OccupancyDriven",
     "CommonNoiseStripPixelCorrelation_OccupancyDriven",
     "CommonNoiseHitsStrip_SigmaNoise_3.000",
     "CommonNoiseHitsPixel_SigmaNoise_3.000",
-    "SSA(0)toMPA(8)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(1)toMPA(9)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(2)toMPA(10)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(3)toMPA(11)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(4)toMPA(12)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(5)toMPA(13)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(6)toMPA(14)_CommonNoiseCorrelation_SigmaNoise_3.000",
-    "SSA(7)toMPA(15)_CommonNoiseCorrelation_SigmaNoise_3.000",
+    "SSA(*)toMPA(*)_CommonNoiseCorrelation_SigmaNoise_3.000",
     "CommonNoiseStripPixelCorrelation_SigmaNoise_3.000",
     "SSAtoMPA_SamplingEdgeErrorRate_SSA_SLVScurrent_1",
     "SSAtoMPA_SamplingEdgeTestedBits_SSA_SLVScurrent_1",
@@ -214,84 +140,13 @@ hybridPlots = [
     "SSAtoSSA_SamplingEdgeTestedBits_SSA_SLVScurrent_4",
     "SSAtoSSA_SamplingEdgeErrorRate_SSA_SLVScurrent_7",
     "SSAtoSSA_SamplingEdgeTestedBits_SSA_SLVScurrent_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_0_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_1_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_3_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_1",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_4",
-    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_5_LpGBT_Clock_Polarity_1_Clock_Strength_7",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort0",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort0",
-    "LpGBTforCICbypass_BestPhase_phyPort0",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort1",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort1",
-    "LpGBTforCICbypass_BestPhase_phyPort1",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort2",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort2",
-    "LpGBTforCICbypass_BestPhase_phyPort2",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort3",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort3",
-    "LpGBTforCICbypass_BestPhase_phyPort3",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort4",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort4",
-    "LpGBTforCICbypass_BestPhase_phyPort4",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort5",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort5",
-    "LpGBTforCICbypass_BestPhase_phyPort5",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort6",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort6",
-    "LpGBTforCICbypass_BestPhase_phyPort6",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort7",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort7",
-    "LpGBTforCICbypass_BestPhase_phyPort7",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort8",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort8",
-    "LpGBTforCICbypass_BestPhase_phyPort8",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort9",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort9",
-    "LpGBTforCICbypass_BestPhase_phyPort9",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort10",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort10",
-    "LpGBTforCICbypass_BestPhase_phyPort10",
-    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort11",
-    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort11",
-    "LpGBTforCICbypass_BestPhase_phyPort11",
-    "MPAtoCIC_PhaseScanErrorRate_MPA_SLVScurrent_1",
-    "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_1",
-    "MPAtoCIC_PhaseScanErrorRate_MPA_SLVScurrent_4",
-    "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_4",
-    "MPAtoCIC_PhaseScanErrorRate_MPA_SLVScurrent_7",
-    "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_7",
+    "CICtoLpGBT_PatternMatchingTestedBits_CIC_SLVScurrent_*",
+    "CICtoLpGBT_PatternMatchingErrorRate_CIC_SLVScurrent_*",
+    "LpGBTforCICbypass_PhaseScanBitErrorRate_phyPort*",
+    "LpGBTforCICbypass_PhaseScanTestedBits_phyPort*",
+    "LpGBTforCICbypass_BestPhase_phyPort*",
+    "MPAtoCIC_PhaseScanErrorRate_MPA_SLVScurrent_*",
+    "MPAtoCIC_PhaseScanTestedBits_MPA_SLVScurrent_*",
 
     "CICBX0AlignmentDelay",
 ]
@@ -334,7 +189,10 @@ opticalGroupPlots = [
     "3DTSBWCorr",
     "TSFWCorrSlice_*",
     "TSBWCorrSlice_*",
-
+    "TSFWCorrSliceMPA_*",
+    "TSBWCorrSliceMPA_*",
+    "TSFWCorrSliceSSA_*",
+    "TSBWCorrSliceSSA_*"
 ]
 
 
@@ -696,6 +554,55 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
     histograms = get_histograms(rootFile)
     histogramPaths = [hist_path for hist_path, hist_obj in histograms]
+
+    # Support for wildcards in variable lists
+    import re, fnmatch
+    for collection in [allVariables, hybridPlots, opticalGroupPlots, exstensiveVariables]:
+        new_list = []
+        
+        # Define regexes to extract the "slug" (including potential extra descriptors)
+        # from the full ROOT path, matching the script's fetch templates.
+        if collection is allVariables:
+            # Template: D_B(%s)_O(%s)_H(%s)_%s_Chip(%s)
+            slug_extractor = re.compile(r"D_B\(\d+\)_O\(\d+\)_H\(\d+\)_(.*?)_Chip\(\d+\)")
+        elif collection is hybridPlots:
+            # Template: D_B(%s)_O(%s)_%s_Hybrid(%s)
+            slug_extractor = re.compile(r"D_B\(\d+\)_O\(\d+\)_(.*?)_Hybrid\(\d+\)")
+        elif collection is opticalGroupPlots:
+            # Template: D_B(%s)_%s_OpticalGroup(%s)
+            slug_extractor = re.compile(r"D_B\(\d+\)_(.*?)_OpticalGroup\(\d+\)")
+        else:
+            slug_extractor = None
+
+        for variable in collection:
+            if '*' in variable or '?' in variable:
+                matches = set()
+                if slug_extractor:
+                    for hist_path in histogramPaths:
+                        m = slug_extractor.search(hist_path)
+                        if m:
+                            slug = m.group(1)
+                            # Match the wildcard against the extracted slug
+                            if fnmatch.fnmatch(slug, variable):
+                                matches.add(slug)
+                
+                # Fallback to general underscore matching if extraction failed or didn't find anything
+                if not matches:
+                    pattern = variable.replace("?", ".?").replace("*", ".*?")
+                    regex = re.compile(r"_(%s)_" % pattern)
+                    for hist_path in histogramPaths:
+                        m = regex.search(hist_path)
+                        if m:
+                            matches.add(m.group(1))
+                
+                if matches:
+                    new_list.extend(sorted(list(matches)))
+                else:
+                    new_list.append(variable)
+            else:
+                new_list.append(variable)
+        collection[:] = new_list
+
     if verbose>1000:
         print("List of histograms in the ROOT file:")
         for hist_path, hist_obj in histograms:
@@ -714,8 +621,6 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                     found = True
                     break
             if verbose>2: print("found", found)
-            if histograms:
-                print(hist_path)
             if not found:
                 if verbose>2: print("#####################################################################################")
                 print("WARNING: %s not found in the root file. It will be excluded from the webpage."%(name))
