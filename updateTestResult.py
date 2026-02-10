@@ -195,6 +195,9 @@ opticalGroupPlots = [
     "TSBWCorrSliceSSA_*"
 ]
 
+# allVariables = []
+# hybridPlots = []
+# opticalGroupPlots = []
 
 
 ## Check for duplicates
@@ -554,6 +557,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
     addHistoPlot(plots, c1, noiseGraph, fName = tmpFolder+"/CombinedNoisePlot.png")
     histograms = get_histograms(rootFile)
     histogramPaths = [hist_path for hist_path, hist_obj in histograms]
+    usedHistogramPaths = set()
 
     # Support for wildcards in variable lists
     import re, fnmatch
@@ -617,7 +621,8 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             if verbose>2: print("Checking %s"%name)
             found = False
             for hist_path, hist_obj in histograms:
-                if "_%s_"%name in hist_path:
+                # Robust check for name matches, even with suffixes
+                if "_%s_"%name in hist_path or "_%s__"%name in hist_path or hist_path.endswith("_%s"%name):
                     found = True
                     break
             if verbose>2: print("found", found)
@@ -632,6 +637,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
         if "NoiseDistribution" in hist_path:
             if verbose>2: print(hist_path.split("/")[-1])
             addHistoPlot(plots, c1, hist_obj, fName = tmpFolder+"/%s.png"%hist_path.split("/")[-1])
+            usedHistogramPaths.add(hist_path)
     missingPlots = []
     if verbose>2:
         print("allVariables: ", allVariables)
@@ -666,6 +672,7 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
                         plot = rootFile.Get(histoName)
                         if histoName in histogramPaths:
                             plot = histograms[histogramPaths.index(histoName)][1]
+                            usedHistogramPaths.add(histoName)
                         else:
                             print("WARNING: %s not found in ROOT file %s. Skipping."%(histoName, rootFile.GetName()))
                             if verbose>100000: 
@@ -724,13 +731,18 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
         for hybrid_id in opticalGroup['hybrids']:
             hybrid = opticalGroup['hybrids'][str(hybrid_id)]
             hybridMod_id = opticalGroup_id*2 + int(hybrid_id)
-            plot2 = rootFile.Get("Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_%s_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id))
+            histoName = "Detector/Board_%s/OpticalGroup_%s/Hybrid_%s/D_B(%s)_O(%s)_%s_Hybrid(%s)"%(board_id, opticalGroup_id, hybridMod_id, board_id, opticalGroup_id, name, hybridMod_id)
+            plot2 = rootFile.Get(histoName)
+            if plot2:
+                usedHistogramPaths.add(histoName)
             if verbose>1000: print("F")
             addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
     
     for name in opticalGroupPlots:
         path = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_%s_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, name, opticalGroup_id)
         plot2 = rootFile.Get(path)
+        if plot2:
+            usedHistogramPaths.add(path)
         if verbose>1000: print("Doing %s %s"%(name, path), plot2)
         if plot2 == None:
             print("WARNING: %s not found in ROOT file %s. Skipping."%(path, rootFile.GetName()))
@@ -745,6 +757,22 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
         print("WARNING: %s not found in ROOT file %s. Skipping."%(missingPlot, rootFile.GetName()))
     print("################################################")
     print()
+
+    unusedPaths = [p for p in histogramPaths if p not in usedHistogramPaths and "_Col" not in p]
+    if unusedPaths:
+        print("\n################################################")
+        print("List of histograms in the ROOT file NOT included in the website:")
+        folders = {}
+        for p in unusedPaths:
+            folder = "/".join(p.split("/")[:-1])
+            if folder not in folders: folders[folder] = []
+            folders[folder].append(p.split("/")[-1])
+        for folder in sorted(folders.keys()):
+            print("Folder: %s"%folder)
+            for p in sorted(folders[folder]):
+                print("  %s"%p)
+        print("################################################\n")
+
     for plot in plots:
         for plotToBeRenamed in plotsToBeRenamed:
             if plotToBeRenamed in plot:
