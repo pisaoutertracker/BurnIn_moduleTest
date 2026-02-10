@@ -206,7 +206,11 @@ opticalGroupPlots = [
     "TSFWCorrSliceMPA_*",
     "TSBWCorrSliceMPA_*",
     "TSFWCorrSliceSSA_*",
-    "TSBWCorrSliceSSA_*"
+    "TSBWCorrSliceSSA_*",
+    "PixelTCFWHistMPA_*",
+    "PixelTCBWHistMPA_*",
+    "hMPAError_*",
+    "hSSAError_*",
 ]
 
 # allVariables = []
