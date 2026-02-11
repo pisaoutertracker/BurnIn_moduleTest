@@ -1061,7 +1061,7 @@ def getBurnInSessions(debug=False):
                 print(session["operator"])
                 print(session["description"])
                 print(session["testType"])
-            if counters["Heat"]>0 and counters["Cool"]>0 and counters["PSfullTest"]>0:
+            if counters["nCycles"]>0 and counters["PSfullTest"]>0:
                 burnInSessions.append(session)
                 if debug:
                     print("Session %s is a burn-in session"%(session["sessionName"]))
