@@ -1028,7 +1028,6 @@ def getBurnInSessions(debug=False):
         if "stepList" in session:
             if debug:print("Session %s stepList: %s"%(session["sessionName"], session["stepList"]))
             counters = {
-                ""
                 "Heat" : 0,
                 "Cool" : 0,
                 "ScanIV" : 0,
