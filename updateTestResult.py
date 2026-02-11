@@ -25,7 +25,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2026-02-10"
+version = "2026-02-11"
 #version = "2025-10-22e"
 
 skipInfluxDb= False
@@ -195,12 +195,35 @@ opticalGroupPlots = [
     "MinHitsBWHist",
     "MinHitsBWHistSSA*",
     "MinHitsBWHistMPA*",
-    "3DTSFWCorr",
-    "3DTSFWCorrSSA*",
-    "3DTSFWCorrMPA*",
-    "3DTSBWCorr",
-    "3DTSBWCorrSSA*",
-    "3DTSBWCorrMPA*",
+    #### exclude 3D plots ###
+    # "3DTSFWCorr",
+    # "3DTSFWCorrSSA*",
+    # "3DTSFWCorrMPA*",
+    # "3DTSBWCorr",
+    # "3DTSBWCorrSSA*",
+    # "3DTSBWCorrMPA*",
+    "TSFWCorrSlice_*",
+    "TSBWCorrSlice_*",
+    "TSFWCorrSliceMPA_*",
+    "TSBWCorrSliceMPA_*",
+    "TSFWCorrSliceSSA_*",
+    "TSBWCorrSliceSSA_*",
+    "PixelTCFWHistMPA_*",
+    "PixelTCBWHistMPA_*",
+    "hMPAError_*",
+    "hSSAError_*",
+]
+
+logZPlots = [
+    "SameEvHist",
+    "SameEvHistSSA*",
+    "SameEvHistMPA*",
+    "StripTCFWHist",
+    "StripTCFWHistSSA*",
+    "StripTCFWHistMPA*",
+    "StripTCBWHist",
+    "StripTCBWHistSSA*",
+    "StripTCBWHistMPA*",
     "TSFWCorrSlice_*",
     "TSBWCorrSlice_*",
     "TSFWCorrSliceMPA_*",
@@ -384,16 +407,25 @@ def addHistoPlot(plots, canvas, plot, fName):
                     plot.Draw()
         canvas.Update()
         plotName = plot.GetName()
-        isLog = False
+        isLogY = False
         for logPlot in logPlots:
-            if logPlot in plotName: isLog = True
+            if logPlot in plotName: isLogY = True
+        
+        isLogZ = False
+        for logZPlot in logZPlots:
+            if fnmatch.fnmatch(plotName, "*%s"%logZPlot): isLogZ = True
+
         if verbose>10:
             print("Creating %s"%fName)
-        if isLog: 
+        if isLogY: 
             print("Setting log scale")
             canvas.SetLogy()
+        if isLogZ: 
+            print("Setting log scale (Z)")
+            canvas.SetLogz()
         canvas.SaveAs(fName)
-        if isLog: canvas.SetLogy(0)
+        if isLogY: canvas.SetLogy(0)
+        if isLogZ: canvas.SetLogz(0)
     ## append fName, even if it does not exist to show the missing plot, except for the known missing plots
     if not("SSA" in fName and ("/2DPixelNoise_" in fName or "/2DChannelOffsetValues_" in fName or "/2DChannelOccupancyAfterOffsetEqualization_" in fName or "/2DChannelNoise_" in fName)) and not("MPA" in fName and ("/ChannelOffsetValues_" in fName)):
         if verbose>10: 
