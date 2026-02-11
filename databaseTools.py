@@ -178,6 +178,14 @@ def getListOfModulesFromDB():
     result = make_get_request("getListOfModulesFromDB", api_url, "modules list")
     return result if result is not None else []
 
+### read the list of sessions
+
+def getListOfSessionsFromDB():
+    if Config.VERBOSE>0: print("Calling getListOfSessionsFromDB()")
+    api_url = "http://%s:%d/sessions"%(Config.IP, Config.PORT)
+    result = make_get_request("getListOfSessionsFromDB", api_url, "sessions list")
+    return result if result is not None else []
+
 ### read the test modules analysis
 
 def getListOfAnalysisFromDB():
@@ -1011,8 +1019,69 @@ def printSingleModuleTestAnalysesOfSession(sessionName):
             if analysisName:
                 print(f"- {analysisName}")
 
+def getBurnInSessions(debug=False):
+    sessions = getListOfSessionsFromDB()
+    burnInSessions = []
+    for session in sessions:
+        if session["sessionName"] != "session895":
+            continue
+        if "stepList" in session:
+            if debug:print("Session %s stepList: %s"%(session["sessionName"], session["stepList"]))
+            counters = {
+                ""
+                "Heat" : 0,
+                "Cool" : 0,
+                "ScanIV" : 0,
+                "LV_off" : 0,
+                "LV_on" : 0,
+                "HV_off" : 0,
+                "HV_on" : 0,
+                "Wait" : 0,
+                "vtrxoff" : 0,
+                "PSquickTest" : 0,
+                "PSfullTest" : 0,
+                "Runs" : 0,
+                "nCycles" : 0,
+                "modules" : 0,
+            }
+            for step in session["stepList"]:
+                for key in counters.keys():
+                    if key in step:
+                        counters[key] += 1
+            if "test_runName" in session:
+                counters["Runs"] = len(session["test_runName"])
+                if debug:
+                    for run in session["test_runName"]:
+                        run = getRunFromDB(run)
+                        print(run["moduleTestName"])
+                if "nCycles" in session:
+                    counters["nCycles"] = session["nCycles"]
+            if "modulesList" in session:
+                counters["modules"] = len(session["modulesList"])
+            if debug:
+                pprint(counters)
+                print("Session %s"%(session["sessionName"]))
+                print(session["operator"])
+                print(session["description"])
+                print(session["testType"])
+            if counters["Heat"]>0 and counters["Cool"]>0 and counters["PSfullTest"]>0:
+                burnInSessions.append(session)
+                if debug:
+                    print("Session %s is a burn-in session"%(session["sessionName"]))
+                    print()
+
+    return burnInSessions
+
+
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
+    print()
+    sessions = getListOfSessionsFromDB()
+    burnInSessions = getBurnInSessions(debug=True)
+    for session in burnInSessions:
+        print(session["sessionName"], session["operator"], session["description"])
+    print()
+    print()
     session = "session812"
     print("printSingleModuleTestAnalysesOfSession(%s):"%session)
     printSingleModuleTestAnalysesOfSession(session)
