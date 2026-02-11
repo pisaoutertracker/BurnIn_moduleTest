@@ -1023,8 +1023,6 @@ def getBurnInSessions(debug=False):
     sessions = getListOfSessionsFromDB()
     burnInSessions = []
     for session in sessions:
-        if session["sessionName"] != "session895":
-            continue
         if "stepList" in session:
             if debug:print("Session %s stepList: %s"%(session["sessionName"], session["stepList"]))
             counters = {
@@ -1049,10 +1047,10 @@ def getBurnInSessions(debug=False):
                         counters[key] += 1
             if "test_runName" in session:
                 counters["Runs"] = len(session["test_runName"])
-                if debug:
-                    for run in session["test_runName"]:
-                        run = getRunFromDB(run)
-                        print(run["moduleTestName"])
+                # if debug:
+                #     for run in session["test_runName"]:
+                #         run = getRunFromDB(run)
+                #         print(run["moduleTestName"])
                 if "nCycles" in session:
                     counters["nCycles"] = session["nCycles"]
             if "modulesList" in session:
