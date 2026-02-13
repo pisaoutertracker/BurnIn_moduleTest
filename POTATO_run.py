@@ -393,7 +393,7 @@ if __name__ == "__main__":
     ## Run POTATO express in headless mode
     #export QT_QPA_PLATFORM=offscreen
     ## Remember: you might need to run ./compile.py first!
-    {skipPOTATO_string} POTATODIR={POTATOExpressFolder} PYTHONPATH=/home/thermal/potato/cmsdbldr/src/main/python/  ./PotatoExpress --user cmspisa --password "$(cat ~/private/.cmspi)"
+    {skipPOTATO_string} POTATODIR={POTATOExpressFolder} PYTHONPATH=/home/thermal/potato/cmsdbldr/src/main/python/  ./PotatoExpress --user cmspisa --password "$(cat ~/private/.cmspi)" --upload
                 """
                 scriptName = scriptName_base%rootTrackerPath.split("/")[-1].replace(".root", "")
                 scriptPath = "%s/%s"%(outDir, scriptName)
