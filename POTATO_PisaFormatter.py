@@ -714,7 +714,7 @@ class POTATOPisaFormatter():
         TObjString(str(runNumber)).Write("LocalRunNumber") ##Our local run number corresponds to the run number 
         print("Location: ", moduleName[moduleName.find("-")-3:moduleName.find("-")])
         location = moduleName[moduleName.find("-")-3:moduleName.find("-")] ###  how it was defined in the old code
-        location = "PSA"
+        location = "Pisa"
         TObjString(location).Write("Location")
         print("Module_ID: ", moduleName)
         TObjString(moduleName).Write("Module_ID")
