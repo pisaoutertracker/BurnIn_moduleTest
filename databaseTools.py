@@ -1040,6 +1040,7 @@ def getBurnInSessions(debug=False):
                 "Runs" : 0,
                 "nCycles" : 0,
                 "modules" : 0,
+                "RunsWithFullTest" : 0,
             }
             for step in session["stepList"]:
                 for key in counters.keys():
@@ -1047,6 +1048,10 @@ def getBurnInSessions(debug=False):
                         counters[key] += 1
             if "test_runName" in session:
                 counters["Runs"] = len(session["test_runName"])
+                for run in session["test_runName"]:
+                    run = getRunFromDB(run)
+                    if "runType" in run and run["runType"] == "PSfullTest":   
+                        counters["RunsWithFullTest"] += 1
                 # if debug:
                 #     for run in session["test_runName"]:
                 #         run = getRunFromDB(run)
@@ -1061,7 +1066,7 @@ def getBurnInSessions(debug=False):
                 print(session["operator"])
                 print(session["description"])
                 print(session["testType"])
-            if counters["nCycles"]>0 and counters["PSfullTest"]>0:
+            if counters["nCycles"]>0 and counters["RunsWithFullTest"]>0 and  counters["Heat"]>0 and counters["Cool"]>0:
                 burnInSessions.append(session)
                 if debug:
                     print("Session %s is a burn-in session"%(session["sessionName"]))
