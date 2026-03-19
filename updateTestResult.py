@@ -25,7 +25,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2026-03-19b"
+version = "2026-03-19d"
 #version = "2025-10-22e"
 
 skipInfluxDb= False
@@ -62,8 +62,6 @@ allVariables = [
     "ChannelOccupancy_Injection_2.000_MIP",
     "CommonNoiseHits_OccupancyDriven",
     "CommonNoiseHits_SigmaNoise_3.000",
-    "CommonNoiseHitsStrip_SigmaNoise_*",
-    "CommonNoiseHitsPixel_SigmaNoise_*"
 ]
 
 
@@ -215,6 +213,8 @@ opticalGroupPlots = [
     "PixelTCBWHistMPA_*",
     "hMPAError_*",
     "hSSAError_*",
+    "CommonNoiseHitsStrip_SigmaNoise_*",
+    "CommonNoiseHitsPixel_SigmaNoise_*"
 ]
 
 logZPlots = [
@@ -278,6 +278,8 @@ logPlots = [
     "SSA(6)toMPA(14)_CommonNoiseCorrelation_SigmaNoise_3.000",
     "SSA(7)toMPA(15)_CommonNoiseCorrelation_SigmaNoise_3.000",
     "CommonNoiseStripPixelCorrelation_SigmaNoise_3.000",
+    "CommonNoiseHitsStrip_SigmaNoise_",
+    "CommonNoiseHitsPixel_SigmaNoise_"
 ]
 
 plotsToBeRenamed = { ##old name --> new name
@@ -451,30 +453,61 @@ def addMultipleHistoPlot(plots, canvas, plotCollections, fName):
             assert(type(plot)==ROOT.TH1F)
             canvas.cd()
             max_ = max(max_, plot.GetMaximum())
-            min_ = min(min_, plot.GetMaximum())
+            min_ = min(min_, plot.GetMinimum())
     
 #    leg = ROOT.TLegend(0.75,0.5,0.9,0.9)
     leg = ROOT.TLegend(0.9,0.1,0.99,0.9)
     leg.SetFillStyle(0)
     leg.SetLineStyle(0)
     leg.SetLineWidth(0)
+    isLogY = False
     for hybridN in plotCollections:
         for i, plot in enumerate(plotCollections[hybridN]):
+            plotName = plot.GetName()
+            for logPlot in logPlots:
+                if fnmatch.fnmatch(plotName, f"*{logPlot}*"):
+                    isLogY = True
+                    break
+            if isLogY:
+                break
+        if isLogY:
+            break
+    if isLogY:
+        canvas.SetLogy(1)
+
+    for hybridN in plotCollections:
+        for i, plot in enumerate(plotCollections[hybridN]):
+            plotName = plot.GetName()
             plot.SetLineColor(colors[i])
             plot.SetMarkerColor(colors[i])
             if i == 0:
                 plot.SetMaximum(max_*1.1)
-                plot.SetMinimum(max(0, min_ - max_*0.2))
+                if isLogY:
+                    plot.SetMinimum(1e-3)
+                else:
+                    plot.SetMinimum(max(0, min_ - max_*0.2))
                 plot.Draw()
             else:
                 plot.Draw("same")
-            chipN = int(plot.GetName().split("_Chip(")[1].split(")")[0])
-            if "MPA" in fName: chipN = chipN - 8
-            leg.AddEntry(plot,"H%s C%d"%(hybridN, chipN))
+            # Original chip label if available, otherwise sigma label
+            if "_Chip(" in plot.GetName():
+                chipN = int(plot.GetName().split("_Chip(")[1].split(")")[0])
+                if "MPA" in fName:
+                    chipN = chipN - 8
+                label = "H%s C%d"%(hybridN, chipN)
+            else:
+                m = re.search(r"SigmaNoise_([^_]+)", plot.GetName())
+                if m:
+                    label = f"{m.group(1)} #sigma"
+                else:
+                    label = plot.GetName().split("_OpticalGroup(")[0].split(")_")[-1]
+            leg.AddEntry(plot, label)
     leg.Draw()
     canvas.Update()
     print("Creating %s"%fName)
     canvas.SaveAs(fName)
+    if isLogY:
+        canvas.SetLogy(0)
     plots.append(fName)
     return
 
@@ -791,6 +824,8 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             if verbose>1000: print("F")
             addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_Hybrid%s.png"%(name, hybrid_id))
     
+    pixelOGplots = []
+    stripOGplots = []
     for name in opticalGroupPlots:
         path = "Detector/Board_%s/OpticalGroup_%s/D_B(%s)_%s_OpticalGroup(%s)"%(board_id, opticalGroup_id, board_id, name, opticalGroup_id)
         plot2 = rootFile.Get(path)
@@ -802,7 +837,22 @@ def makePlots(rootFile, xmlConfig, board_id, opticalGroup_id, tmpFolder, dateTim
             continue
         if verbose>1000: print("G")
         addHistoPlot(plots, c1, plot2, fName = tmpFolder+"/%s_OpticalGroup%s.png"%(name, hybrid_id))
-    
+        # overlay OG level pixel and strip occupancy plots 
+        if plot2.GetDimension() == 1:
+            if name.startswith("CommonNoiseHitsPixel_SigmaNoise_"):
+                pixelOGplots.append(plot2)
+            elif name.startswith("CommonNoiseHitsStrip_SigmaNoise_"):
+                stripOGplots.append(plot2)
+    if pixelOGplots:
+        addMultipleHistoPlot(
+            plots, c1, {0: pixelOGplots},
+            fName=tmpFolder+"/CommonNoiseHitsPixel_SigmaNoise_Multiple_MPA_OpticalGroup.png"
+        )
+    if stripOGplots:
+        addMultipleHistoPlot(
+            plots, c1, {0: stripOGplots},
+            fName=tmpFolder+"/CommonNoiseHitsStrip_SigmaNoise_Multiple_SSA_OpticalGroup.png"
+        )
     print()
     print("################################################")
     print("List of missing plots:")
@@ -905,10 +955,56 @@ def addPlotSection(title, plots, width):
         imageCode += '<img src="%s" style="width: %f%%;">\n'%(plot.split("/")[-1], width)
     return imageCode
 
+def isOpticalGroupSlicePlot(plot):
+    name = os.path.basename(plot).replace(".png", "")
+    return name.startswith((
+        "TSFWCorrSlice_",
+        "TSBWCorrSlice_",
+        "TSFWCorrSliceMPA_",
+        "TSBWCorrSliceMPA_",
+        "TSFWCorrSliceSSA_",
+        "TSBWCorrSliceSSA_",
+    ))
+
+def addOpticalGroupSection(plots, width):
+    imageCode = "<h1> OpticalGroup slices</h1>\n"
+
+    grouped = {}
+    other = []
+    prefixes = (
+        "TSFWCorrSlice_",
+        "TSBWCorrSlice_",
+        "TSFWCorrSliceMPA_",
+        "TSBWCorrSliceMPA_",
+        "TSFWCorrSliceSSA_",
+        "TSBWCorrSliceSSA_",
+    )
+
+    for plot in sorted(plots):
+        name = os.path.basename(plot).replace(".png", "")
+        if not name.startswith(prefixes):
+            other.append(plot)
+            continue
+        m = re.search(r"__(.+?)_OpticalGroup(\d+)", name)
+        if m:
+            key = m.group(1) + "_OpticalGroup" + m.group(2)
+            grouped.setdefault(key, []).append(plot)
+        else:
+            other.append(plot)
+
+    for key in sorted(grouped.keys()):
+        imageCode += "<h2> %s </h2>\n" % key
+        imageCode += "<p>"
+        for plot in grouped[key]:
+            imageCode += '<img src="%s" style="width: %f%%;">\n'%(plot.split("/")[-1], width)
+        imageCode += "</p>"
+
+    return imageCode
+
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor, error_lines_count=0, error_I2C_lines_count=0):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor, error_lines_count=0, error_I2C_lines_count=0, warning_lines_count=0, warning_I2C_lines_count=0, skipInfluxDb=False, useOnlyMergedPlots=False, verbose=0):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -944,7 +1040,8 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     imageCode += addPlotSection("All-in-one plots", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and (not "MPA" in p and not "SSA" in p))], 30.0)
     imageCode += addPlotSection("All-in-one plots (MPA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("MPA" in p))], 30.0)
     imageCode += addPlotSection("All-in-one plots (SSA)", [p for p in plots if (("Multiple"in p or "CombinedNoisePlot"in p) and ("SSA" in p))], 30.0)
-    imageCode += addPlotSection("OpticalGroup", [p for p in plotsInclusive if "_OpticalGroup"in p], 30.0)
+    imageCode += addPlotSection("OpticalGroup", [p for p in plotsInclusive if "_OpticalGroup" in p and not isOpticalGroupSlicePlot(p)], 30.0)
+    imageCode += addOpticalGroupSection([p for p in plotsInclusive if "_OpticalGroup" in p and isOpticalGroupSlicePlot(p)], 30.0)
     imageCode += addPlotSection("Hybrid 0", [p for p in plotsInclusive if "_Hybrid0"in p], 30.0)
     imageCode += addPlotSection("Hybrid 1", [p for p in plotsInclusive if "_Hybrid1"in p], 30.0)
     imageCode += addPlotSection("Hybrid 0 - MPA - Merged plots", [p for p in plotsPerChip if "_Hybrid0"in p and "MPA" in p], 30.0)
@@ -1040,7 +1137,8 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     body += grayText("Link to Grafana (available only from INFN Pisa): ") + '<a href="%s">'%GrafanaLink + GrafanaText + "</a><br>" + "\n"
     body += grayText("Number of error lines: ") + str(error_lines_count) + "<br>" + "\n"
     body += grayText("Number of I2C error lines: ") + str(error_I2C_lines_count) + "<br>" + "\n"
-    
+    body += grayText("Number of warning lines: ") + str(warning_lines_count) + "<br>" + "\n"
+
     ### Single Module Run
     boardToId = {v: k for k, v in run["runBoards"].items()}
     body += "<h1> %s %s  </h1>"%(grayText("Single Module Run:"), testID) + "\n"
@@ -1460,6 +1558,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
 
     # Count error lines in any log files extracted from the zip
     import glob
+    warning_lines_count = 0
     error_lines_count = 0
     error_I2C_lines_count = 0
     log_files = glob.glob(os.path.join(extracted_dir, "**", "*.log"), recursive=True)
@@ -1478,6 +1577,8 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
                         error_lines_count += 1
                         if "I2C" in line:
                             error_I2C_lines_count += 1
+                    elif "|W|" in line:
+                        warning_lines_count += 1
         except Exception as e:
             print("Could not read log file for error count:", e)
     else:
@@ -1563,7 +1664,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor, error_lines_count, error_I2C_lines_count)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor, error_lines_count, error_I2C_lines_count, warning_lines_count)
     zipFile = "results"  
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -1604,8 +1705,9 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #     navigator = "dummy"
 
     error_lines = {
-        "total": error_lines_count,
-        "I2C": error_I2C_lines_count,
+        "error_total": error_lines_count,
+        "error_I2C": error_I2C_lines_count,
+        "warning_total": warning_lines_count
     }
 
     print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_analysis_read,nfolder))
