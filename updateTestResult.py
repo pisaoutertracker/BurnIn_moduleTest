@@ -1004,7 +1004,7 @@ def addOpticalGroupSection(plots, width):
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor, error_lines_count=0, error_I2C_lines_count=0, warning_lines_count=0, warning_I2C_lines_count=0, skipInfluxDb=False, useOnlyMergedPlots=False, verbose=0):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotType, slotNumber, tempSensor, error_lines_count=0, error_I2C_lines_count=0, warning_lines_count=0, warning_I2C_lines_count=0, skipInfluxDb=False, useOnlyMergedPlots=False, verbose=0):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -1147,7 +1147,7 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
     board_id = boardToId[str(test['board'])]
     optical_id = str(test['opticalGroupName'])
     body += grayText("Board: ") + str(test['board']) + grayText(". BoardId: ") + board_id + grayText(". OpticalGroup: ")  + optical_id + "<br>" +"\n"
-    body += grayText("Burn-in slot: ") + str(slotBI) + "<br>" +"\n"
+    body += grayText("Slot type: ") + slotType + grayText(". Slot number: ") + str(slotNumber) + "<br>" +"\n"
     body += "<br>" + "\n"
 #    body += grayText("NameId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_NameId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
     body += grayText("LpGBTFuseId: ") + str(rootFile.Get("Detector/Board_%s/OpticalGroup_%s/D_B(%s)_LpGBTFuseId_OpticalGroup(%s)"%(board_id, optical_id, board_id, optical_id))) + "<br>" +"\n"
@@ -1226,18 +1226,20 @@ def getInfluxQueryAPI(token_location = "~/private/influx.sct"):
     client = InfluxDBClient(url="http://cmslabserver:8086/", token=token)
     return client.query_api()
 
-def getTemperatureAt(timestamp, sensorName="Temp0", org="pisaoutertracker"):
+def getTemperatureAt(timestamp, sensorName="/fnalbox/full:Temp0", org="pisaoutertracker"):
     # Define a small window around the timestamp (±30 seconds)
     if verbose>2: print('Calling getTemperatureAt(timestamp=%s, sensorName=%s, org=%s)'%(timestamp, sensorName, org))
     window = timedelta(seconds=30)
     timestamp = datetime.fromisoformat(timestamp)
     start_window = (timestamp - window).isoformat("T") + "Z"
     end_window = (timestamp + window).isoformat("T") + "Z"
+    sensorTopic, sensorField = sensorName.split(":")
     query = f'''
     from(bucket: "sensor_data")
         |> range(start: {start_window}, stop: {end_window})
         |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
-        |> filter(fn: (r) => r["_field"] == "{sensorName}")
+        |> filter(fn: (r) => r["topic"] == "{sensorTopic}")
+        |> filter(fn: (r) => r["_field"] == "{sensorField}")
         |> aggregateWindow(every: 1s, fn: mean, createEmpty: false)
         |> yield(name: "mean")
     '''
@@ -1413,15 +1415,16 @@ def makePlotInfluxdb(startTime_rome, stopTime_rome, tempSensor, folder, org="pis
     stop_time = (stopTime_utc + timedelta(hours=1)).isoformat("T").split("+")[0] + "Z"
     
 
-    sensorName = tempSensor
+    sensorTopic,sensorField = tempSensor.split(":")
     query = f'''
     from(bucket: "sensor_data")
      |> range(start: {start_time}, stop: {stop_time})
      |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
-     |> filter(fn: (r) => r["_field"] == "%s" )
+     |> filter(fn: (r) => r["topic"] == "{sensorTopic}")
+     |> filter(fn: (r) => r["_field"] == "{sensorField}")
      |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
      |> yield(name: "mean")
-    '''%sensorName
+    '''
     
     time = []
     value = []
@@ -1438,7 +1441,7 @@ def makePlotInfluxdb(startTime_rome, stopTime_rome, tempSensor, folder, org="pis
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     plt.figure(figsize=(10, 5))
-    plt.plot(time, value, label=sensorName)
+    plt.plot(time, value, label=tempSensor)
     plt.axvline(x=startTime_utc, color='r', linestyle='--', label=startTime_utc.strftime('%H:%M:%S'))
     plt.axvline(x=stopTime_utc, color='b', linestyle='--', label=stopTime_utc.strftime('%H:%M:%S'))
     ## Set the x and y axis labels
@@ -1607,15 +1610,24 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
         connectionMap = {}
 
     ### Get slotBI from connection map
-    from databaseTools import getSlotBIFromModuleConnectionMap
-    slotBI = getSlotBIFromModuleConnectionMap(connectionMap)
+    from databaseTools import getSlotFromModuleConnectionMap
+    slotType, slotNumber = getSlotFromModuleConnectionMap(connectionMap)
+    print("ConnectionMap: ", connectionMap)
+    print("slot: ", slotType, slotNumber)
     if tempSensor == "auto":
-        try:
-            tempSensor = "OW%02d"%(slotBI)
-            print("Auto tempSensor:", tempSensor)
-        except Exception as e:
-            print("Error setting tempSensor:", e)
-            tempSensor = "Temp0"
+        if slotType == "Burn-in":
+            tempSensor = "/fnalbox/full:OW%02d"%(slotNumber)
+        elif slotType == "MARTA":
+            tempSensor = "/MARTA/status:TT06_CO2"
+        elif slotType == "Integration":
+            tempSensor = "/integration/thermalcamera:max"
+        elif slotType == "Other":
+            tempSensor = "/fnalbox/full:Temp0"
+        else:
+            tempSensor = "/fnalbox/full:Temp0"
+            print("Could not determine tempSensor from slot:", slotType, slotNumber)
+            print("Defaulting tempSensor to:", tempSensor)
+        print("Auto tempSensor:", tempSensor)
 
     ### Add plot with voltage and currents
     hv_channel = -1
@@ -1664,7 +1676,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor, error_lines_count, error_I2C_lines_count, warning_lines_count)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotType, slotNumber, tempSensor, error_lines_count, error_I2C_lines_count, warning_lines_count)
     zipFile = "results"  
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -1755,14 +1767,15 @@ def printAllSensors(org="pisaoutertracker"):
     from(bucket: "sensor_data")
     |> range(start: -1h)
     |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer")
-    |> group(columns: ["_field"])
-    |> distinct(column: "_field")
-    |> yield(name: "distinct")
+    |> group(columns: ["topic", "_field"])
+    |> limit(n: 1)
+    |> keep(columns: ["topic", "_field"])
+    |> yield(name: "unique_combinations")
     '''
     tables = getInfluxQueryAPI().query(query, org=org)
     for table in tables:
         for record in table.records:
-            print(record.get_value())
+            print(f"{record['topic']}:{record['_field']}")
 
 
 if __name__ == '__main__':
@@ -1771,7 +1784,7 @@ if __name__ == '__main__':
     print("Example: python3  updateTestResult.py PS_26_IPG-10010__run500939 ")
     print()
     #makePlotInfluxdb("2025-02-24T12:32:38", "2025-02-24T14:32:38", "/tmp/influxdb/")
-    print(getTemperatureAt("2025-02-24T12:32:38", sensorName="Temp0"))
+    print(getTemperatureAt("2025-02-24T12:32:38", sensorName="/fnalbox/full:Temp0"))
     #makePlotInfluxdbVoltageAndCurrent("2025-02-24T12:32:38","2025-02-24T13:32:38", "/tmp/influxdb/")
     #printAllSensors
     parser = argparse.ArgumentParser(description='Script used to elaborate the results of the Phase-2 PS module test. More info at https://github.com/pisaoutertracker/BurnIn_moduleTest. \n Example: python3  updateTestResult.py PS_26_05-IBA_00102__run418 . ')

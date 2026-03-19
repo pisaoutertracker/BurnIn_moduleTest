@@ -24,6 +24,11 @@ if __name__ == "__main__":
     print("python3  POTATO_run.py session747\n")
     print()
 
+    ##     python3 login.py --getSessionCacheLocation {POTATOExpressFolder}//../get_session_cache.py --coockiesOutput {POTATOExpressFolder}//../.session.cache \;
+    command = f"python3 login.py --getSessionCacheLocation {POTATOExpressFolder}/../get_session_cache.py --coockiesOutput {POTATOExpressFolder}/../.session.cache"
+    print(f"Running command to get session cache for POTATO Express: {command}")
+    os.system(command)
+
     #$DISPLAY not null
     if os.getenv('DISPLAY') is None:
         raise Exception("Error: $DISPLAY is not set. This would cause a crash in POTATO Express. Please run it where $DISPLAY is available.")
@@ -285,7 +290,7 @@ if __name__ == "__main__":
         date = run['runDate']
         from updateTestResult import getTemperatureAt, getTimeFromRomeToUTC
         dateTime_rome, dateTime_utc = getTimeFromRomeToUTC(date)
-        temp = getTemperatureAt(dateTime_utc.isoformat("T").split("+")[0] , sensorName="Temp0")
+        temp = getTemperatureAt(dateTime_utc.isoformat("T").split("+")[0] , sensorName="/fnalbox/full:Temp0") ##FIXME: select the proper sensor!
         #formatted_temp = format(temp, "+.1f")
         formatted_temp = format(int(temp), "+d")
         formatted_date = dateTime_rome.strftime("%Y-%m-%d_%Hh%Mm%Ss")
@@ -379,9 +384,9 @@ if __name__ == "__main__":
                     skipPOTATO_string = ""
                 script = f"""{descriptionLine}
     # login unnecessary if you pass user/password directly to ./PotatoExpress
-    #python3 login.py --getSessionCacheLocation {POTATOExpressFolder}/../get-session-cache.py --coockiesOutput {POTATOExpressFolder}/../.session.cache
     cd {POTATOExpressFolder}
     source ../setupPotato.sh
+    #cd Express
     mkdir -p backup
     mv data/LocalFiles/DropBox/* backup
 

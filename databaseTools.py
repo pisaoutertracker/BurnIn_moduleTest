@@ -196,14 +196,6 @@ def getListOfAnalysisFromDB():
 
 ### read the module test result from DB
 
-def getSessionFromDB(testID):
-    if Config.VERBOSE>0: print("Calling getSessionFromDB()", testID)
-    api_url = "http://%s:%d/sessions/%s"%(Config.IP, Config.PORT, testID)
-    result = make_get_request("getSessionFromDB", api_url, "session", testID)
-    return result if result is not None else evalMod("{}")
-
-### read the module test result from DB
-
 def getModuleTestFromDB(testID):
     if Config.VERBOSE>0: print("Calling getModuleTestFromDB()", testID)
     api_url = "http://%s:%d/module_test/%s"%(Config.IP, Config.PORT, testID)
@@ -409,18 +401,18 @@ def getListOfAnalysisFromDB():
 
 ### read the module test result from DB
 
-def getSessionFromDB(testID):
-    if Config.VERBOSE>0: print("Calling getSessionFromDB()", testID)
-    api_url = "http://%s:%d/sessions/%s"%(Config.IP, Config.PORT, testID)
+def getSessionFromDB(sessionName):
+    if Config.VERBOSE>0: print("Calling getSessionFromDB()", sessionName)
+    api_url = "http://%s:%d/sessions/%s"%(Config.IP, Config.PORT, sessionName)
     response = requests.get(api_url)
     if response.status_code == 200:
         if Config.VERBOSE>1: print("Session read successfully")
     else:
         print()
-        print(f"ERROR [getSessionFromDB]: Failed to get session {testID}. Status code:", response.status_code)
+        print(f"ERROR [getSessionFromDB]: Failed to get session {sessionName}. Status code:", response.status_code)
         print()
         print("You can check if the session exists in the database using:")
-        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/sessions/{testID}'")
+        print(f"curl -X GET -H 'Content-Type: application/json' 'http://{Config.IP}:{Config.PORT}/sessions/{sessionName}'")
         print("Response:", response.status_code)
         print("Response:", response.content.decode())
         print()
@@ -925,25 +917,37 @@ def getConnectionMapFromFC7(fc7):
         print()
         return None
 
-def getSlotBIFromModuleConnectionMap(connectionMapModule):
+def getSlotFromModuleConnectionMap(connectionMapModule):
     """
     Get the slotBI from the module connection map (detSide view).
     slotBI is a number between 0 and 8 (slot in the burn-in).
     Returns: slotBI as an integer, or None if not found
     """
-    if Config.VERBOSE>0: print("Calling getSlotBIFromModuleConnectionMap()")
+    if Config.VERBOSE>0: print("Calling getSlotFromModuleConnectionMap()")
     if connectionMapModule is None:
-        raise Exception("Error in calling getSlotBIFromModuleConnectionMap(). Module connection map does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)")
+        raise Exception("Error in calling getSlotFromModuleConnectionMap(). Module connection map does not exist in the database (see http://pccmslab1.pi.infn.it:5000/static/connections.html)")
 
     for el in connectionMapModule.values():
         if "connections" in el:
             for conn in el["connections"]:
-                if "cable" in conn and conn["cable"].startswith("B") and conn["cable"][1].isdigit(): ## expect "B0" to "B8"
-                    slotBI = int(conn["cable"].replace("B",""))
+                if "cable" in conn and conn["cable"].startswith("B") and conn["cable"][1].isdigit(): ## expect "B0" to "B8" (slot in the burn-in)
+                    slot = int(conn["cable"].replace("B",""))
                     if Config.VERBOSE>1: print("Found slotBI %s for module in connection map"%(slotBI))
-                    return slotBI
-    print("ERROR [getSlotBIFromModuleConnectionMap]: Could not find any slotBI in the module connection map")
-    return None
+                    return "BI", slot
+                elif "cable" in conn and conn["cable"].startswith("BINT") and conn["cable"][4].isdigit(): ## expect "BINT1" (slot test)
+                    slot = int(conn["cable"][4])
+                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slotBI))
+                    return "Integration", slot
+                elif "cable" in conn and conn["cable"] == "P001": ## this is not MARTA, but not even a slot in the burn-in nor in integration test
+                    if Config.VERBOSE>1: print("Found patch panel 001 (%s) for module in connection map"%(conn["cable"]))
+                    return "Other", 0
+                elif "cable" in conn and conn["cable"].startswith("P") and conn["cable"][1].isdigit(): ## expect "P2" (patch panel number from MARTA)
+                    slot = int(conn["cable"][1:])
+                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slotBI))
+                    return "MARTA", slot
+                
+    print("ERROR [getSlotFromModuleConnectionMap]: Could not find any slotBI in the module connection map")
+    return "Other", 0
 
 #module.get("children").get("PS Read-out Hybrid").get("details").get("ALPGBT_VERSION")
 
@@ -1048,29 +1052,31 @@ def getBurnInSessions(debug=False):
                         counters[key] += 1
             if "test_runName" in session:
                 counters["Runs"] = len(session["test_runName"])
-                for run in session["test_runName"]:
-                    run = getRunFromDB(run)
-                    if "runType" in run and run["runType"] == "PSfullTest":   
-                        counters["RunsWithFullTest"] += 1
-                # if debug:
-                #     for run in session["test_runName"]:
-                #         run = getRunFromDB(run)
-                #         print(run["moduleTestName"])
-                if "nCycles" in session:
-                    counters["nCycles"] = session["nCycles"]
             if "modulesList" in session:
                 counters["modules"] = len(session["modulesList"])
+            if "nCycles" in session:
+                counters["nCycles"] = session["nCycles"]
             if debug:
                 pprint(counters)
                 print("Session %s"%(session["sessionName"]))
                 print(session["operator"])
                 print(session["description"])
                 print(session["testType"])
-            if counters["nCycles"]>0 and counters["RunsWithFullTest"]>0 and  counters["Heat"]>0 and counters["Cool"]>0:
-                burnInSessions.append(session)
-                if debug:
-                    print("Session %s is a burn-in session"%(session["sessionName"]))
-                    print()
+            if counters["nCycles"]>0 and counters["Heat"]>0 and counters["Cool"]>0:
+                if "test_runName" in session:
+                    for run in session["test_runName"]:
+                        run = getRunFromDB(run)
+                        if "runType" in run and run["runType"] == "PSfullTest":   
+                            counters["RunsWithFullTest"] += 1
+                        # if debug:
+                        #     for run in session["test_runName"]:
+                        #         run = getRunFromDB(run)
+                        #         print(run["moduleTestName"])
+                if counters["RunsWithFullTest"]>0:
+                    burnInSessions.append(session)
+                    if debug:
+                        print("Session %s is a burn-in session"%(session["sessionName"]))
+                        print()
 
     return burnInSessions
 
@@ -1128,7 +1134,7 @@ if __name__ == '__main__':
 
     print("getConnectionMapFromModule:", moduleName)
     connectionMap = getConnectionMap(moduleName)
-    slot = getSlotBIFromModuleConnectionMap(connectionMap)
+    slot = getSlotFromModuleConnectionMap(connectionMap)
     pprint(slot)
 
     print("\nhwToModuleName:")
