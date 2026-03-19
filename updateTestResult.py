@@ -25,7 +25,7 @@ verbose = 100000
 
 
 useOnlyMergedPlots = True
-version = "2026-02-11"
+version = "2026-03-19b"
 #version = "2025-10-22e"
 
 skipInfluxDb= False
@@ -41,6 +41,7 @@ allVariables = [
     "2DChannelOffsetValues", 
     "2DChannelOccupancyAfterOffsetEqualization", 
     "SCurve", 
+    "PulseHeightDistribution", 
     "PedestalDistribution", 
     "ChannelPedestal", 
     "NoiseDistribution", 
@@ -61,6 +62,8 @@ allVariables = [
     "ChannelOccupancy_Injection_2.000_MIP",
     "CommonNoiseHits_OccupancyDriven",
     "CommonNoiseHits_SigmaNoise_3.000",
+    "CommonNoiseHitsStrip_SigmaNoise_*",
+    "CommonNoiseHitsPixel_SigmaNoise_*"
 ]
 
 
@@ -905,7 +908,7 @@ def addPlotSection(title, plots, width):
 def grayText(text):
     return '<font color="gray"> %s </font>'%text
 
-def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor):
+def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlFileLink, tmpFolder, slotBI, tempSensor, error_lines_count=0, error_I2C_lines_count=0):
     html = """
 <!DOCTYPE html>
 <html lang="en">
@@ -1035,6 +1038,8 @@ def makeWebpage(rootFile, testID, moduleName, runName, module, run, test, noiseP
         GrafanaText = "%s %s -> %s %s"%(start_time_grafana_d, start_time_grafana_t, stop_time_grafana_d, stop_time_grafana_t)
     
     body += grayText("Link to Grafana (available only from INFN Pisa): ") + '<a href="%s">'%GrafanaLink + GrafanaText + "</a><br>" + "\n"
+    body += grayText("Number of error lines: ") + str(error_lines_count) + "<br>" + "\n"
+    body += grayText("Number of I2C error lines: ") + str(error_I2C_lines_count) + "<br>" + "\n"
     
     ### Single Module Run
     boardToId = {v: k for k, v in run["runBoards"].items()}
@@ -1452,7 +1457,32 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
         # Extract all the contents into the specified directory
         zip_ref.extractall(extracted_dir)
-    
+
+    # Count error lines in any log files extracted from the zip
+    import glob
+    error_lines_count = 0
+    error_I2C_lines_count = 0
+    log_files = glob.glob(os.path.join(extracted_dir, "**", "*.log"), recursive=True)
+    if log_files:
+        # Prefer a log file that matches the test/run name if possible
+        log_file = log_files[0]
+        for candidate in log_files:
+            # Prefer a log file with the same prefix as the run folder name (e.g., Run_206.log)
+            if os.path.basename(candidate).startswith(fDir):
+                log_file = candidate
+                break
+        try:
+            with open(log_file, "r", errors="ignore") as f:
+                for line in f:
+                    if "|E|" in line:
+                        error_lines_count += 1
+                        if "I2C" in line:
+                            error_I2C_lines_count += 1
+        except Exception as e:
+            print("Could not read log file for error count:", e)
+    else:
+        print("No log file found in", extracted_dir)
+
     ## check if the file is there
     if os.path.exists(extracted_dir+"/Results.root"):
         rootFile = TFile.Open(extracted_dir+"/Results.root")
@@ -1533,7 +1563,7 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #print(command)
     fff = [f for f in fff if os.path.exists(f)]
 #        newNames = uploadToWebDav(nfolder, fff)
-    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor)
+    webpage = makeWebpage(rootFile, module_test, moduleName, runName, module, run, test, noisePerChip, noiseRatioPerChip, xmlConfig, board_id, opticalGroup_id, result, plots, xmlPyConfigFile, tmpFolder, slotBI, tempSensor, error_lines_count, error_I2C_lines_count)
     zipFile = "results"  
     import shutil
     tmpUpFolder = tmpFolder.replace("//","/").replace("//","/")
@@ -1573,6 +1603,11 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
     #     download = "dummy"
     #     navigator = "dummy"
 
+    error_lines = {
+        "total": error_lines_count,
+        "I2C": error_I2C_lines_count,
+    }
+
     print("CERN box link (folder): https://cernbox.cern.ch/files/link/public/%s/%s"%(hash_value_analysis_read,nfolder))
     print(f"Local folder: {cernbox_folder_analysis}/{nfolder}")
     if verbose>1: print("TBPS Pisa page: https://cmstkita.web.cern.ch/Pisa/TBPS/")
@@ -1598,7 +1633,8 @@ def updateTestResult(module_test, tempSensor="auto"):#, skipWebdav = False):
         "analysisVersion": version, #"Test", 
         "analysisResults": {module_test:result},
         "analysisSummary": noisePerChip,
-        "analysisFile": navigator
+        "analysisFile": navigator,
+        "analysisErrorLines": error_lines,
     }
     status = createAnalysis(json)
     if int(status) != 201:
