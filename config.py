@@ -22,7 +22,7 @@ class Config:
     
     # Default values
     VERBOSE = 0  # -1: errors only, 0: info, 1: debug, 3+: detailed debug
-    LAST_PH2ACF_VERSION = "ph2_acf_v6-18"
+    LAST_PH2ACF_VERSION = "ph2_acf_v6-25"
     XML_PY_CONFIG_FILE = "PS_Module_settings.py"
     IP = "192.168.0.45"
     PORT = 5000
