@@ -722,10 +722,11 @@ class POTATOPisaFormatter():
         TObjString("Unknown").Write("Result_Folder")
         
         # Set Run_Type based on carrier temperature at test start
+        # Note: "inc_*" is for incomplete (https://cern.sharepoint.com/sites/Tracker-Upgrade/DataBase/SitePages/DB-Data-Upload.aspx)
         if(moduleCarrierTemperatureGraph.Eval(testTimeStart) > -15):
-            ROOT.TObjString("inc_mod_burnin_warm").Write("Run_Type")
+            ROOT.TObjString("mod_burnin_warm").Write("Run_Type")
         else:
-            ROOT.TObjString("inc_mod_burnin_cold").Write("Run_Type")
+            ROOT.TObjString("mod_burnin_cold").Write("Run_Type")
         
         print("Module_Slot: ", opticalGroupToBurninSlot[opticalGroupNumber])
         TObjString(opticalGroupToBurninSlot[opticalGroupNumber]).Write("Module_Slot")
