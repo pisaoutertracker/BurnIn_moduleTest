@@ -521,11 +521,12 @@ class IVCurveMeasurement:
             mean_temp = -999
             mean_rh = -999
         
-        # set the RunType name, can either be inc_mod_burnin_warm or inc_mod_burnin_cold if mean temp is above or below -15C
+        # set the RunType name, can either be mod_burnin_warm or mod_burnin_cold if mean temp is above or below -15C
+        # note: "inc_*" is for incomplete (https://cern.sharepoint.com/sites/Tracker-Upgrade/DataBase/SitePages/DB-Data-Upload.aspx) 
         if mean_temp > -15:
-            run_info['Run_type'] = 'inc_mod_burnin_warm'
+            run_info['Run_type'] = 'mod_burnin_warm'
         else:
-            run_info['Run_type'] = 'inc_mod_burnin_cold'
+            run_info['Run_type'] = 'mod_burnin_cold'
         
         with open(target_file, 'w') as f:
             # Write header information
