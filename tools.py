@@ -249,8 +249,33 @@ def parse_module_settings(xml_file):
 
     # Extract board URI from <connection id="board"> and get the host part.
     connection_elem = root.find(".//BeBoard/connection[@id='board']")
-    board_uri = connection_elem.get("uri")  # e.g., "ipbusudp-2.0://fc7ot3:50001"
-    board = board_uri.split("://")[1].split(":")[0]
+    board_uri = connection_elem.get("uri")  # e.g., "chtcp-2.0://localhost:10203?target=192.168.0.196:50001"
+
+    # Try to extract an IP from "target=<ip>:<port>" first, then fall back to the host in the URI.
+    import re
+    target_match = re.search(r'[?&]target=([^:/?&]+)', board_uri)
+    if target_match:
+        host_or_ip = target_match.group(1)
+    else:
+        host_or_ip = board_uri.split("://")[1].split(":")[0].split("?")[0]
+
+    # If it looks like an IP address, resolve it via /etc/hosts.
+    if re.match(r'^\d+\.\d+\.\d+\.\d+$', host_or_ip):
+        board = host_or_ip  # default: keep IP if not found in hosts
+        try:
+            with open("/etc/hosts") as _hosts_file:
+                for _line in _hosts_file:
+                    _line = _line.strip()
+                    if not _line or _line.startswith("#"):
+                        continue
+                    _parts = _line.split()
+                    if len(_parts) >= 2 and _parts[0] == host_or_ip:
+                        board = _parts[1]
+                        break
+        except OSError:
+            pass
+    else:
+        board = host_or_ip
 
     # Find all OpticalGroup elements under BeBoard.
     optical_groups = root.findall(".//BeBoard/OpticalGroup")
@@ -352,10 +377,11 @@ def getPh2ACFtag(resultsFileName):
 
 if __name__ == '__main__':
     print("getPh2ACFtag('Results.root'):", getPh2ACFtag('Results.root'))
-    filename = "ModuleTest_settings.xml"
+    filename = "OT6_OG4.xml"
     board, slots, hybrids, strips, pixels = parse_module_settings(filename)
 #    print("Slot:", slot)
     print("Board:", board)
+    print("Slots:", slots)
     print("Pixel channels:", pixels)
     print("Strip channels:", strips)
     print("Hybrids:", hybrids)
