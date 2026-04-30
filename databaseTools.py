@@ -932,18 +932,18 @@ def getSlotFromModuleConnectionMap(connectionMapModule):
             for conn in el["connections"]:
                 if "cable" in conn and conn["cable"].startswith("B") and conn["cable"][1].isdigit(): ## expect "B0" to "B8" (slot in the burn-in)
                     slot = int(conn["cable"].replace("B",""))
-                    if Config.VERBOSE>1: print("Found slotBI %s for module in connection map"%(slotBI))
+                    if Config.VERBOSE>1: print("Found slotBI %s for module in connection map"%(slot))
                     return "BI", slot
                 elif "cable" in conn and conn["cable"].startswith("BINT") and conn["cable"][4].isdigit(): ## expect "BINT1" (slot test)
                     slot = int(conn["cable"][4])
-                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slotBI))
+                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slot))
                     return "Integration", slot
                 elif "cable" in conn and conn["cable"] == "P001": ## this is not MARTA, but not even a slot in the burn-in nor in integration test
                     if Config.VERBOSE>1: print("Found patch panel 001 (%s) for module in connection map"%(conn["cable"]))
                     return "Other", 0
                 elif "cable" in conn and conn["cable"].startswith("P") and conn["cable"][1].isdigit(): ## expect "P2" (patch panel number from MARTA)
                     slot = int(conn["cable"][1:])
-                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slotBI))
+                    if Config.VERBOSE>1: print("Found slot integration %s for module in connection map"%(slot))
                     return "MARTA", slot
                 
     print("ERROR [getSlotFromModuleConnectionMap]: Could not find any slotBI in the module connection map")
@@ -1084,15 +1084,19 @@ def getBurnInSessions(debug=False):
 ### This code allow you to test this code using "python3 databaseTools.py"
 if __name__ == '__main__':
     print()
+    connectionMap = getConnectionMap("PS_26_IPG-10011")
+    saveMapToFile(connectionMap, "connectionMap.json")
+    print(connectionMap)
+    1/0
     sessions = getListOfSessionsFromDB()
-    burnInSessions = getBurnInSessions(debug=True)
-    for session in burnInSessions:
-        print(session["sessionName"], session["operator"], session["description"])
+    #burnInSessions = getBurnInSessions(debug=True)
+    #for session in burnInSessions:
+    #    print(session["sessionName"], session["operator"], session["description"])
     print()
     print()
     session = "session812"
     print("printSingleModuleTestAnalysesOfSession(%s):"%session)
-    printSingleModuleTestAnalysesOfSession(session)
+    #printSingleModuleTestAnalysesOfSession(session)
     print("Testing databaseTools.py")
     module = "PS_26_IBA-10003"
     print(f"getLpGBTversionFromDB({module}):", getLpGBTversionFromDB(module))
@@ -1111,12 +1115,11 @@ if __name__ == '__main__':
     print("IV scans for PS_26_05-IPG_001021:")
     for scan in iv_scans:
         print(scan["sessionName"],scan["runType"], scan["IVScanId"])
-    connectionMap = getConnectionMap("PS_26_IPG-10010")
-    print(connectionMap)
     saveMapToFile(connectionMap, "connectionMap.json")
     r = getRunFromDB("run303")
     print(r)
-    moduleName = "PS_26_IPG-10010"
+    moduleName = module
+    #moduleName = "PS_26_IPG-10010"
     testID = "T2023_11_08_17_57_54_302065"
     #testID = "T52"
     hwToModuleName, hwToMongoID = makeModuleNameMapFromDB()
@@ -1134,6 +1137,7 @@ if __name__ == '__main__':
 
     print("getConnectionMapFromModule:", moduleName)
     connectionMap = getConnectionMap(moduleName)
+    print(connectionMap)
     slot = getSlotFromModuleConnectionMap(connectionMap)
     pprint(slot)
 
