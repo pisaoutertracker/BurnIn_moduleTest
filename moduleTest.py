@@ -22,7 +22,7 @@ from config import Config, set_verbose_level
 # Configure logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if Config.VERBOSE > 0 else logging.INFO,
     format='%(message)s'
 )
 
@@ -898,6 +898,7 @@ def prepare_result_files(test_id: str,
         conn_map_file = f"{result_folder}/{Config.CONNECTION_MAP_FILENAME % module}"
         
         if not args.useExistingModuleTest:
+            logger.debug(f"Getting connection map for module {module} to {conn_map_file}.")
             connection_map = getConnectionMap(module)
             saveMapToFile(connection_map, conn_map_file)
         else:
@@ -1172,14 +1173,15 @@ def main():
     logger.info("++++++++++++++++++ Preliminary checks ++++++++++++++++++")
     logger.info("")
     
+    # Verify module connections
+    logger.info("")
+    logger.info("++++++++++++++++++ Check modules match DB, resolve 'auto', check 10G/5G ++++++++++++++++++")
+    logger.info("")
+    
+    modules = verify_module_connections(board, optical_groups, modules, args)
+    logger.debug(f"Modules after verification: {modules}")
+        
     if not args.useExistingXmlFile and not args.useExistingModuleTest:
-        # Verify module connections
-        logger.info("")
-        logger.info("++++++++++++++++++ Check modules match DB, resolve 'auto', check 10G/5G ++++++++++++++++++")
-        logger.info("")
-        
-        modules = verify_module_connections(board, optical_groups, modules, args)
-        
         # Check and install firmware
         check_and_install_firmware(board, modules, firmware, args)
         
